@@ -13,7 +13,7 @@ def read_contents(file_to_read):
 
 def get_version():
     script_dir = os.path.dirname(os.path.realpath(__file__))
-    version_path = os.path.join(script_dir, pypi_name, "VERSION")
+    version_path = os.path.join(script_dir, "src", pypi_name, "VERSION")
     return read_contents(version_path).strip()
 
 
@@ -22,8 +22,8 @@ setup(
     zip_safe=True,
     version=get_version(),
     description="NI System Configuration Python API",
-    long_description=read_contents("README.rst"),
-    long_description_content_type="text/x-rst",
+    long_description=read_contents("README.md"),
+    long_description_content_type="text/markdown",
     author="National Instruments",
     url="https://github.com/tkrebes/nisyscfg-python",
     maintainer="Tyler Krehbiel",
@@ -31,7 +31,8 @@ setup(
     keywords=[pypi_name, "syscfg"],
     license="MIT",
     include_package_data=True,
-    packages=find_packages(),
+    packages=find_packages(where="src"),
+    package_dir={"": "src"},
     python_requires=">=3.9",
     install_requires=[
         "hightime",
