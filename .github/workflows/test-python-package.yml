@@ -25,5 +25,5 @@ jobs:
         flake8
     - name: Test with pytest
       run: |
-        pip install pytest pytest-cov hightime six
-        pytest
+        python -m pip install --editable . pytest pytest-cov
+        python -m pytest
