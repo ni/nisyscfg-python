@@ -26,7 +26,10 @@ build-backend = "poetry.core.masonry.api"
 # region: poetry configuration
 [tool.poetry]
 packages = [{ include = "example_package", from = "src" }]
-requires-poetry = '>=2.1,<3.0'
+requires-poetry = '>=2.4.0,<3.0"
+
+[solver]
+min-release-age = 14
 
 [tool.poetry.dependencies]
 # cli
