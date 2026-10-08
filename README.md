@@ -1,6 +1,6 @@
-# NI System Configuration Python API
-
-**Author:** National Instruments
+| **Info** | NI System Configuration Python API |
+| --- | --- |
+| **Author** | National Instruments |
 
 ## Table of Contents
 
