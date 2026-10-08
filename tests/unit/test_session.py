@@ -1118,7 +1118,7 @@ def test_session_set_system_image_with_folder(lib_mock, tmp_path):
 
 def test_session_set_system_image_with_file(lib_mock, tmp_path):
     lib_mock.return_value.NISysCfgSetSystemImageFromFolder2.return_value = nisyscfg.errors.Status.OK
-    system_image_path = pathlib.Path(__file__).parent / "mock_system_image.zip"
+    system_image_path = pathlib.Path(__file__).parent.parent / "assets" / "mock_system_image.zip"
 
     with mock.patch("tempfile.TemporaryDirectory") as mock_tempdir:
         mock_tempdir.return_value.__enter__.return_value = tmp_path
@@ -1146,7 +1146,7 @@ def test_session_set_system_image_with_file(lib_mock, tmp_path):
 
 
 def test_session_set_system_image_with_invalid_file(lib_mock, tmp_path):
-    system_image_path = pathlib.Path(__file__).parent / "mock_invalid_system_image.bin"
+    system_image_path = pathlib.Path(__file__).parent.parent / "assets" / "mock_invalid_system_image.bin"
 
     with mock.patch("tempfile.TemporaryDirectory") as mock_tempdir:
         mock_tempdir.return_value.__enter__.return_value = tmp_path
