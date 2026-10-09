@@ -3,7 +3,7 @@ name: Publish Package to PyPI
 on:
   push:
     paths:
-      - nisyscfg/VERSION
+      - src/nisyscfg/VERSION
     branches:
       - main
   release:

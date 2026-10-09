@@ -1,13 +1,13 @@
 import os
 
-parent_dir, _ = os.path.split(os.path.dirname(__file__))
-# Set the current working directory to the parent directory of test_import.py.
-os.chdir(parent_dir)
+project_dir = os.path.dirname(os.path.dirname(__file__))
+package_dir = os.path.join(project_dir, "src", "nisyscfg")
 
-# Walk all module directories and create import tests for all non-private python
-# modules.
-for root, dirs, files in os.walk("nisyscfg"):
-    base_name = ".".join(root.split(os.path.sep))
+# Walk all module directories and create import tests for all non-private
+# Python modules.
+for root, dirs, files in os.walk(package_dir):
+    relative_root = os.path.relpath(root, os.path.join(project_dir, "src"))
+    base_name = ".".join(relative_root.split(os.path.sep))
     if "__init__.py" in files:
         exec("def test_{}(): import {}".format(base_name.replace(".", "_"), base_name))
     for f in files:
