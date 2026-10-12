@@ -35,7 +35,7 @@ requires = ["poetry-core>=2.1.0,<3.0.0"]
 build-backend = "poetry.core.masonry.api"
 
 [tool.poetry]
-requires-poetry = ">=2.4.0,<3.0"
+requires-poetry = ">=2.2.1,<3.0"
 packages = [{ include = "nisyscfg", from = "src" }]
 include = [{ path = "src/nisyscfg/VERSION", format = ["sdist", "wheel"] }]
 
