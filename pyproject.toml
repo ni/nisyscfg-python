@@ -37,7 +37,6 @@ build-backend = "poetry.core.masonry.api"
 [tool.poetry]
 requires-poetry = '>=2.1,<3.0'
 packages = [{ include = "nisyscfg", from = "src" }]
-include = [{ path = "src/nisyscfg/VERSION", format = ["sdist", "wheel"] }]
 
 [tool.poetry.group.test.dependencies]
 pytest = ">=7.2"
@@ -55,6 +54,14 @@ testpaths = ["tests"]
 show_source = true
 max_line_length = 120
 exclude = ["build", "docs", "tests", ".tox", "__pycache__", ".venv*"]
+
+# H404: Multi line docstrings should start without a leading new line.
+# H405: Multi line docstrings should start with a one line summary followed by an empty line.
+# H903: Windows style line endings not allowed in code
+# E501: Line length
+# W391: Blank line at end of file
+# W503: Line break occurred before a binary operator (not PEP8 compatible)
+# W504: Line break occurred after a binary operator (not PEP8 compatible)
 ignore = ["H404", "H405", "H903", "E501", "W391", "W503", "W504"]
 
 [tool.black]
