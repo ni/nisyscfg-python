@@ -6,7 +6,6 @@
 
 - [About](#about)
 - [Installation](#installation)
-- [Development](#development)
 - [Usage](#usage)
 
 ## About
@@ -38,23 +37,6 @@ Or, install **nisyscfg** by cloning the main branch and running the following co
 ```bash
 pip install --pre .
 ```
-
-## Development
-
-Install Poetry 2.4 or newer, then run these commands from the repository root:
-
-```bash
-python -m pip install "poetry>=2.4.0,<3.0"
-poetry install
-poetry run pytest
-poetry run flake8
-poetry build
-```
-
-Add runtime dependencies with `poetry add <package>`. Add development dependencies
-to a group with `poetry add --group test <package>` or
-`poetry add --group lint <package>`. Commit the updated `poetry.lock` with
-dependency changes.
 
 ## Usage
 
