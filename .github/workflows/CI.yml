@@ -1,0 +1,45 @@
+name: CI
+
+on:
+  push:
+    branches:
+      - main  
+  workflow_call:
+  workflow_dispatch:
+
+permissions: {}
+  
+jobs:
+  check_workflows:
+    name: Check workflows
+    uses: ./.github/workflows/check_workflows.yml
+  get_package_names:
+    name: Get package names
+    uses: ./.github/workflows/get_package_names.yml
+  check_packages:
+    name: Check ${{ matrix.package-name }}
+    needs: get_package_names
+    strategy:
+      matrix:
+        package-name: ${{ fromJson(needs.get_package_names.outputs.package-names) }}
+    uses: ./.github/workflows/check_package.yml
+    with:
+      package-name: ${{ matrix.package-name }}
+  test_packages:
+    name: Test ${{ matrix.package-name }}
+    needs: get_package_names
+    strategy:
+      matrix:
+        package-name: ${{ fromJson(needs.get_package_names.outputs.package-names) }}
+    uses: ./.github/workflows/test_package.yml
+    with:
+      package-name: ${{ matrix.package-name }}
+  report_test_results:
+    name: Report test results
+    if: ${{ always() }}
+    needs: test_packages
+    uses: ./.github/workflows/report_test_results.yml
+    permissions:
+      checks: write # needed to push the aggregated report
+      pull-requests: write # needed to post the report to the PR
+      

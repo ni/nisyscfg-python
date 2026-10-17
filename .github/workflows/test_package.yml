@@ -1,0 +1,81 @@
+name: Test package
+on:
+  workflow_call:
+    inputs:
+      package-name:
+        description: 'The name of the package folder to test.'
+        default: ''
+        required: true
+        type: string
+  workflow_dispatch:
+    inputs:
+      package-name:
+        description: 'The name of the package folder to test.'
+        default: ''
+        required: true
+        type: string
+
+permissions: {}
+
+jobs:
+  get_package_info:
+    name: Get package info - ${{ inputs.package-name }}
+    uses: ./.github/workflows/get_package_info.yml
+    with:
+      package-name: ${{ inputs.package-name }}
+
+  run_unit_tests:
+    strategy:
+      # Fail-fast skews the pass/fail ratio and seems to make pytest produce
+      # incomplete JUnit XML results.
+      fail-fast: false
+      matrix:
+        os: [windows-latest, ubuntu-latest]
+        python-version: ['3.9', '3.10', '3.11', '3.12', '3.13']
+    name: Run unit tests - ${{ inputs.package-name }} (${{ matrix.python-version }} - ${{ matrix.os }})
+    needs: get_package_info
+    runs-on: ${{ matrix.os }}
+    steps:
+      - name: Check out repo
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+          submodules: true
+      - name: Get OS version
+        run: echo "osVersion=$ImageOS" >> "$GITHUB_ENV"
+        shell: bash
+      - name: Set up Python
+        uses: ni/python-actions/setup-python@aa64e60612cb078b0c2ada666becbd70d4817d55 # v0.7.1
+        id: setup-python
+        with:
+          python-version: ${{ matrix.python-version }}
+      - name: Set up Poetry
+        uses: ni/python-actions/setup-poetry@aa64e60612cb078b0c2ada666becbd70d4817d55 # v0.7.1
+      - name: Cache ${{ inputs.package-name }} virtualenv
+        uses: actions/cache@668228422ae6a00e4ad889ee87cd7109ec5666a7 # v5.0.4
+        with:
+          path: ${{ github.workspace }}/${{ needs.get_package_info.outputs.package-basepath }}/.venv
+          key:  ${{ inputs.package-name }}-${{ matrix.os }}-py${{ matrix.python-version }}-${{ steps.setup-python.outputs.python-version }}-${{ hashFiles('**/poetry.lock') }}
+        
+      - name: Install ${{ inputs.package-name }}
+        run: poetry install -v
+        working-directory: ${{ github.workspace }}/${{ needs.get_package_info.outputs.package-basepath }}
+        shell: bash
+      - name: Run ${{ inputs.package-name }} unit tests and code coverage
+        env:
+          PACKAGE_NAME: ${{ inputs.package-name }}
+          MATRIX_OS: ${{ matrix.os }}
+          PYTHON_VERSION: ${{ steps.setup-python.outputs.python-version }}
+        run: poetry run pytest -v --cov="$PACKAGE_NAME" --junitxml="test_results/$PACKAGE_NAME-$MATRIX_OS-py$PYTHON_VERSION.xml"
+        working-directory: ${{ github.workspace }}/${{ needs.get_package_info.outputs.package-basepath }}
+        shell: bash
+      - name: Upload ${{ inputs.package-name }} test results
+        uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # v6.0.0
+        with:
+          name: test_results_unit_${{ inputs.package-name }}_${{ matrix.os }}_py${{ steps.setup-python.outputs.python-version }}
+          path: ${{ github.workspace }}/${{ needs.get_package_info.outputs.package-basepath }}/test_results/*.xml
+        if: always()
+
+
+
+

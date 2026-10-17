@@ -6,13 +6,14 @@ on:
       - published
 
 jobs:
-  build-and-publish:
+  build-and-publish: # zizmor: ignore[excessive-permissions] Temporary: permissions hardening tracked in follow-up PR
     if: github.repository == 'ni/nisyscfg-python'
     runs-on: ubuntu-latest
 
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-
+        with:
+          persist-credentials: false
       - name: Set up Python 3.9
         uses: ni/python-actions/setup-python@dee640bba235ae28fdc6b7337c643bd06358ae90 # v0.9.0
         with:
@@ -26,12 +27,14 @@ jobs:
 
       - name: Publish distribution to Test PyPI
         uses: pypa/gh-action-pypi-publish@dc37677b2e1c63e2034f94d8a5b11f265b73ba33 # v1.14.2
+        # zizmor: ignore[use-trusted-publishing] Temporary token authentication; migration tracked in follow-up PR
         with:
-          password: ${{ secrets.test_pypi_password }}
-          repository-url: https://test.pypi.org/legacy/
-        continue-on-error: true
+         repository-url: https://test.pypi.org/legacy/
+         password: ${{ secrets.test_pypi_password }}
+         continue-on-error: true
 
       - name: Publish distribution to PyPI
         uses: pypa/gh-action-pypi-publish@dc37677b2e1c63e2034f94d8a5b11f265b73ba33 # v1.14.2
+         # zizmor: ignore[use-trusted-publishing] Temporary token authentication; migration tracked in follow-up PR
         with:
           password: ${{ secrets.pypi_password }}

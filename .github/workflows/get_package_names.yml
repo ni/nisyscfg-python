@@ -1,0 +1,33 @@
+name: Get package names
+
+on:
+  workflow_call:
+    outputs:
+      package-names:
+        description: "List of package names from .github/python-packages.json"
+        value: ${{ jobs.get_package_names.outputs.package-names }}
+
+permissions: {}
+
+jobs:
+  get_package_names:
+    name: Get package names
+    runs-on: ubuntu-latest
+    outputs:
+      package-names: ${{ steps.parse_json.outputs.package-names }}
+    steps:
+      - name: Check out repo
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - name: Get package info from JSON
+        id: parse_json
+        # NOTE: jq only supports standard JSON, not JSONC or JSON5
+        run: |
+          info=$(jq -c 'keys' ./.github/python-packages.json)
+          if [ -z "$info" ] || [ "$info" = "[]" ]; then
+            echo "Error: No package names found in .github/python-packages.json" >&2
+            exit 1
+          fi
+          echo "Package names: $info"
+          echo "package-names=$info" >> $GITHUB_OUTPUT

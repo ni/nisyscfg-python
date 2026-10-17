@@ -1,0 +1,64 @@
+name: Get package info
+
+on:
+  workflow_call:
+    inputs:
+      package-name:
+        description: 'The name of the package from .github/python-packages.json.'
+        default: ''
+        required: true
+        type: string
+    outputs:
+      package-basepath:
+        description: 'The package base path relative to the repo root.'
+        # NOTE: This is not the absolute path, because downstream actions are expected to be run on multiple platforms.
+        value: ${{ jobs.get_package_info.outputs.package-basepath }}
+      install-extras:
+        description: 'A space-separated list of package extras to install.'
+        value: ${{ jobs.get_package_info.outputs.install-extras }}
+permissions: {}
+
+jobs:
+  get_package_info:
+    name: Get package info for ${{ inputs.package-name }}
+    runs-on: ubuntu-latest
+    outputs:
+      package-basepath: ${{ steps.parse_json.outputs.package-basepath }}
+      install-extras: ${{ steps.parse_json.outputs.install-extras }}
+      should-check-docs: ${{ steps.parse_json.outputs.should-check-docs }}
+    steps:
+      - name: Check out repo
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - name: Get package info from JSON
+        id: parse_json
+        env:
+          PACKAGE_NAME: ${{ inputs.package-name }}
+        # NOTE: jq only supports standard JSON, not JSONC or JSON5
+        run: |
+          info=$(jq -c --arg name "$PACKAGE_NAME" '.[$name]' "./.github/python-packages.json")
+          if [ "$info" = "null" ]; then
+            echo "Error: Package '$PACKAGE_NAME' not found in .github/python-packages.json." >&2
+            exit 1
+          fi
+
+          package_basepath=$(echo "$info" | jq -r '."package-basepath"')
+          install_extras=$(echo "$info" | jq -r '."install-extras"')
+
+          should_check_docs=false
+          if [ -d "${package_basepath}/docs" ]; then
+            should_check_docs=true
+          fi
+
+          if [ "${install_extras}" == "null" ]; then
+            install_extras=""
+          fi
+          echo "package-basepath=${package_basepath}" >> $GITHUB_OUTPUT
+          echo "install-extras=${install_extras}" >> $GITHUB_OUTPUT
+          echo "should-check-docs=${should_check_docs}" >> $GITHUB_OUTPUT
+      - name: Show package info
+        env:
+          STEP_OUTPUTS: ${{ toJSON(steps.parse_json.outputs) }}
+        run: |
+          echo "$STEP_OUTPUTS"

@@ -1,0 +1,24 @@
+name: PR
+
+on:
+  pull_request:
+    branches:
+      - main
+  workflow_call:
+  workflow_dispatch:
+
+permissions: {}
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  run_ci:
+    name: Run CI
+    uses: ./.github/workflows/CI.yml
+    permissions:
+      checks: write # needed to push the aggregated test results report
+      pull-requests: write # needed to post the test results report to the PR
+      
+
+
