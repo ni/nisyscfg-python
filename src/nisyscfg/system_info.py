@@ -15,7 +15,7 @@ class SystemInfoIterator(object):
         # The handle is typically an integer/opaque C handle; allow None for closed state.
         self._handle: Optional[int] = handle
         # Cast the getter to Any before calling so mypy allows the call to an untyped function.
-        self._library: Any = cast(Any, _library_singleton.get())()
+        self._library: Any = cast(Any, _library_singleton.get())
 
     def __del__(self) -> None:
         """Release resources associated with the iterator."""

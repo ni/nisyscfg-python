@@ -2,7 +2,7 @@ from __future__ import absolute_import
 
 import locale
 import sys
-from typing import Optional, Union
+from typing import Optional, Union, overload
 
 if sys.platform.startswith("win"):
     # On Windows, nisyscfg uses the system code page for the decoding of C-strings
@@ -32,13 +32,21 @@ def c_string_encode(value: Optional[Union[str, bytes]]) -> Optional[bytes]:
     return value
 
 
-def c_string_decode(value: Optional[Union[bytes, str]]) -> str:
+@overload
+def c_string_decode(value: None) -> None: ...
+
+
+@overload
+def c_string_decode(value: Union[bytes, str]) -> str: ...
+
+
+def c_string_decode(value: Optional[Union[bytes, str]]) -> Optional[str]:
     """Decode a string returned by the C API.
 
-    Treat None as an empty string for callers that expect a Python str.
+    Preserve None when the C API returns a null string pointer.
     """
     if value is None:
-        return ""
+        return None
     # Use built-in bytes/str checks so type checkers can narrow the type.
     if isinstance(value, bytes):
         return value.decode(get_syscfg_locale())

@@ -83,7 +83,7 @@ jobs:
     needs: [get_publish_info, get_package_info]
     with:
       package-name: ${{ needs.get_publish_info.outputs.package-name }}
-      package-basepath: ${{ github.workspace }}/${{ needs.get_package_info.outputs.package-basepath }}
+      package-basepath: ${{ needs.get_package_info.outputs.package-basepath }}
       install-extras: ${{ needs.get_package_info.outputs.install-extras }}
   # TODO: Call check docs post including check docs file which generates docs.
   build_package:

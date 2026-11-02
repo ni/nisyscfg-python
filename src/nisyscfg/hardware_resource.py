@@ -41,7 +41,7 @@ SaveChangesResult = typing.NamedTuple(
     "SaveChangesResult",
     [
         ("restart_required", bool),
-        ("details", str),
+        ("details", typing.Optional[str]),
     ],
 )
 
@@ -49,7 +49,7 @@ UpgradeFirmwareResult = typing.NamedTuple(
     "UpgradeFirmwareResult",
     [
         ("status", nisyscfg.enums.FirmwareStatus),
-        ("details", str),
+        ("details", typing.Optional[str]),
     ],
 )
 
@@ -58,7 +58,7 @@ FirmwareStatusResult = typing.NamedTuple(
     [
         ("percent_complete", int),
         ("status", nisyscfg.enums.FirmwareStatus),
-        ("details", str),
+        ("details", typing.Optional[str]),
     ],
 )
 
@@ -66,7 +66,7 @@ DeleteResult = typing.NamedTuple(
     "DeleteResult",
     [
         ("dependent_items_deleted", bool),
-        ("details", str),
+        ("details", typing.Optional[str]),
     ],
 )
 
@@ -379,7 +379,7 @@ class HardwareResource(object):
         error.
         """
         restart_required = ctypes.c_int()
-        details: str = ""
+        details: typing.Optional[str] = ""
         error_code_2 = 0
         c_details = ctypes.POINTER(ctypes.c_char)()
         error_code = self._library.SaveResourceChanges(
@@ -393,7 +393,7 @@ class HardwareResource(object):
 
         return SaveChangesResult(restart_required=restart_required.value != 0, details=details)
 
-    def self_calibrate(self) -> str:
+    def self_calibrate(self) -> typing.Optional[str]:
         """Performs a self-calibration on a device.
 
         Self-calibration adjusts the calibration constants with respect to an
@@ -412,7 +412,7 @@ class HardwareResource(object):
         Raises an nisyscfg.errors.LibraryError exception in the event of an
         error.
         """
-        details: str = ""
+        details: typing.Optional[str] = ""
         error_code_2 = 0
         c_details = ctypes.POINTER(ctypes.c_char)()
         error_code = self._library.SelfCalibrateHardware(self._handle, ctypes.pointer(c_details))
@@ -424,7 +424,7 @@ class HardwareResource(object):
 
         return details
 
-    def self_test(self, mode: int = 0) -> str:
+    def self_test(self, mode: int = 0) -> typing.Optional[str]:
         """Verifies that system devices are able to perform basic I/O functions.
 
         No other tasks should run on the system while executing the self test
@@ -440,7 +440,7 @@ class HardwareResource(object):
         Raises an nisyscfg.errors.LibraryError exception in the event of an
         error.
         """
-        details: str = ""
+        details: typing.Optional[str] = ""
         error_code_2 = 0
         c_details = ctypes.POINTER(ctypes.c_char)()
         error_code = self._library.SelfTestHardware(self._handle, mode, ctypes.pointer(c_details))
@@ -532,7 +532,7 @@ class HardwareResource(object):
             raise ValueError(
                 "upgrade_firmware() requires either version or filepath to be specified"
             )
-        details: str = ""
+        details: typing.Optional[str] = ""
         error_code_2 = 0
         if c_details:
             details = c_string_decode(ctypes.cast(c_details, ctypes.c_char_p).value)
@@ -572,7 +572,7 @@ class HardwareResource(object):
         error_code = self._library.CheckFirmwareStatus(
             self._handle, percent_complete, firmware_status, ctypes.pointer(c_details)
         )
-        details: str = ""
+        details: typing.Optional[str] = ""
         error_code_2 = 0
         if c_details:
             details = c_string_decode(ctypes.cast(c_details, ctypes.c_char_p).value)
@@ -629,7 +629,7 @@ class HardwareResource(object):
         error_code = self._library.DeleteResource(
             self._handle, mode, dependent_items_deleted, ctypes.pointer(c_details)
         )
-        details: str = ""
+        details: typing.Optional[str] = ""
         error_code_2 = 0
         if c_details:
             details = c_string_decode(ctypes.cast(c_details, ctypes.c_char_p).value)

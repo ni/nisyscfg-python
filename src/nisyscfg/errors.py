@@ -3,7 +3,7 @@
 
 import platform
 import warnings
-from typing import Any, Union
+from typing import Any, Optional, Union
 
 from nisyscfg.enums import BaseEnum
 
@@ -35,11 +35,11 @@ class InvalidSystemImageError(Error):
 class LibraryError(Error):
     """Raised when the NI System Configuration API returns an error."""
 
-    def __init__(self, code: Union[int, BaseEnum], description: str) -> None:
+    def __init__(self, code: Union[int, BaseEnum], description: Optional[str]) -> None:
         """Initialize the library error."""
         assert _is_error(code), "Should not raise Error if code is not fatal."
         self.code: Union[int, BaseEnum] = code
-        self.description: str = description
+        self.description: Optional[str] = description
         if self.description:
             message = str(self.code) + ": " + self.description
         else:
@@ -50,11 +50,11 @@ class LibraryError(Error):
 class LibraryWarning(Warning):
     """Represents a warning returned by the NI System Configuration API."""
 
-    def __init__(self, code: Union[int, BaseEnum], description: str) -> None:
+    def __init__(self, code: Union[int, BaseEnum], description: Optional[str]) -> None:
         """Initialize the library warning."""
         assert _is_warning(code), "Should not create Warning if code is not positive."
         self.code: Union[int, BaseEnum] = code
-        self.description: str = description
+        self.description: Optional[str] = description
         if self.description:
             message = "Warning {0}: {1}".format(str(self.code), self.description)
         else:
@@ -101,7 +101,7 @@ def handle_error(
         if is_error_handling:
             # The caller is in the midst of error handling and an error occurred.
             # Don't try to get the description or we'll start recursing until the stack overflows.
-            description: str = ""
+            description: Optional[str] = ""
         else:
             description = session._get_status_description(code)
     except Exception:

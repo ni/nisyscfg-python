@@ -53,8 +53,8 @@ jobs:
       - name: Analyze Python Project
         uses: ni/python-actions/analyze-project@dee640bba235ae28fdc6b7337c643bd06358ae90 # v0.9.0
         with:
-          project-directory: ${{ github.workspace }}/${{ needs.get_package_info.outputs.package-basepath }}
+          project-directory: ${{ github.workspace }}/${{ inputs.package-basepath }}
           install-args: ${{ inputs.install-extras && format('--extras ''{0}''', inputs.install-extras) || '' }}
       - name: Bandit security checks
         run:  poetry run bandit -c pyproject.toml -r src/
-        working-directory: ${{ github.workspace }}/${{ needs.get_package_info.outputs.package-basepath }}
+        working-directory: ${{ inputs.package-basepath }}

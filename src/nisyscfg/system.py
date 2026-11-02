@@ -35,7 +35,7 @@ SaveChangesResult = NamedTuple(
     "SaveChangesResult",
     [
         ("restart_required", bool),
-        ("details", str),
+        ("details", Optional[str]),
     ],
 )
 
@@ -131,12 +131,14 @@ class Session(object):
         """Close the session when exiting a context manager."""
         self.close()
 
-    def _get_status_description(self, status: Union[int, "nisyscfg.errors.Status"]) -> str:
+    def _get_status_description(
+        self, status: Union[int, "nisyscfg.errors.Status"]
+    ) -> Optional[str]:
         c_detailed_description = ctypes.POINTER(ctypes.c_char)()
         error_code = self._library.GetStatusDescription(
             self._session, status, ctypes.pointer(c_detailed_description)
         )
-        detailed_description = ""
+        detailed_description: Optional[str] = ""
         error_code_2 = 0
         if c_detailed_description:
             detailed_description = c_string_decode(
@@ -161,7 +163,9 @@ class Session(object):
             nisyscfg.errors.handle_error(self, error_code)
             self._session = None
 
-    def get_system_experts(self, expert_names: str = "") -> nisyscfg.expert_info.ExpertInfoIterator:
+    def get_system_experts(
+        self, expert_names: Union[str, List[str]] = ""
+    ) -> nisyscfg.expert_info.ExpertInfoIterator:
         """Returns the experts available on the system.
 
         expert_names - This is a case-insensitive comma-separated string
@@ -186,7 +190,7 @@ class Session(object):
         self,
         filter: Union[None, nisyscfg.filter.Filter] = None,
         mode: nisyscfg.enums.FilterMode = nisyscfg.enums.FilterMode.MATCH_VALUES_ALL,
-        expert_names: str = "",
+        expert_names: Union[str, List[str]] = "",
     ) -> nisyscfg.hardware_resource.HardwareResourceIterator:
         """Returns an iterator of hardware in a specified system.
 
@@ -1062,7 +1066,7 @@ class Session(object):
         error_code = self._library.SaveSystemChanges(
             self._session, restart_required, ctypes.pointer(c_details)
         )
-        details: str = ""
+        details: Optional[str] = ""
         error_code_2 = 0
         if c_details:
             details = c_string_decode(ctypes.cast(c_details, ctypes.c_char_p).value)
