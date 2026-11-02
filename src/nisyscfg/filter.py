@@ -1,7 +1,7 @@
 """Hardware filter functionality for NI System Configuration."""
 
 import ctypes
-from typing import Any, Optional, Type, cast
+from typing import TYPE_CHECKING, Any, Optional, Protocol, Type, cast
 
 import nisyscfg.errors
 import nisyscfg.properties
@@ -12,11 +12,27 @@ from nisyscfg.properties import PropertyAccessor
 
 _property_bag = cast(Any, nisyscfg.properties.PropertyBag)
 
+if TYPE_CHECKING:
+
+    class _XnetFilterProperties(Protocol):
+        port_number: int
+
 
 @_property_bag(cast(Any, nisyscfg.properties.Filter))
 @_property_bag(cast(Any, nisyscfg.xnet.properties.Filter), expert="xnet")
 class Filter(object):
     """Represents a NI System Configuration filter."""
+
+    if TYPE_CHECKING:
+        is_device: bool
+        is_present: bool
+        is_ni_product: bool
+        is_chassis: bool
+        serial_number: str
+        user_alias: str
+        connects_to_link_name: str
+        expert_name: str
+        xnet: _XnetFilterProperties
 
     _handle: Optional["nisyscfg.types.FilterHandle"]
 

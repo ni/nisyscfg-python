@@ -3,7 +3,7 @@
 import nisyscfg
 
 
-def print_primary_expert_alias_and_resource():
+def print_primary_expert_alias_and_resource() -> None:
     """Print the primary expert alias and resource name for each device."""
     format_string = "{0: <16} {1: <32} {2}"
     with nisyscfg.Session() as session:

@@ -4,6 +4,7 @@ import sys
 
 import nisyscfg
 import nisyscfg.xnet
+import nisyscfg.xnet.enums
 
 
 class PortNotFoundError(Exception):
@@ -12,7 +13,7 @@ class PortNotFoundError(Exception):
     pass
 
 
-def nixnet_blink_port_led(port_name, mode):
+def nixnet_blink_port_led(port_name: str, mode: nisyscfg.xnet.enums.Blink) -> None:
     """Enable or disable blinking for the specified NI-XNET port LED."""
     with nisyscfg.Session() as session:
         # Search for the NI-XNET interface with port name.

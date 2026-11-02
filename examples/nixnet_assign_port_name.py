@@ -18,7 +18,7 @@ class PortNotFoundError(Exception):
     pass
 
 
-def nixnet_assign_port_name(serial_number, port_number, port_name):
+def nixnet_assign_port_name(serial_number: str, port_number: int, port_name: str) -> None:
     """Assign a user-defined name to an NI-XNET port.
 
     Searches for the NI-XNET device with the specified serial number,

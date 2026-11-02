@@ -3,7 +3,7 @@
 import ctypes
 import typing
 from functools import reduce
-from typing import Any, Callable
+from typing import TYPE_CHECKING, Any, Callable, Protocol
 
 import nisyscfg.errors
 import nisyscfg.properties
@@ -17,6 +17,20 @@ from nisyscfg._lib import c_string_decode, c_string_encode
 # Typed local aliases for untyped C interop helpers so mypy sees their signatures.
 _c_string_decode: Callable[[Any], str] = c_string_decode
 _c_string_encode: Callable[[str], Any] = c_string_encode
+
+if TYPE_CHECKING:
+    import hightime
+
+    import nisyscfg.pxi.enums
+    import nisyscfg.xnet.enums
+
+    class _XnetResourceProperties(Protocol):
+        blink: nisyscfg.xnet.enums.Blink
+        protocol: nisyscfg.xnet.enums.Protocol
+
+    class _PxiResourceProperties(Protocol):
+        fan_mode: nisyscfg.pxi.enums.FanModes
+        power_supply_name: nisyscfg.properties.IndexedPropertyItems
 
 
 class _NoDefault(object):
@@ -119,6 +133,17 @@ class HardwareResourceIterator(object):
 @nisyscfg.properties.PropertyBag(nisyscfg.xnet.properties.Resource, expert="xnet")
 class HardwareResource(object):
     """Represents a hardware resource managed by NI System Configuration."""
+
+    if TYPE_CHECKING:
+        expert_name: nisyscfg.properties.IndexedPropertyItems
+        provides_link_name: str
+        current_time: hightime.datetime
+        is_device: bool
+        product_name: str
+        temperature_name: nisyscfg.properties.IndexedPropertyItems
+        temperature_reading: nisyscfg.properties.IndexedPropertyItems
+        pxi: _PxiResourceProperties
+        xnet: _XnetResourceProperties
 
     def __init__(self, handle: "nisyscfg.types.ResourceHandle") -> None:
         """Initialize the hardware resource wrapper."""

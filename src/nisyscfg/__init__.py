@@ -5,4 +5,4 @@ from nisyscfg import (
     errors,  # noqa: F401
     types,  # noqa: F401
 )
-from nisyscfg.system import Session  # noqa: F401
+from nisyscfg.system import Session as Session  # noqa: I250
