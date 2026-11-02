@@ -1,7 +1,7 @@
 """Expert discovery and enumeration functionality for NI System Configuration."""
 
 import typing
-from typing import Any, Callable, Optional
+from typing import Any, Optional
 
 import nisyscfg.errors
 from nisyscfg import _library_singleton
@@ -16,11 +16,6 @@ ExpertInfo = typing.NamedTuple(
     ],
 )
 
-# Provide typed wrappers for untyped callables so mypy's "no-untyped-call"
-# rule is satisfied while preserving runtime behavior.
-_c_string_decode: Callable[[Any], str] = c_string_decode
-_get_library: Callable[[], Any] = _library_singleton.get
-
 
 class ExpertInfoIterator(object):
     """Iterates over expert information returned by the system."""
@@ -30,7 +25,7 @@ class ExpertInfoIterator(object):
         self._handle: Optional[Any] = handle
         # _library is untyped at runtime; we keep the type as Any to avoid
         # leaking implementation details while satisfying type checking.
-        self._library: Any = _get_library()
+        self._library: Any = _library_singleton.get()
 
     def __del__(self) -> None:
         """Release resources associated with the iterator."""
@@ -53,9 +48,9 @@ class ExpertInfoIterator(object):
             raise StopIteration()
         nisyscfg.errors.handle_error(self, error_code)
         return ExpertInfo(
-            _c_string_decode(expert_name.value),
-            _c_string_decode(display_name.value),
-            _c_string_decode(version.value),
+            c_string_decode(expert_name.value),
+            c_string_decode(display_name.value),
+            c_string_decode(version.value),
         )
 
     def close(self) -> None:

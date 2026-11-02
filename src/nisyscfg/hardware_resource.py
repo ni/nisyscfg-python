@@ -3,7 +3,7 @@
 import ctypes
 import typing
 from functools import reduce
-from typing import TYPE_CHECKING, Any, Callable, Protocol
+from typing import TYPE_CHECKING, Protocol
 
 import nisyscfg.errors
 import nisyscfg.properties
@@ -13,10 +13,6 @@ import nisyscfg.types
 import nisyscfg.xnet.properties
 from nisyscfg import _library_singleton
 from nisyscfg._lib import c_string_decode, c_string_encode
-
-# Typed local aliases for untyped C interop helpers so mypy sees their signatures.
-_c_string_decode: Callable[[Any], str] = c_string_decode
-_c_string_encode: Callable[[str], Any] = c_string_encode
 
 if TYPE_CHECKING:
     import hightime
@@ -84,10 +80,8 @@ class HardwareResourceIterator(object):
         self._session: "nisyscfg.types.SessionHandle" = session
         # Handle may be cleared by close(); make it Optional for typing.
         self._handle: typing.Optional["nisyscfg.types.EnumResourceHandle"] = handle
-        from typing import Any
-
         # The library singleton is dynamically typed; treat it as Any locally.
-        self._library: Any = typing.cast(Any, _library_singleton.get())
+        self._library: typing.Any = typing.cast(typing.Any, _library_singleton.get())
 
     def __del__(self) -> None:
         """Release resources associated with the iterator."""
@@ -148,10 +142,8 @@ class HardwareResource(object):
     def __init__(self, handle: "nisyscfg.types.ResourceHandle") -> None:
         """Initialize the hardware resource wrapper."""
         self._handle: typing.Optional["nisyscfg.types.ResourceHandle"] = handle
-        from typing import Any
-
         # The library singleton is dynamically typed; treat it as Any locally.
-        self._library: Any = typing.cast(Any, _library_singleton.get())
+        self._library: typing.Any = typing.cast(typing.Any, _library_singleton.get())
         # PropertyAccessor is dynamically typed.
         # Cast to the expected type to avoid mypy complaining about untyped-call.
         self._property_accessor: "nisyscfg.properties.PropertyAccessor" = (
@@ -226,7 +218,7 @@ class HardwareResource(object):
         if c_type == nisyscfg.types.TimestampUTC:
             return nisyscfg.timestamp._convert_ctype_to_datetime(value)
 
-        return _c_string_decode(value.value)
+        return c_string_decode(value.value)
 
     def _get_indexed_property(
         self,

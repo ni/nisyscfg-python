@@ -2,16 +2,13 @@
 
 import ctypes
 import typing
-from typing import Any, Callable, Optional, cast
+from typing import Any, Optional, cast
 
 import nisyscfg.component_info
 import nisyscfg.enums
 import nisyscfg.errors
 from nisyscfg import _library_singleton
 from nisyscfg._lib import c_string_decode
-
-# Provide typed wrapper like component_info so mypy's no-untyped-call rule is satisfied
-_c_string_decode: Callable[[Any], str] = c_string_decode
 
 DependencyInfo = typing.NamedTuple(
     "DependencyInfo",
@@ -70,7 +67,7 @@ class DependencyInfoIterator(object):
         nisyscfg.errors.handle_error(self, error_code)
 
         if c_depender_detailed_description:
-            depender_detailed_description = _c_string_decode(
+            depender_detailed_description = c_string_decode(
                 cast(bytes, ctypes.cast(c_depender_detailed_description, ctypes.c_char_p).value)
             )
             error_code = self._library.FreeDetailedString(c_depender_detailed_description)
@@ -79,7 +76,7 @@ class DependencyInfoIterator(object):
             depender_detailed_description = ""
 
         if c_dependee_detailed_description:
-            dependee_detailed_description = _c_string_decode(
+            dependee_detailed_description = c_string_decode(
                 cast(bytes, ctypes.cast(c_dependee_detailed_description, ctypes.c_char_p).value)
             )
             error_code = self._library.FreeDetailedString(c_dependee_detailed_description)
@@ -89,16 +86,16 @@ class DependencyInfoIterator(object):
 
         return DependencyInfo(
             depender=nisyscfg.component_info.ComponentInfo(
-                id=_c_string_decode(depender_id.value),
-                version=_c_string_decode(depender_version.value),
-                title=_c_string_decode(depender_title.value),
+                id=c_string_decode(depender_id.value),
+                version=c_string_decode(depender_version.value),
+                title=c_string_decode(depender_title.value),
                 type=nisyscfg.enums.ComponentType.UNKNOWN,
                 details=depender_detailed_description,
             ),
             dependee=nisyscfg.component_info.ComponentInfo(
-                id=_c_string_decode(dependee_id.value),
-                version=_c_string_decode(dependee_version.value),
-                title=_c_string_decode(dependee_title.value),
+                id=c_string_decode(dependee_id.value),
+                version=c_string_decode(dependee_version.value),
+                title=c_string_decode(dependee_title.value),
                 type=nisyscfg.enums.ComponentType.UNKNOWN,
                 details=dependee_detailed_description,
             ),

@@ -1,6 +1,6 @@
 """System discovery and enumeration functionality for NI System Configuration."""
 
-from typing import Any, Callable, Optional, cast
+from typing import Any, Optional, cast
 
 import nisyscfg.errors
 from nisyscfg import _library_singleton
@@ -34,10 +34,7 @@ class SystemInfoIterator(object):
         if error_code == nisyscfg.errors.Status.END_OF_ENUM:
             raise StopIteration()
         nisyscfg.errors.handle_error(self, error_code)
-        # c_string_decode is untyped in stubs; cast it to a Callable that returns str
-        # so mypy treats this call as returning a str without changing runtime behavior.
-        c_string_decode_t = cast(Callable[[Any], str], c_string_decode)
-        return c_string_decode_t(system_name.value)
+        return c_string_decode(system_name.value)
 
     def close(self) -> None:
         """Close the system enumeration handle."""

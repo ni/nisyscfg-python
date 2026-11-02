@@ -7,7 +7,7 @@ import pathlib
 import tempfile
 import zipfile
 from contextlib import ExitStack
-from typing import Any, Callable, List, NamedTuple, Optional, Union, cast
+from typing import Any, List, NamedTuple, Optional, Union, cast
 
 import nisyscfg
 import nisyscfg._library_singleton
@@ -1030,9 +1030,7 @@ class Session(object):
         if issubclass(c_type, ctypes.c_void_p):
             return value
 
-        # c_string_decode is untyped; provide a typed alias for mypy to accept the call.
-        c_string_decode_t = cast(Callable[[Any], str], c_string_decode)
-        return c_string_decode_t(value.value)
+        return c_string_decode(value.value)
 
     def _set_property(self, id: int, value: Any, c_type: Any, nisyscfg_type: int) -> None:
         if c_type == ctypes.c_char_p:
