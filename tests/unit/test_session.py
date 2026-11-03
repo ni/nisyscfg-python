@@ -381,13 +381,12 @@ def test_get_system_experts_with_no_experts(lib_mock: MagicMock) -> None:
     assert lib_mock.mock_calls == expected_calls
 
 
-def test_expert_info_iterator_raises_error_after_close(lib_mock: MagicMock) -> None:
+def test_expert_info_iterator_stops_after_close(lib_mock: MagicMock) -> None:
     with nisyscfg.Session() as session:
         expert_info = session.get_system_experts()
         expert_info.close()
-        with pytest.raises(Exception):
-            # Preserve the missing-method AttributeError this test covers.
-            getattr(expert_info, "next")()
+        with pytest.raises(StopIteration):
+            next(expert_info)
 
 
 def test_get_system_experts_with_two_experts(lib_mock: MagicMock) -> None:
@@ -779,13 +778,30 @@ def test_interating_over_hardware_resources(lib_mock: MagicMock) -> None:
     assert lib_mock.mock_calls == expected_calls
 
 
-def test_hardware_resource_raises_error_after_close(lib_mock: MagicMock) -> None:
+def test_hardware_resource_iterator_stops_after_close(lib_mock: MagicMock) -> None:
     with nisyscfg.Session() as session:
-        resource = session.find_hardware()
-        resource.close()
-        with pytest.raises(Exception):
-            # Preserve the missing-method AttributeError this test covers.
-            getattr(resource, "next")()
+        resource_iterator = session.find_hardware()
+        resource_iterator.close()
+        with pytest.raises(StopIteration):
+            next(resource_iterator)
+
+
+def test_null_enumeration_handles_produce_empty_iterators(lib_mock: MagicMock) -> None:
+    lib = lib_mock.return_value
+    lib.NISysCfgGetAvailableSoftwareComponents.side_effect = None
+    lib.NISysCfgGetAvailableSoftwareComponents.return_value = nisyscfg.errors.Status.OK
+    lib.NISysCfgGetInstalledSoftwareComponents.side_effect = None
+    lib.NISysCfgGetInstalledSoftwareComponents.return_value = nisyscfg.errors.Status.OK
+    lib.NISysCfgGetFilteredBaseSystemImages.side_effect = None
+    lib.NISysCfgGetFilteredBaseSystemImages.return_value = nisyscfg.errors.Status.OK
+    lib.NISysCfgGetSoftwareFeeds.side_effect = None
+    lib.NISysCfgGetSoftwareFeeds.return_value = nisyscfg.errors.Status.OK
+
+    with nisyscfg.Session() as session:
+        assert list(session.get_available_software_components()) == []
+        assert list(session.get_installed_software_components()) == []
+        assert list(session.get_filtered_base_system_images()) == []
+        assert list(session.get_software_feeds()) == []
 
 
 @pytest.mark.parametrize(

@@ -101,7 +101,7 @@ class Session(object):
         """Initialize a system configuration session."""
         self._children: List[Any] = []
         self._session: Any = nisyscfg.types.SessionHandle()
-        self._library = cast(Any, nisyscfg._library_singleton.get())
+        self._library = nisyscfg._library_singleton.get()
         self._property_accessor = nisyscfg.properties.PropertyAccessor(
             setter=self._set_property,
             getter=self._get_property,
@@ -327,9 +327,7 @@ class Session(object):
         )
         nisyscfg.errors.handle_error(self, error_code)
 
-        # SystemInfoIterator expects Optional[int] for its handle.
-        # cast the ctypes handle to int/None
-        return nisyscfg.system_info.SystemInfoIterator(cast(Optional[int], system_handle))
+        return nisyscfg.system_info.SystemInfoIterator(system_handle)
 
     def create_filter(self) -> nisyscfg.filter.Filter:
         """Creates a hardware filter used to query for specific resources in a system.
@@ -1018,8 +1016,7 @@ class Session(object):
             value = c_type(0)
             value_arg = ctypes.pointer(value)
 
-        # _library is untyped; cast to Any to allow calling into the C api.
-        error_code = cast(Any, self._library).GetSystemProperty(self._session, id, value_arg)
+        error_code = self._library.GetSystemProperty(self._session, id, value_arg)
         nisyscfg.errors.handle_error(self, error_code)
 
         if issubclass(c_type, nisyscfg.enums.BaseEnum) or issubclass(
@@ -1042,7 +1039,7 @@ class Session(object):
         else:
             value = c_type(value)
 
-        error_code = cast(Any, self._library).SetSystemProperty(self._session, id, value)
+        error_code = self._library.SetSystemProperty(self._session, id, value)
         nisyscfg.errors.handle_error(self, error_code)
 
     def save_changes(self) -> SaveChangesResult:

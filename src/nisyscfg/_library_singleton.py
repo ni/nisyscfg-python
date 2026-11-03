@@ -27,10 +27,7 @@ class CTypesLibrary(object):
         return self._windll
 
 
-_instance: Optional[Any] = None
-# The generated _library.Library type is untyped; silence unused-ignore when present
-# by providing an alias for type checkers
-Library = Any  # alias for generated Library type to satisfy type checkers
+_instance: Optional[_library.Library] = None
 _instance_lock = threading.Lock()
 _library_info: Dict[str, Dict[str, Dict[str, str]]] = {
     "Linux": {"64bit": {"name": "libnisyscfg.so", "type": "cdll"}},
@@ -55,7 +52,7 @@ def _get_library_type() -> str:
         raise errors.UnsupportedPlatformError
 
 
-def get() -> Any:
+def get() -> _library.Library:
     """Return the singleton NI System Configuration library instance."""
     global _instance
 
@@ -75,9 +72,5 @@ def get() -> Any:
                     )
             except OSError:
                 raise errors.LibraryNotInstalledError()
-            # _library.Library is generated without type annotations.
-            #  Treat as Any to avoid untyped-call errors.
-            # Wrap the generated library instance with Any to keep runtime behavior
-            # Use getattr to avoid mypy "attr-defined" on the generated module
-            _instance = cast(Any, getattr(_library, "Library")(ctypes_library))
+            _instance = _library.Library(ctypes_library)
         return _instance

@@ -1,21 +1,20 @@
 """System discovery and enumeration functionality for NI System Configuration."""
 
-from typing import Any, Optional, cast
+from typing import Optional
 
 import nisyscfg.errors
 from nisyscfg import _library_singleton
 from nisyscfg._lib import c_string_decode
+from nisyscfg.types import EnumSystemHandle
 
 
 class SystemInfoIterator(object):
     """Iterates over discovered systems."""
 
-    def __init__(self, handle: Optional[int]) -> None:
+    def __init__(self, handle: Optional[EnumSystemHandle]) -> None:
         """Initialize the system information iterator."""
-        # The handle is typically an integer/opaque C handle; allow None for closed state.
-        self._handle: Optional[int] = handle
-        # Cast the getter to Any before calling so mypy allows the call to an untyped function.
-        self._library: Any = cast(Any, _library_singleton.get())
+        self._handle: Optional[EnumSystemHandle] = handle
+        self._library = _library_singleton.get()
 
     def __del__(self) -> None:
         """Release resources associated with the iterator."""

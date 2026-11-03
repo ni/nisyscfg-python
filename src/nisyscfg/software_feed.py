@@ -2,7 +2,7 @@
 
 import ctypes
 import typing
-from typing import Any, Optional
+from typing import Optional
 
 import nisyscfg._library_singleton
 import nisyscfg.errors
@@ -22,12 +22,10 @@ SoftwareFeed = typing.NamedTuple(
 class SoftwareFeedIterator(object):
     """Iterates over configured software feeds."""
 
-    def __init__(self, handle: Optional[Any]) -> None:
+    def __init__(self, handle: Optional[nisyscfg.types.EnumSoftwareFeedHandle]) -> None:
         """Initialize the software feed iterator."""
-        self._handle: Optional[Any] = handle
-        # _library is untyped at runtime; keep the type as Any to avoid
-        # leaking implementation details while satisfying type checking.
-        self._library: Any = nisyscfg._library_singleton.get()
+        self._handle: Optional[nisyscfg.types.EnumSoftwareFeedHandle] = handle
+        self._library = nisyscfg._library_singleton.get()
 
     def __del__(self) -> None:
         """Release resources associated with the iterator."""

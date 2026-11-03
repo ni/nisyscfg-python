@@ -2,7 +2,7 @@
 
 import ctypes
 import typing
-from typing import Any, Optional
+from typing import Optional
 
 import nisyscfg._library_singleton
 import nisyscfg.enums
@@ -24,12 +24,10 @@ ComponentInfo = typing.NamedTuple(
 class ComponentInfoIterator(object):
     """Iterates over software component information."""
 
-    def __init__(self, handle: Optional[Any]) -> None:
+    def __init__(self, handle: Optional[nisyscfg.types.EnumSoftwareComponentHandle]) -> None:
         """Initialize the iterator with a component enumeration handle."""
-        self._handle: Optional[Any] = handle
-        # _library is untyped at runtime; keep the type as Any to avoid
-        # leaking implementation details while satisfying type checking.
-        self._library: Any = nisyscfg._library_singleton.get()
+        self._handle: Optional[nisyscfg.types.EnumSoftwareComponentHandle] = handle
+        self._library = nisyscfg._library_singleton.get()
 
     def __del__(self) -> None:
         """Release resources associated with the iterator."""
@@ -85,13 +83,10 @@ class EnumSoftwareComponent(object):
         """Create a new software component enumeration."""
         # EnumSoftwareComponentHandle is a ctypes.c_void_p alias; allow None
         # to be stored when the handle is closed by typing as Optional.
-        self._handle: typing.Optional[ctypes.c_void_p] = (
-            nisyscfg.types.EnumSoftwareComponentHandle()
-        )
-        # _library is untyped at runtime; keep the type as Any to avoid
-        # leaking implementation details while satisfying type checking.
-        self._library: Any = nisyscfg._library_singleton.get()
-        error_code = self._library.CreateComponentsEnum(ctypes.pointer(self._handle))
+        handle = nisyscfg.types.EnumSoftwareComponentHandle()
+        self._handle: typing.Optional[nisyscfg.types.EnumSoftwareComponentHandle] = handle
+        self._library = nisyscfg._library_singleton.get()
+        error_code = self._library.CreateComponentsEnum(ctypes.pointer(handle))
         nisyscfg.errors.handle_error(self, error_code)
 
     def __del__(self) -> None:

@@ -1,7 +1,7 @@
 """Property definitions and access helpers for NI System Configuration."""
 
 import ctypes
-from typing import Any, Callable, Iterator, Optional, Type, Union, cast
+from typing import Any, Callable, Iterator, Optional, Type, TypeVar, Union, cast
 
 import nisyscfg.timestamp
 from nisyscfg.enums import (
@@ -719,6 +719,9 @@ class Expert(object):
         raise NotImplementedError
 
 
+_PropertyBagTarget = TypeVar("_PropertyBagTarget")
+
+
 class PropertyBag(object):
     """Descriptor providing access to a group of properties."""
 
@@ -727,7 +730,7 @@ class PropertyBag(object):
         self._property_groups = property_groups
         self._expert = expert
 
-    def __call__(self, session: Any) -> Any:
+    def __call__(self, session: _PropertyBagTarget) -> _PropertyBagTarget:
         """Attach configured properties to a session object."""
         if self._expert:
             setattr(session, self._expert, Expert(*self._property_groups))

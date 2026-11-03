@@ -80,8 +80,7 @@ class HardwareResourceIterator(object):
         self._session: "nisyscfg.types.SessionHandle" = session
         # Handle may be cleared by close(); make it Optional for typing.
         self._handle: typing.Optional["nisyscfg.types.EnumResourceHandle"] = handle
-        # The library singleton is dynamically typed; treat it as Any locally.
-        self._library: typing.Any = typing.cast(typing.Any, _library_singleton.get())
+        self._library = _library_singleton.get()
 
     def __del__(self) -> None:
         """Release resources associated with the iterator."""
@@ -142,10 +141,7 @@ class HardwareResource(object):
     def __init__(self, handle: "nisyscfg.types.ResourceHandle") -> None:
         """Initialize the hardware resource wrapper."""
         self._handle: typing.Optional["nisyscfg.types.ResourceHandle"] = handle
-        # The library singleton is dynamically typed; treat it as Any locally.
-        self._library: typing.Any = typing.cast(typing.Any, _library_singleton.get())
-        # PropertyAccessor is dynamically typed.
-        # Cast to the expected type to avoid mypy complaining about untyped-call.
+        self._library = _library_singleton.get()
         self._property_accessor: "nisyscfg.properties.PropertyAccessor" = (
             nisyscfg.properties.PropertyAccessor(
                 setter=self._set_property,

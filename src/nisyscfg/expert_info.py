@@ -1,7 +1,7 @@
 """Expert discovery and enumeration functionality for NI System Configuration."""
 
 import typing
-from typing import Any, Optional
+from typing import Optional
 
 import nisyscfg.errors
 from nisyscfg import _library_singleton
@@ -20,12 +20,10 @@ ExpertInfo = typing.NamedTuple(
 class ExpertInfoIterator(object):
     """Iterates over expert information returned by the system."""
 
-    def __init__(self, handle: Optional[Any]) -> None:
+    def __init__(self, handle: Optional[nisyscfg.types.EnumExpertHandle]) -> None:
         """Initialize the expert info iterator."""
-        self._handle: Optional[Any] = handle
-        # _library is untyped at runtime; we keep the type as Any to avoid
-        # leaking implementation details while satisfying type checking.
-        self._library: Any = _library_singleton.get()
+        self._handle: Optional[nisyscfg.types.EnumExpertHandle] = handle
+        self._library = _library_singleton.get()
 
     def __del__(self) -> None:
         """Release resources associated with the iterator."""

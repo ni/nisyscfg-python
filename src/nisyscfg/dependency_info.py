@@ -2,7 +2,7 @@
 
 import ctypes
 import typing
-from typing import Any, Optional, cast
+from typing import Optional, cast
 
 import nisyscfg.component_info
 import nisyscfg.enums
@@ -22,12 +22,10 @@ DependencyInfo = typing.NamedTuple(
 class DependencyInfoIterator(object):
     """Iterates over software dependency information."""
 
-    def __init__(self, handle: Optional[Any]) -> None:
+    def __init__(self, handle: Optional[nisyscfg.types.EnumDependencyHandle]) -> None:
         """Initialize the iterator with a dependency enumeration handle."""
-        # Handle is a ctypes handle type at runtime; allow None when closed
-        self._handle: Optional[Any] = handle
-        # Keep library as Any to avoid leaking generated types to the public API
-        self._library: Any = _library_singleton.get()
+        self._handle: Optional[nisyscfg.types.EnumDependencyHandle] = handle
+        self._library = _library_singleton.get()
 
     def __del__(self) -> None:
         """Release resources associated with the iterator."""

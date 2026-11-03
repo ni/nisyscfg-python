@@ -18,7 +18,7 @@ object-oriented wrapper around the NI System Configuration C API using the
 
 **nisyscfg** supports only the Windows and Linux operating systems.
 
-**nisyscfg** supports CPython 3.9+.
+**nisyscfg** supports CPython 3.11+.
 
 ## Installation
 

@@ -1,7 +1,7 @@
 """Hardware filter functionality for NI System Configuration."""
 
 import ctypes
-from typing import TYPE_CHECKING, Any, Optional, Protocol, Type, cast
+from typing import TYPE_CHECKING, Any, Optional, Protocol, Type
 
 import nisyscfg.errors
 import nisyscfg.properties
@@ -10,16 +10,14 @@ from nisyscfg import _library_singleton
 from nisyscfg._lib import c_string_encode
 from nisyscfg.properties import PropertyAccessor
 
-_property_bag = cast(Any, nisyscfg.properties.PropertyBag)
-
 if TYPE_CHECKING:
 
     class _XnetFilterProperties(Protocol):
         port_number: int
 
 
-@_property_bag(cast(Any, nisyscfg.properties.Filter))
-@_property_bag(cast(Any, nisyscfg.xnet.properties.Filter), expert="xnet")
+@nisyscfg.properties.PropertyBag(nisyscfg.properties.Filter)
+@nisyscfg.properties.PropertyBag(nisyscfg.xnet.properties.Filter, expert="xnet")
 class Filter(object):
     """Represents a NI System Configuration filter."""
 
@@ -41,9 +39,7 @@ class Filter(object):
     def __init__(self, session: "nisyscfg.types.SessionHandle") -> None:
         """Initialize a hardware filter."""
         self._handle = nisyscfg.types.FilterHandle()
-        # The library singleton is dynamically typed; treat it as Any locally.
-        # The library singleton is dynamically typed; treat it as Any locally.
-        self._library: Any = _library_singleton.get()
+        self._library = _library_singleton.get()
 
         # PropertyAccessor is a typed class in nisyscfg.properties; construct it directly.
         self._property_accessor: PropertyAccessor = PropertyAccessor(
@@ -70,7 +66,6 @@ class Filter(object):
         self, id: int, value: Any, c_type: Type[Any], nisyscfg_type: int
     ) -> None:
         if c_type == ctypes.c_char_p:
-            # c_string_encode is untyped; ignore here.
             value = c_string_encode(value)
         elif issubclass(c_type, nisyscfg.enums.BaseEnum) or issubclass(
             c_type, nisyscfg.enums.BaseFlag
