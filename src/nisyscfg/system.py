@@ -163,9 +163,7 @@ class Session(object):
             nisyscfg.errors.handle_error(self, error_code)
             self._session = None
 
-    def get_system_experts(
-        self, expert_names: Union[str, List[str]] = ""
-    ) -> nisyscfg.expert_info.ExpertInfoIterator:
+    def get_system_experts(self, expert_names: str = "") -> nisyscfg.expert_info.ExpertInfoIterator:
         """Returns the experts available on the system.
 
         expert_names - This is a case-insensitive comma-separated string
@@ -176,8 +174,6 @@ class Session(object):
         error.
         """
         expert_handle = nisyscfg.types.EnumExpertHandle()
-        if isinstance(expert_names, list):
-            expert_names = ",".join(expert_names)
         error_code = self._library.GetSystemExperts(
             self._session, c_string_encode(expert_names), ctypes.pointer(expert_handle)
         )
@@ -190,7 +186,7 @@ class Session(object):
         self,
         filter: Union[None, nisyscfg.filter.Filter] = None,
         mode: nisyscfg.enums.FilterMode = nisyscfg.enums.FilterMode.MATCH_VALUES_ALL,
-        expert_names: Union[str, List[str]] = "",
+        expert_names: str = "",
     ) -> nisyscfg.hardware_resource.HardwareResourceIterator:
         """Returns an iterator of hardware in a specified system.
 
@@ -232,8 +228,6 @@ class Session(object):
         else:
             flt = filter
         resource_handle = nisyscfg.types.EnumResourceHandle()
-        if isinstance(expert_names, list):
-            expert_names = ",".join(expert_names)
         error_code = self._library.FindHardware(
             self._session,
             mode,
@@ -391,7 +385,7 @@ class Session(object):
         device_class: Union[None, str] = None,
         os: Union[None, str] = None,
         product_id: int = 0,
-    ) -> nisyscfg.component_info.ComponentInfoIterator:
+    ) -> Optional[nisyscfg.component_info.ComponentInfoIterator]:
         """Retrieves a collection of base system images available from a repository path.
 
         These include a base operating system and are intended to be used
@@ -421,10 +415,11 @@ class Session(object):
             ctypes.pointer(software_component_handle),
         )
         nisyscfg.errors.handle_error(self, error_code)
-        iter = nisyscfg.component_info.ComponentInfoIterator(software_component_handle)
         if software_component_handle:
+            iter = nisyscfg.component_info.ComponentInfoIterator(software_component_handle)
             self._children.append(iter)
-        return iter
+            return iter
+        return None
 
     def format(
         self,
@@ -509,7 +504,7 @@ class Session(object):
     def get_available_software_components(
         self,
         item_types: nisyscfg.enums.IncludeComponentTypes = nisyscfg.enums.IncludeComponentTypes.ALL_VISIBLE,
-    ) -> nisyscfg.component_info.ComponentInfoIterator:
+    ) -> Optional[nisyscfg.component_info.ComponentInfoIterator]:
         """Retrieve software components available for installation.
 
         item_types - Allows inclusion of hidden software installed on the target
@@ -537,16 +532,17 @@ class Session(object):
             self._session, item_types, ctypes.pointer(software_component_handle)
         )
         nisyscfg.errors.handle_error(self, error_code)
-        iter = nisyscfg.component_info.ComponentInfoIterator(software_component_handle)
         if software_component_handle:
+            iter = nisyscfg.component_info.ComponentInfoIterator(software_component_handle)
             self._children.append(iter)
-        return iter
+            return iter
+        return None
 
     def get_installed_software_components(
         self,
         item_types: nisyscfg.enums.IncludeComponentTypes = nisyscfg.enums.IncludeComponentTypes.ALL_VISIBLE,
         cached: bool = False,
-    ) -> nisyscfg.component_info.ComponentInfoIterator:
+    ) -> Optional[nisyscfg.component_info.ComponentInfoIterator]:
         """Retrieve installed software components.
 
         item_types - Allows inclusion of hidden software installed on the target
@@ -578,10 +574,11 @@ class Session(object):
             self._session, item_types, cached, ctypes.pointer(software_component_handle)
         )
         nisyscfg.errors.handle_error(self, error_code)
-        iter = nisyscfg.component_info.ComponentInfoIterator(software_component_handle)
         if software_component_handle:
+            iter = nisyscfg.component_info.ComponentInfoIterator(software_component_handle)
             self._children.append(iter)
-        return iter
+            return iter
+        return None
 
     def add_software_feed(self, name: str, uri: str, enabled: bool, trusted: bool) -> None:
         """Adds a software feed to the system.
@@ -954,7 +951,10 @@ class Session(object):
     ) -> nisyscfg.component_info.ComponentInfo:
         components = [
             component
-            for component in self.get_available_software_components(item_types)
+            for component in cast(
+                nisyscfg.component_info.ComponentInfoIterator,
+                self.get_available_software_components(item_types),
+            )
             if (component.title == component_name) or (component.id == component_name)
         ]
 
@@ -967,7 +967,9 @@ class Session(object):
 
         return max(components, key=lambda comp: comp.version.split("."))
 
-    def get_software_feeds(self) -> nisyscfg.software_feed.SoftwareFeedIterator:
+    def get_software_feeds(
+        self,
+    ) -> Optional[nisyscfg.software_feed.SoftwareFeedIterator]:
         """Retrieves a list of configured software feeds.
 
         A feed represents a location that the package manager uses to find and
@@ -984,10 +986,11 @@ class Session(object):
             self._session, ctypes.pointer(software_feed_handle)
         )
         nisyscfg.errors.handle_error(self, error_code)
-        iter = nisyscfg.software_feed.SoftwareFeedIterator(software_feed_handle)
         if software_feed_handle:
+            iter = nisyscfg.software_feed.SoftwareFeedIterator(software_feed_handle)
             self._children.append(iter)
-        return iter
+            return iter
+        return None
 
     @property
     def resource(self) -> nisyscfg.hardware_resource.HardwareResource:

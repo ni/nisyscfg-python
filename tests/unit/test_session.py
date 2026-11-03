@@ -451,15 +451,6 @@ def test_get_system_experts_with_csv_expert_names(lib_mock: MagicMock) -> None:
     assert lib_mock().NISysCfgGetSystemExperts.mock_calls == expected_calls
 
 
-def test_get_system_experts_with_list_of_expert_names(lib_mock: MagicMock) -> None:
-    with nisyscfg.Session() as session:
-        session.get_system_experts(["xnet", "sync"])
-    expected_calls = [
-        mock.call().NISysCfgGetSystemExperts(CVoidPMatcher(SESSION_HANDLE), b"xnet,sync", mock.ANY),
-    ]
-    assert lib_mock().NISysCfgGetSystemExperts.mock_calls == expected_calls
-
-
 def test_find_hardware_with_default_arguments(lib_mock: MagicMock) -> None:
     with nisyscfg.Session() as session:
         session.find_hardware()
@@ -529,15 +520,6 @@ def test_find_hardware_with_filter_properties_specified(lib_mock: MagicMock) -> 
 def test_find_hardware_with_csv_expert_names(lib_mock: MagicMock) -> None:
     with nisyscfg.Session() as session:
         session.find_hardware(expert_names="xnet,sync")
-    expected_calls = [
-        mock.call().NISysCfgFindHardware(mock.ANY, mock.ANY, mock.ANY, b"xnet,sync", mock.ANY),
-    ]
-    assert lib_mock().NISysCfgFindHardware.mock_calls == expected_calls
-
-
-def test_find_hardware_with_list_of_expert_names(lib_mock: MagicMock) -> None:
-    with nisyscfg.Session() as session:
-        session.find_hardware(expert_names=["xnet", "sync"])
     expected_calls = [
         mock.call().NISysCfgFindHardware(mock.ANY, mock.ANY, mock.ANY, b"xnet,sync", mock.ANY),
     ]
@@ -786,7 +768,7 @@ def test_hardware_resource_iterator_stops_after_close(lib_mock: MagicMock) -> No
             next(resource_iterator)
 
 
-def test_null_enumeration_handles_produce_empty_iterators(lib_mock: MagicMock) -> None:
+def test_null_enumeration_handles_return_none(lib_mock: MagicMock) -> None:
     lib = lib_mock.return_value
     lib.NISysCfgGetAvailableSoftwareComponents.side_effect = None
     lib.NISysCfgGetAvailableSoftwareComponents.return_value = nisyscfg.errors.Status.OK
@@ -798,10 +780,10 @@ def test_null_enumeration_handles_produce_empty_iterators(lib_mock: MagicMock) -
     lib.NISysCfgGetSoftwareFeeds.return_value = nisyscfg.errors.Status.OK
 
     with nisyscfg.Session() as session:
-        assert list(session.get_available_software_components()) == []
-        assert list(session.get_installed_software_components()) == []
-        assert list(session.get_filtered_base_system_images()) == []
-        assert list(session.get_software_feeds()) == []
+        assert session.get_available_software_components() is None
+        assert session.get_installed_software_components() is None
+        assert session.get_filtered_base_system_images() is None
+        assert session.get_software_feeds() is None
 
 
 @pytest.mark.parametrize(
