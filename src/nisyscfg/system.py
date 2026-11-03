@@ -163,7 +163,9 @@ class Session(object):
             nisyscfg.errors.handle_error(self, error_code)
             self._session = None
 
-    def get_system_experts(self, expert_names: str = "") -> nisyscfg.expert_info.ExpertInfoIterator:
+    def get_system_experts(
+        self, expert_names: Union[str, List[str]] = ""
+    ) -> nisyscfg.expert_info.ExpertInfoIterator:
         """Returns the experts available on the system.
 
         expert_names - This is a case-insensitive comma-separated string
@@ -174,6 +176,8 @@ class Session(object):
         error.
         """
         expert_handle = nisyscfg.types.EnumExpertHandle()
+        if isinstance(expert_names, list):
+            expert_names = ",".join(expert_names)
         error_code = self._library.GetSystemExperts(
             self._session, c_string_encode(expert_names), ctypes.pointer(expert_handle)
         )
@@ -186,7 +190,7 @@ class Session(object):
         self,
         filter: Union[None, nisyscfg.filter.Filter] = None,
         mode: nisyscfg.enums.FilterMode = nisyscfg.enums.FilterMode.MATCH_VALUES_ALL,
-        expert_names: str = "",
+        expert_names: Union[str, List[str]] = "",
     ) -> nisyscfg.hardware_resource.HardwareResourceIterator:
         """Returns an iterator of hardware in a specified system.
 
@@ -228,6 +232,8 @@ class Session(object):
         else:
             flt = filter
         resource_handle = nisyscfg.types.EnumResourceHandle()
+        if isinstance(expert_names, list):
+            expert_names = ",".join(expert_names)
         error_code = self._library.FindHardware(
             self._session,
             mode,

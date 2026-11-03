@@ -63,11 +63,11 @@ class CoolingProfiles(BaseFlag):
 class CoolingProfileSource(BaseEnum):
     """PXI chassis cooling profile sources."""
 
-    UNKNOWN = -1  # Not software-readable
-    USER_SPECIFIED = 1  # The cooling profile reflects the user configured value
-    MODULE_REQUEST = 2  # A module is requesting the current cooling profile
+    UNKNOWN = -1  #: Not software-readable
+    USER_SPECIFIED = 1  #: The cooling profile reflects the user configured value
+    MODULE_REQUEST = 2  #: A module is requesting the current cooling profile
     USER_OVERRIDE_OF_MODULE_REQUEST = (
-        3  # The user is overriding the cooling profile requested by a module
+        3  #: The user is overriding the cooling profile requested by a module
     )
 
 

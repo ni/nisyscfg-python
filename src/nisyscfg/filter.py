@@ -34,8 +34,6 @@ class Filter(object):
 
     _handle: Optional["nisyscfg.types.FilterHandle"]
 
-    """Represents a hardware resource filter."""
-
     def __init__(self, session: "nisyscfg.types.SessionHandle") -> None:
         """Initialize a hardware filter."""
         self._handle = nisyscfg.types.FilterHandle()

@@ -333,15 +333,14 @@ class HardwareResource(object):
 
         # TODO(tkrebes): Ensure lifetime of HardwareResource does not exceed the
         # session.
-        overwritten_resource = (
-            HardwareResource(overwritten_resource_handle)
-            if overwritten_resource_handle.value
-            else None
+        # Preserve existing runtime behavior from main.
+        overwritten_resource = overwritten_resource_handle.value and HardwareResource(
+            overwritten_resource_handle
         )
 
         # Do not return the bool 'name_already_existed' since it is equivalent
         # to 'overwritten_syscfg_resource == None'.
-        return overwritten_resource
+        return typing.cast(typing.Optional["HardwareResource"], overwritten_resource)
 
     def reset(self, mode: int = 0) -> None:
         """Executes a reset on a specified resource.
