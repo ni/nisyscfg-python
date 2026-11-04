@@ -23,6 +23,7 @@ permissions: {}
 jobs:
   no_op:
     if: ${{ inputs.check-docs == 'false' }}
+    runs-on: ubuntu-latest
     steps:
       - name: No-Op
         run: echo "Not checking docs for ${PACKAGE_NAME} because check-docs is set to false."
