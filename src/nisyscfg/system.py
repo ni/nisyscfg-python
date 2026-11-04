@@ -192,18 +192,22 @@ class Session(object):
     ) -> nisyscfg.hardware_resource.HardwareResourceIterator:
         """Returns an iterator of hardware in a specified system.
 
-        filter - Specifies a filter you can use to limit the results to hardware
-        matching specific properties. The default is no filter.
-
         Args:
             mode: Filter mode. ``MATCH_VALUES_ALL`` (default) matches all
                 specified properties, ``MATCH_VALUES_ANY`` matches any
                 specified property, ``MATCH_VALUES_NONE`` matches none, and
                 ``ALL_PROPERTIES_EXIST`` matches when all specified properties
                 exist regardless of value.
-        expert_names - A case-insensitive, comma-separated string or a list of
-        strings specifying which experts to query. If None or an empty
-        string/list, all supported experts are queried.
+            expert_names - A case-insensitive, comma-separated string or a list of
+                strings specifying which experts to query. If None or an empty
+                string/list, all supported experts are queried.
+            filter: Specifies a filter you can use to limit the results to hardware
+                matching specific properties. The default is no filter.
+            mode: Filter mode. ``MATCH_VALUES_ALL`` includes all specified
+                properties, ``MATCH_VALUES_ANY`` includes any specified property,
+                ``MATCH_VALUES_NONE`` includes none of the specified properties,
+                and ``ALL_PROPERTIES_EXIST`` includes specified properties
+                regardless of value. The default is ``MATCH_VALUES_ALL``.
         Raises:
             nisyscfg.errors.LibraryError: In the event of an error.
         """
@@ -277,6 +281,7 @@ class Session(object):
         * ``MAC`` includes only the MAC address.
         * ``MAC_HOSTNAME`` includes the MAC address and hostname.
         * ``MAC_IP`` includes the MAC address and IP address.
+
         Note: In some cases this parameter may return a system that is not in
         the requested format. For example, if you request the default
         HOSTNAME_IP but an unconfigured system is detected, that system is
