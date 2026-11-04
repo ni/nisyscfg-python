@@ -46,6 +46,7 @@ htmlhelp_basename = f"{project}doc"
 autoapi_options = list(autoapi.extension._DEFAULT_OPTIONS)
 autoapi_options.remove("private-members")  # note: remove this to include "_" members in docs
 autoapi_dirs = [root_path / "src" / "nisyscfg"]
+autoapi_add_toctree_entry = False
 autoapi_python_use_implicit_namespaces = True
 autoapi_python_class_content = "both"
 autoapi_type = "python"
@@ -79,8 +80,6 @@ exclude_patterns = [
 
 intersphinx_mapping = {
     "python": ("https://docs.python.org/3", None),
-    "protobuf": ("https://googleapis.dev/python/protobuf/latest/", None),
-    "grpc": ("https://grpc.github.io/grpc/python/", None),
 }
 
 
