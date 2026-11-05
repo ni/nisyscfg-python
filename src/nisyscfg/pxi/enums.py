@@ -114,7 +114,7 @@ class InhibitModes(BaseFlag):
 
 
 class CalExtActions(BaseEnum):
-    """PXI chassis calibration extension actions."""
+    """PXI chassis external calibration actions."""
 
     CANCEL = 0
     OCXO_START = 1

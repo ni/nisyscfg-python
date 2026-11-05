@@ -1,1 +1,1 @@
-"""NI System Configuration XNET extensions."""
+"""NI System Configuration NI-XNET extensions."""

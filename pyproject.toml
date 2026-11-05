@@ -40,7 +40,6 @@ packages = [{ include = "nisyscfg", from = "src" }]
 
 [tool.poetry.dependencies]
 hightime = "1.0.0"
-six = "1.17.0"
 
 [tool.poetry.group.test.dependencies]
 pytest = ">=7.2"

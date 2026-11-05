@@ -1,7 +1,7 @@
 import ctypes
 import platform
 import threading
-from typing import Any, Dict, Optional, cast
+from typing import Any, Dict, Optional
 
 from nisyscfg import _library, errors
 
@@ -63,7 +63,7 @@ def get() -> _library.Library:
                 if library_type == "dual":
                     ctypes_library = CTypesLibrary(
                         ctypes.CDLL(_get_library_name(), ctypes.RTLD_GLOBAL),
-                        cast(Any, getattr(ctypes, "WinDLL"))(_get_library_name()),
+                        ctypes.WinDLL(_get_library_name()),
                     )
                 else:
                     assert library_type == "cdll"
@@ -73,4 +73,4 @@ def get() -> _library.Library:
             except OSError:
                 raise errors.LibraryNotInstalledError()
             _instance = _library.Library(ctypes_library)
-        return _instance
+    return _instance

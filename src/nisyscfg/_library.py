@@ -1,7 +1,6 @@
 # This file is code generated
 # fmt: off
 # mypy: disable-error-code=no-untyped-def
-# type: ignore
 
 import ctypes
 import threading

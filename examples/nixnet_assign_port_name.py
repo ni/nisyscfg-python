@@ -1,4 +1,4 @@
-"""Example demonstrating how to assign a name to an XNET port."""
+"""Example demonstrating how to assign a name to an  NI-XNET device port."""
 
 import sys
 

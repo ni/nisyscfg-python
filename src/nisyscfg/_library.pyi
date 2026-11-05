@@ -1,7 +1,8 @@
 from __future__ import annotations
 
-# These arguments cross a dynamic ctypes boundary; fixed arity and method names
-# are declared here while the C-compatible argument values remain heterogeneous.
+# These arguments cross a dynamic ctypes boundary; method names and parameter
+# counts are declared here while the C-compatible argument values remain
+# heterogeneous.
 class Library:
     def __init__(self, ctypes_library: object) -> None: ...
     def AddComponentToEnum(

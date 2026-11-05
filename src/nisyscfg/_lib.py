@@ -18,17 +18,9 @@ else:
 
 
 def c_string_encode(value: Optional[Union[str, bytes]]) -> Optional[bytes]:
-    """Encode a Python string for use with the C API.
-
-    Accept None and return None so callers can pass it directly to C APIs
-    that expect a NULL pointer.
-    """
-    if value is None:
-        return None
-    # Use built-in str/bytes checks so type checkers can narrow the type.
+    """Encode a Python string for use with the C API."""
     if isinstance(value, str):
         return value.encode(get_syscfg_locale())
-    # value is bytes at runtime here
     return value
 
 
@@ -41,14 +33,7 @@ def c_string_decode(value: Union[bytes, str]) -> str: ...
 
 
 def c_string_decode(value: Optional[Union[bytes, str]]) -> Optional[str]:
-    """Decode a string returned by the C API.
-
-    Preserve None when the C API returns a null string pointer.
-    """
-    if value is None:
-        return None
-    # Use built-in bytes/str checks so type checkers can narrow the type.
+    """Decode a string returned by the C API."""
     if isinstance(value, bytes):
         return value.decode(get_syscfg_locale())
-    # value is str at runtime here
     return value

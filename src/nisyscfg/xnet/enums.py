@@ -1,4 +1,4 @@
-"""XNET-specific enumeration definitions for NI System Configuration."""
+"""NI-XNET-specific enumeration definitions for NI System Configuration."""
 
 from nisyscfg.enums import BaseEnum
 
@@ -46,7 +46,7 @@ class CanTransceiverCapability(BaseEnum):
 
 
 class DongleId(BaseEnum):
-    """Supported XNET dongle identifiers."""
+    """Supported NI-XNET dongle identifiers."""
 
     LS_CAN = 1
     HS_CAN = 2
@@ -58,7 +58,7 @@ class DongleId(BaseEnum):
 
 
 class DongleState(BaseEnum):
-    """XNET dongle status values."""
+    """NI-XNET dongle status values."""
 
     NO_DONGLE_NO_EXTERNAL_POWER = 1
     NO_DONGLE_HAS_EXTERNAL_POWER = 2
