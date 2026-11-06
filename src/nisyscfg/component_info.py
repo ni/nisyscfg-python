@@ -1,11 +1,13 @@
+"""Software component information and enumeration helpers."""
+
 import ctypes
+import typing
+from typing import Optional
+
+import nisyscfg._library_singleton
 import nisyscfg.enums
 import nisyscfg.errors
-import typing
-
-from nisyscfg._lib import c_string_decode
-from nisyscfg._lib import c_string_encode
-
+from nisyscfg._lib import c_string_decode, c_string_encode
 
 ComponentInfo = typing.NamedTuple(
     "ComponentInfo",
@@ -13,30 +15,36 @@ ComponentInfo = typing.NamedTuple(
         ("id", str),
         ("version", str),
         ("title", str),
-        ("type", str),
-        ("details", str),
+        ("type", nisyscfg.enums.ComponentType),
+        ("details", typing.Optional[str]),
     ],
 )
 
 
 class ComponentInfoIterator(object):
-    def __init__(self, handle):
-        self._handle = handle
+    """Iterates over software component information."""
+
+    def __init__(self, handle: Optional[nisyscfg.types.EnumSoftwareComponentHandle]) -> None:
+        """Initialize the iterator with a component enumeration handle."""
+        self._handle: Optional[nisyscfg.types.EnumSoftwareComponentHandle] = handle
         self._library = nisyscfg._library_singleton.get()
 
-    def __del__(self):
+    def __del__(self) -> None:
+        """Release resources associated with the iterator."""
         self.close()
 
-    def __iter__(self):
+    def __iter__(self) -> "ComponentInfoIterator":
+        """Return the iterator instance."""
         return self
 
     def __next__(self) -> ComponentInfo:
+        """Return the next software component."""
         if not self._handle:
             raise StopIteration()
         id = nisyscfg.types.simple_string()
         version = nisyscfg.types.simple_string()
         title = nisyscfg.types.simple_string()
-        item_type = nisyscfg.types.ctypes.c_int()
+        item_type = ctypes.c_int()
         c_details = ctypes.POINTER(ctypes.c_char)()
         error_code = self._library.NextComponentInfo(
             self._handle, id, version, title, ctypes.pointer(item_type), c_details
@@ -61,6 +69,7 @@ class ComponentInfoIterator(object):
         )
 
     def close(self) -> None:
+        """Close the component enumeration handle."""
         if self._handle:
             error_code = self._library.CloseHandle(self._handle)
             nisyscfg.errors.handle_error(self, error_code)
@@ -68,16 +77,24 @@ class ComponentInfoIterator(object):
 
 
 class EnumSoftwareComponent(object):
-    def __init__(self):
-        self._handle = nisyscfg.types.EnumSoftwareComponentHandle()
+    """Represents a software component enumeration."""
+
+    def __init__(self) -> None:
+        """Create a new software component enumeration."""
+        # EnumSoftwareComponentHandle is a ctypes.c_void_p alias; allow None
+        # to be stored when the handle is closed by typing as Optional.
+        handle = nisyscfg.types.EnumSoftwareComponentHandle()
+        self._handle: typing.Optional[nisyscfg.types.EnumSoftwareComponentHandle] = handle
         self._library = nisyscfg._library_singleton.get()
-        error_code = self._library.CreateComponentsEnum(ctypes.pointer(self._handle))
+        error_code = self._library.CreateComponentsEnum(ctypes.pointer(handle))
         nisyscfg.errors.handle_error(self, error_code)
 
-    def __del__(self):
+    def __del__(self) -> None:
+        """Release resources associated with the enumeration."""
         self.close()
 
     def close(self) -> None:
+        """Close the software component enumeration."""
         if self._handle:
             error_code = self._library.CloseHandle(self._handle)
             nisyscfg.errors.handle_error(self, error_code)
@@ -89,8 +106,7 @@ class EnumSoftwareComponent(object):
         version: str = "",
         mode: nisyscfg.enums.VersionSelectionMode = nisyscfg.enums.VersionSelectionMode.HIGHEST,
     ) -> None:
-        """
-        Adds a software component
+        """Adds a software component.
 
         id - ID of the software component to be added to the enumeration.
 
@@ -104,6 +120,9 @@ class EnumSoftwareComponent(object):
         Raises an nisyscfg.errors.LibraryError exception in the event of an error.
         """
         error_code = self._library.AddComponentToEnum(
-            self._handle, c_string_encode(id), c_string_encode(version), mode
+            self._handle,
+            c_string_encode(id),
+            c_string_encode(version),
+            mode,
         )
         nisyscfg.errors.handle_error(self, error_code)

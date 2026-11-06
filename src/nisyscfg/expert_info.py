@@ -1,8 +1,11 @@
-import nisyscfg.errors
+"""Expert discovery and enumeration functionality for NI System Configuration."""
+
 import typing
+from typing import Optional
 
+import nisyscfg.errors
+from nisyscfg import _library_singleton
 from nisyscfg._lib import c_string_decode
-
 
 ExpertInfo = typing.NamedTuple(
     "ExpertInfo",
@@ -15,17 +18,23 @@ ExpertInfo = typing.NamedTuple(
 
 
 class ExpertInfoIterator(object):
-    def __init__(self, handle):
-        self._handle = handle
-        self._library = nisyscfg._library_singleton.get()
+    """Iterates over expert information returned by the system."""
 
-    def __del__(self):
+    def __init__(self, handle: Optional[nisyscfg.types.EnumExpertHandle]) -> None:
+        """Initialize the expert info iterator."""
+        self._handle: Optional[nisyscfg.types.EnumExpertHandle] = handle
+        self._library = _library_singleton.get()
+
+    def __del__(self) -> None:
+        """Release resources associated with the iterator."""
         self.close()
 
-    def __iter__(self):
+    def __iter__(self) -> "ExpertInfoIterator":
+        """Return the iterator instance."""
         return self
 
     def __next__(self) -> ExpertInfo:
+        """Return the next expert information entry."""
         if not self._handle:
             # TODO(tkrebes): raise RuntimeError
             raise StopIteration()
@@ -43,6 +52,7 @@ class ExpertInfoIterator(object):
         )
 
     def close(self) -> None:
+        """Close the expert enumeration handle."""
         if self._handle:
             error_code = self._library.CloseHandle(self._handle)
             nisyscfg.errors.handle_error(self, error_code)

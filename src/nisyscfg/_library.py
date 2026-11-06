@@ -1,16 +1,22 @@
 # This file is code generated
 # fmt: off
+# mypy: disable-error-code=no-untyped-def
+# type: ignore
 
 import ctypes
 import threading
+from typing import no_type_check
 
 from nisyscfg.enums import *  # noqa: F403
 from nisyscfg.errors import *  # noqa: F403
 from nisyscfg.types import *  # noqa: F403
 
 
+@no_type_check
 class Library(object):
+    """Wraps the NI System Configuration C API using ctypes."""
     def __init__(self, ctypes_library):
+        """Initialize the library wrapper."""
         self._func_lock = threading.Lock()
         self._library = ctypes_library
         self._InitializeSession_cfunc = None
@@ -90,6 +96,7 @@ class Library(object):
         self._ValuesFromTimestamp_cfunc = None
 
     def InitializeSession(self, targetName, username, password, language, forcePropertyRefresh, connectTimeoutMsec, expertEnumHandle, sessionHandle):  # noqa: N802,N803
+        """Initialize an NI System Configuration session."""
         with self._func_lock:
             if self._InitializeSession_cfunc is None:
                 self._InitializeSession_cfunc = self._library.windll.NISysCfgInitializeSession
@@ -98,6 +105,7 @@ class Library(object):
         return self._InitializeSession_cfunc(targetName, username, password, language, forcePropertyRefresh, connectTimeoutMsec, expertEnumHandle, sessionHandle)
 
     def CloseHandle(self, syscfgHandle):  # noqa: N802,N803
+        """Close an NI System Configuration handle."""
         with self._func_lock:
             if self._CloseHandle_cfunc is None:
                 self._CloseHandle_cfunc = self._library.windll.NISysCfgCloseHandle
@@ -106,6 +114,7 @@ class Library(object):
         return self._CloseHandle_cfunc(syscfgHandle)
 
     def GetSystemExperts(self, sessionHandle, expertNames, expertEnumHandle):  # noqa: N802,N803
+        """Retrieve available system experts."""
         with self._func_lock:
             if self._GetSystemExperts_cfunc is None:
                 self._GetSystemExperts_cfunc = self._library.windll.NISysCfgGetSystemExperts
@@ -114,6 +123,7 @@ class Library(object):
         return self._GetSystemExperts_cfunc(sessionHandle, expertNames, expertEnumHandle)
 
     def SetRemoteTimeout(self, sessionHandle, remoteTimeoutMsec):  # noqa: N802,N803
+        """Set the remote operation timeout."""
         with self._func_lock:
             if self._SetRemoteTimeout_cfunc is None:
                 self._SetRemoteTimeout_cfunc = self._library.windll.NISysCfgSetRemoteTimeout
@@ -122,6 +132,7 @@ class Library(object):
         return self._SetRemoteTimeout_cfunc(sessionHandle, remoteTimeoutMsec)
 
     def FindHardware(self, sessionHandle, filterMode, filterHandle, expertNames, resourceEnumHandle):  # noqa: N802,N803
+        """Find hardware resources that match the specified criteria."""
         with self._func_lock:
             if self._FindHardware_cfunc is None:
                 self._FindHardware_cfunc = self._library.windll.NISysCfgFindHardware
@@ -130,6 +141,7 @@ class Library(object):
         return self._FindHardware_cfunc(sessionHandle, filterMode, filterHandle, expertNames, resourceEnumHandle)
 
     def FindSystems(self, sessionHandle, deviceClass, detectOnlineSystems, cacheMode, findOutputMode, timeoutMsec, onlyInstallableSystems, systemEnumHandle):  # noqa: N802,N803
+        """Find systems that match the specified criteria."""
         with self._func_lock:
             if self._FindSystems_cfunc is None:
                 self._FindSystems_cfunc = self._library.windll.NISysCfgFindSystems
@@ -138,6 +150,7 @@ class Library(object):
         return self._FindSystems_cfunc(sessionHandle, deviceClass, detectOnlineSystems, cacheMode, findOutputMode, timeoutMsec, onlyInstallableSystems, systemEnumHandle)
 
     def SelfTestHardware(self, resourceHandle, mode, detailedResult):  # noqa: N802,N803
+        """Run a self-test on a hardware resource."""
         with self._func_lock:
             if self._SelfTestHardware_cfunc is None:
                 self._SelfTestHardware_cfunc = self._library.windll.NISysCfgSelfTestHardware
@@ -146,6 +159,7 @@ class Library(object):
         return self._SelfTestHardware_cfunc(resourceHandle, mode, detailedResult)
 
     def SelfCalibrateHardware(self, resourceHandle, detailedResult):  # noqa: N802,N803
+        """Run self-calibration on a hardware resource."""
         with self._func_lock:
             if self._SelfCalibrateHardware_cfunc is None:
                 self._SelfCalibrateHardware_cfunc = self._library.windll.NISysCfgSelfCalibrateHardware
@@ -154,6 +168,7 @@ class Library(object):
         return self._SelfCalibrateHardware_cfunc(resourceHandle, detailedResult)
 
     def ResetHardware(self, resourceHandle, mode):  # noqa: N802,N803
+        """Reset a hardware resource."""
         with self._func_lock:
             if self._ResetHardware_cfunc is None:
                 self._ResetHardware_cfunc = self._library.windll.NISysCfgResetHardware
@@ -162,6 +177,7 @@ class Library(object):
         return self._ResetHardware_cfunc(resourceHandle, mode)
 
     def RenameResource(self, resourceHandle, newName, overwriteConflict, updateDependencies, nameAlreadyExisted, overwrittenResourceHandle):  # noqa: N802,N803
+        """Rename a hardware resource."""
         with self._func_lock:
             if self._RenameResource_cfunc is None:
                 self._RenameResource_cfunc = self._library.windll.NISysCfgRenameResource
@@ -170,6 +186,7 @@ class Library(object):
         return self._RenameResource_cfunc(resourceHandle, newName, overwriteConflict, updateDependencies, nameAlreadyExisted, overwrittenResourceHandle)
 
     def DeleteResource(self, resourceHandle, mode, dependentItemsDeleted, detailedResult):  # noqa: N802,N803
+        """Delete a hardware resource."""
         with self._func_lock:
             if self._DeleteResource_cfunc is None:
                 self._DeleteResource_cfunc = self._library.windll.NISysCfgDeleteResource
@@ -178,6 +195,7 @@ class Library(object):
         return self._DeleteResource_cfunc(resourceHandle, mode, dependentItemsDeleted, detailedResult)
 
     def GetResourceProperty(self, resourceHandle, propertyID, value):  # noqa: N802,N803
+        """Retrieve a hardware resource property."""
         with self._func_lock:
             if self._GetResourceProperty_cfunc is None:
                 self._GetResourceProperty_cfunc = self._library.windll.NISysCfgGetResourceProperty
@@ -186,6 +204,7 @@ class Library(object):
         return self._GetResourceProperty_cfunc(resourceHandle, propertyID, value)
 
     def SetResourceProperty(self, resourceHandle, propertyID, args):  # noqa: N802,N803
+        """Set a hardware resource property."""
         with self._func_lock:
             if self._SetResourceProperty_cfunc is None:
                 self._SetResourceProperty_cfunc = self._library.cdll.NISysCfgSetResourceProperty
@@ -193,6 +212,7 @@ class Library(object):
         return self._SetResourceProperty_cfunc(resourceHandle, propertyID, args)
 
     def SetResourcePropertyWithType(self, resourceHandle, propertyID, propertyType, args):  # noqa: N802,N803
+        """Set a hardware resource property using an explicit property type."""
         with self._func_lock:
             if self._SetResourcePropertyWithType_cfunc is None:
                 self._SetResourcePropertyWithType_cfunc = self._library.cdll.NISysCfgSetResourcePropertyWithType
@@ -200,6 +220,7 @@ class Library(object):
         return self._SetResourcePropertyWithType_cfunc(resourceHandle, propertyID, propertyType, args)
 
     def SetResourcePropertyV(self, resourceHandle, propertyID, args):  # noqa: N802,N803
+        """Set a hardware resource property using variadic arguments."""
         with self._func_lock:
             if self._SetResourcePropertyV_cfunc is None:
                 self._SetResourcePropertyV_cfunc = self._library.windll.NISysCfgSetResourcePropertyV
@@ -207,6 +228,7 @@ class Library(object):
         return self._SetResourcePropertyV_cfunc(resourceHandle, propertyID, args)
 
     def SetResourcePropertyWithTypeV(self, resourceHandle, propertyID, propertyType, args):  # noqa: N802,N803
+        """Set a typed hardware resource property using variadic arguments."""
         with self._func_lock:
             if self._SetResourcePropertyWithTypeV_cfunc is None:
                 self._SetResourcePropertyWithTypeV_cfunc = self._library.windll.NISysCfgSetResourcePropertyWithTypeV
@@ -214,6 +236,7 @@ class Library(object):
         return self._SetResourcePropertyWithTypeV_cfunc(resourceHandle, propertyID, propertyType, args)
 
     def GetResourceIndexedProperty(self, resourceHandle, propertyID, index, value):  # noqa: N802,N803
+        """Retrieve an indexed hardware resource property."""
         with self._func_lock:
             if self._GetResourceIndexedProperty_cfunc is None:
                 self._GetResourceIndexedProperty_cfunc = self._library.windll.NISysCfgGetResourceIndexedProperty
@@ -222,6 +245,7 @@ class Library(object):
         return self._GetResourceIndexedProperty_cfunc(resourceHandle, propertyID, index, value)
 
     def SaveResourceChanges(self, resourceHandle, changesRequireRestart, detailedResult):  # noqa: N802,N803
+        """Save pending hardware resource changes."""
         with self._func_lock:
             if self._SaveResourceChanges_cfunc is None:
                 self._SaveResourceChanges_cfunc = self._library.windll.NISysCfgSaveResourceChanges
@@ -230,6 +254,7 @@ class Library(object):
         return self._SaveResourceChanges_cfunc(resourceHandle, changesRequireRestart, detailedResult)
 
     def GetSystemProperty(self, sessionHandle, propertyID, value):  # noqa: N802,N803
+        """Retrieve a system property."""
         with self._func_lock:
             if self._GetSystemProperty_cfunc is None:
                 self._GetSystemProperty_cfunc = self._library.windll.NISysCfgGetSystemProperty
@@ -238,6 +263,7 @@ class Library(object):
         return self._GetSystemProperty_cfunc(sessionHandle, propertyID, value)
 
     def SetSystemProperty(self, sessionHandle, propertyID, args):  # noqa: N802,N803
+        """Set a system property."""
         with self._func_lock:
             if self._SetSystemProperty_cfunc is None:
                 self._SetSystemProperty_cfunc = self._library.cdll.NISysCfgSetSystemProperty
@@ -245,6 +271,7 @@ class Library(object):
         return self._SetSystemProperty_cfunc(sessionHandle, propertyID, args)
 
     def SetSystemPropertyV(self, sessionHandle, propertyID, args):  # noqa: N802,N803
+        """Set a system property using variadic arguments."""
         with self._func_lock:
             if self._SetSystemPropertyV_cfunc is None:
                 self._SetSystemPropertyV_cfunc = self._library.windll.NISysCfgSetSystemPropertyV
@@ -252,6 +279,7 @@ class Library(object):
         return self._SetSystemPropertyV_cfunc(sessionHandle, propertyID, args)
 
     def SaveSystemChanges(self, sessionHandle, changesRequireRestart, detailedResult):  # noqa: N802,N803
+        """Save pending system changes."""
         with self._func_lock:
             if self._SaveSystemChanges_cfunc is None:
                 self._SaveSystemChanges_cfunc = self._library.windll.NISysCfgSaveSystemChanges
@@ -260,6 +288,7 @@ class Library(object):
         return self._SaveSystemChanges_cfunc(sessionHandle, changesRequireRestart, detailedResult)
 
     def CreateFilter(self, sessionHandle, filterHandle):  # noqa: N802,N803
+        """Create a hardware discovery filter."""
         with self._func_lock:
             if self._CreateFilter_cfunc is None:
                 self._CreateFilter_cfunc = self._library.windll.NISysCfgCreateFilter
@@ -268,6 +297,7 @@ class Library(object):
         return self._CreateFilter_cfunc(sessionHandle, filterHandle)
 
     def SetFilterProperty(self, filterHandle, propertyID, args):  # noqa: N802,N803
+        """Set a filter property."""
         with self._func_lock:
             if self._SetFilterProperty_cfunc is None:
                 self._SetFilterProperty_cfunc = self._library.cdll.NISysCfgSetFilterProperty
@@ -275,6 +305,7 @@ class Library(object):
         return self._SetFilterProperty_cfunc(filterHandle, propertyID, args)
 
     def SetFilterPropertyWithType(self, filterHandle, propertyID, propertyType, args):  # noqa: N802,N803
+        """Set a filter property using an explicit property type."""
         with self._func_lock:
             if self._SetFilterPropertyWithType_cfunc is None:
                 self._SetFilterPropertyWithType_cfunc = self._library.cdll.NISysCfgSetFilterPropertyWithType
@@ -282,6 +313,7 @@ class Library(object):
         return self._SetFilterPropertyWithType_cfunc(filterHandle, propertyID, propertyType, args)
 
     def SetFilterPropertyV(self, filterHandle, propertyID, args):  # noqa: N802,N803
+        """Set a filter property using variadic arguments."""
         with self._func_lock:
             if self._SetFilterPropertyV_cfunc is None:
                 self._SetFilterPropertyV_cfunc = self._library.windll.NISysCfgSetFilterPropertyV
@@ -289,6 +321,7 @@ class Library(object):
         return self._SetFilterPropertyV_cfunc(filterHandle, propertyID, args)
 
     def SetFilterPropertyWithTypeV(self, filterHandle, propertyID, propertyType, args):  # noqa: N802,N803
+        """Set a typed filter property using variadic arguments."""
         with self._func_lock:
             if self._SetFilterPropertyWithTypeV_cfunc is None:
                 self._SetFilterPropertyWithTypeV_cfunc = self._library.windll.NISysCfgSetFilterPropertyWithTypeV
@@ -296,6 +329,7 @@ class Library(object):
         return self._SetFilterPropertyWithTypeV_cfunc(filterHandle, propertyID, propertyType, args)
 
     def UpgradeFirmwareFromFile(self, resourceHandle, firmwareFile, autoStopTasks, alwaysOverwrite, waitForOperationToFinish, firmwareStatus, detailedResult):  # noqa: N802,N803
+        """Upgrade firmware from a firmware file."""
         with self._func_lock:
             if self._UpgradeFirmwareFromFile_cfunc is None:
                 self._UpgradeFirmwareFromFile_cfunc = self._library.windll.NISysCfgUpgradeFirmwareFromFile
@@ -304,6 +338,7 @@ class Library(object):
         return self._UpgradeFirmwareFromFile_cfunc(resourceHandle, firmwareFile, autoStopTasks, alwaysOverwrite, waitForOperationToFinish, firmwareStatus, detailedResult)
 
     def UpgradeFirmwareVersion(self, resourceHandle, firmwareVersion, autoStopTasks, alwaysOverwrite, waitForOperationToFinish, firmwareStatus, detailedResult):  # noqa: N802,N803
+        """Upgrade firmware to the specified version."""
         with self._func_lock:
             if self._UpgradeFirmwareVersion_cfunc is None:
                 self._UpgradeFirmwareVersion_cfunc = self._library.windll.NISysCfgUpgradeFirmwareVersion
@@ -312,6 +347,7 @@ class Library(object):
         return self._UpgradeFirmwareVersion_cfunc(resourceHandle, firmwareVersion, autoStopTasks, alwaysOverwrite, waitForOperationToFinish, firmwareStatus, detailedResult)
 
     def EraseFirmware(self, resourceHandle, autoStopTasks, firmwareStatus, detailedResult):  # noqa: N802,N803
+        """Erase firmware from a device."""
         with self._func_lock:
             if self._EraseFirmware_cfunc is None:
                 self._EraseFirmware_cfunc = self._library.windll.NISysCfgEraseFirmware
@@ -320,6 +356,7 @@ class Library(object):
         return self._EraseFirmware_cfunc(resourceHandle, autoStopTasks, firmwareStatus, detailedResult)
 
     def CheckFirmwareStatus(self, resourceHandle, percentComplete, firmwareStatus, detailedResult):  # noqa: N802,N803
+        """Retrieve firmware operation status."""
         with self._func_lock:
             if self._CheckFirmwareStatus_cfunc is None:
                 self._CheckFirmwareStatus_cfunc = self._library.windll.NISysCfgCheckFirmwareStatus
@@ -328,6 +365,7 @@ class Library(object):
         return self._CheckFirmwareStatus_cfunc(resourceHandle, percentComplete, firmwareStatus, detailedResult)
 
     def Format(self, sessionHandle, forceSafeMode, restartAfterFormat, fileSystem, networkSettings, timeoutMsec):  # noqa: N802,N803
+        """Format a target system."""
         with self._func_lock:
             if self._Format_cfunc is None:
                 self._Format_cfunc = self._library.windll.NISysCfgFormat
@@ -336,6 +374,7 @@ class Library(object):
         return self._Format_cfunc(sessionHandle, forceSafeMode, restartAfterFormat, fileSystem, networkSettings, timeoutMsec)
 
     def FormatWithBaseSystemImage(self, sessionHandle, autoRestart, fileSystem, networkSettings, systemImageID, systemImageVersion, timeoutMsec):  # noqa: N802,N803
+        """Format a target system using a base system image."""
         with self._func_lock:
             if self._FormatWithBaseSystemImage_cfunc is None:
                 self._FormatWithBaseSystemImage_cfunc = self._library.windll.NISysCfgFormatWithBaseSystemImage
@@ -344,6 +383,7 @@ class Library(object):
         return self._FormatWithBaseSystemImage_cfunc(sessionHandle, autoRestart, fileSystem, networkSettings, systemImageID, systemImageVersion, timeoutMsec)
 
     def Restart(self, sessionHandle, waitForRestartToFinish, installMode, flushDNS, timeoutMsec, newIpAddress):  # noqa: N802,N803
+        """Restart a target system."""
         with self._func_lock:
             if self._Restart_cfunc is None:
                 self._Restart_cfunc = self._library.windll.NISysCfgRestart
@@ -352,6 +392,7 @@ class Library(object):
         return self._Restart_cfunc(sessionHandle, waitForRestartToFinish, installMode, flushDNS, timeoutMsec, newIpAddress)
 
     def GetAvailableSoftwareComponents(self, sessionHandle, itemTypes, componentEnumHandle):  # noqa: N802,N803
+        """Retrieve available components."""
         with self._func_lock:
             if self._GetAvailableSoftwareComponents_cfunc is None:
                 self._GetAvailableSoftwareComponents_cfunc = self._library.windll.NISysCfgGetAvailableSoftwareComponents
@@ -360,6 +401,7 @@ class Library(object):
         return self._GetAvailableSoftwareComponents_cfunc(sessionHandle, itemTypes, componentEnumHandle)
 
     def GetAvailableSoftwareSets(self, sessionHandle, setEnumHandle):  # noqa: N802,N803
+        """Retrieve available software sets."""
         with self._func_lock:
             if self._GetAvailableSoftwareSets_cfunc is None:
                 self._GetAvailableSoftwareSets_cfunc = self._library.windll.NISysCfgGetAvailableSoftwareSets
@@ -368,6 +410,7 @@ class Library(object):
         return self._GetAvailableSoftwareSets_cfunc(sessionHandle, setEnumHandle)
 
     def GetFilteredSoftwareComponents(self, repositoryPath, deviceClass, operatingSystem, productID, itemTypes, componentEnumHandle):  # noqa: N802,N803
+        """Retrieve components matching repository filters."""
         with self._func_lock:
             if self._GetFilteredSoftwareComponents_cfunc is None:
                 self._GetFilteredSoftwareComponents_cfunc = self._library.windll.NISysCfgGetFilteredSoftwareComponents
@@ -376,6 +419,7 @@ class Library(object):
         return self._GetFilteredSoftwareComponents_cfunc(repositoryPath, deviceClass, operatingSystem, productID, itemTypes, componentEnumHandle)
 
     def GetFilteredSoftwareSets(self, repositoryPath, deviceClass, operatingSystem, productID, setEnumHandle):  # noqa: N802,N803
+        """Retrieve software sets matching repository filters."""
         with self._func_lock:
             if self._GetFilteredSoftwareSets_cfunc is None:
                 self._GetFilteredSoftwareSets_cfunc = self._library.windll.NISysCfgGetFilteredSoftwareSets
@@ -384,6 +428,7 @@ class Library(object):
         return self._GetFilteredSoftwareSets_cfunc(repositoryPath, deviceClass, operatingSystem, productID, setEnumHandle)
 
     def GetFilteredBaseSystemImages(self, repositoryPath, deviceClass, operatingSystem, productID, systemImageEnumHandle):  # noqa: N802,N803
+        """Retrieve base system images matching repository filters."""
         with self._func_lock:
             if self._GetFilteredBaseSystemImages_cfunc is None:
                 self._GetFilteredBaseSystemImages_cfunc = self._library.windll.NISysCfgGetFilteredBaseSystemImages
@@ -392,6 +437,7 @@ class Library(object):
         return self._GetFilteredBaseSystemImages_cfunc(repositoryPath, deviceClass, operatingSystem, productID, systemImageEnumHandle)
 
     def GetInstalledSoftwareComponents(self, sessionHandle, itemTypes, cached, componentEnumHandle):  # noqa: N802,N803
+        """Retrieve installed components."""
         with self._func_lock:
             if self._GetInstalledSoftwareComponents_cfunc is None:
                 self._GetInstalledSoftwareComponents_cfunc = self._library.windll.NISysCfgGetInstalledSoftwareComponents
@@ -400,6 +446,7 @@ class Library(object):
         return self._GetInstalledSoftwareComponents_cfunc(sessionHandle, itemTypes, cached, componentEnumHandle)
 
     def GetInstalledSoftwareSet(self, sessionHandle, cached, setHandle):  # noqa: N802,N803
+        """Retrieve the installed software set."""
         with self._func_lock:
             if self._GetInstalledSoftwareSet_cfunc is None:
                 self._GetInstalledSoftwareSet_cfunc = self._library.windll.NISysCfgGetInstalledSoftwareSet
@@ -408,6 +455,7 @@ class Library(object):
         return self._GetInstalledSoftwareSet_cfunc(sessionHandle, cached, setHandle)
 
     def GetSystemImageAsFolder(self, sessionHandle, destinationFolder, encryptionPassphrase, overwriteIfExists, installedSoftwareOnly, autoRestart):  # noqa: N802,N803
+        """Export a system image to a folder."""
         with self._func_lock:
             if self._GetSystemImageAsFolder_cfunc is None:
                 self._GetSystemImageAsFolder_cfunc = self._library.windll.NISysCfgGetSystemImageAsFolder
@@ -416,6 +464,7 @@ class Library(object):
         return self._GetSystemImageAsFolder_cfunc(sessionHandle, destinationFolder, encryptionPassphrase, overwriteIfExists, installedSoftwareOnly, autoRestart)
 
     def GetSystemImageAsFolder2(self, sessionHandle, autoRestart, destinationFolder, encryptionPassphrase, numBlacklistEntries, blacklistFilesDirectories, overwriteIfExists, installedSoftwareOnly):  # noqa: N802,N803
+        """Export a system image to a folder using extended options."""
         with self._func_lock:
             if self._GetSystemImageAsFolder2_cfunc is None:
                 self._GetSystemImageAsFolder2_cfunc = self._library.windll.NISysCfgGetSystemImageAsFolder2
@@ -424,6 +473,7 @@ class Library(object):
         return self._GetSystemImageAsFolder2_cfunc(sessionHandle, autoRestart, destinationFolder, encryptionPassphrase, numBlacklistEntries, blacklistFilesDirectories, overwriteIfExists, installedSoftwareOnly)
 
     def CreateSystemImageAsFolder(self, sessionHandle, imageTitle, imageID, imageVersion, imageDescription, autoRestart, destinationFolder, encryptionPassphrase, numBlacklistEntries, blacklistFilesDirectories, overwriteIfExists):  # noqa: N802,N803
+        """Create a system image in a folder."""
         with self._func_lock:
             if self._CreateSystemImageAsFolder_cfunc is None:
                 self._CreateSystemImageAsFolder_cfunc = self._library.windll.NISysCfgCreateSystemImageAsFolder
@@ -432,6 +482,7 @@ class Library(object):
         return self._CreateSystemImageAsFolder_cfunc(sessionHandle, imageTitle, imageID, imageVersion, imageDescription, autoRestart, destinationFolder, encryptionPassphrase, numBlacklistEntries, blacklistFilesDirectories, overwriteIfExists)
 
     def SetSystemImageFromFolder(self, sessionHandle, sourceFolder, encryptionPassphrase, autoRestart, originalSystemOnly):  # noqa: N802,N803
+        """Apply a system image from a folder."""
         with self._func_lock:
             if self._SetSystemImageFromFolder_cfunc is None:
                 self._SetSystemImageFromFolder_cfunc = self._library.windll.NISysCfgSetSystemImageFromFolder
@@ -440,6 +491,7 @@ class Library(object):
         return self._SetSystemImageFromFolder_cfunc(sessionHandle, sourceFolder, encryptionPassphrase, autoRestart, originalSystemOnly)
 
     def SetSystemImageFromFolder2(self, sessionHandle, autoRestart, sourceFolder, encryptionPassphrase, numBlacklistEntries, blacklistFilesDirectories, originalSystemOnly, networkSettings):  # noqa: N802,N803
+        """Apply a system image from a folder using extended options."""
         with self._func_lock:
             if self._SetSystemImageFromFolder2_cfunc is None:
                 self._SetSystemImageFromFolder2_cfunc = self._library.windll.NISysCfgSetSystemImageFromFolder2
@@ -448,6 +500,7 @@ class Library(object):
         return self._SetSystemImageFromFolder2_cfunc(sessionHandle, autoRestart, sourceFolder, encryptionPassphrase, numBlacklistEntries, blacklistFilesDirectories, originalSystemOnly, networkSettings)
 
     def InstallAll(self, sessionHandle, autoRestart, deselectConflicts, installedComponentEnumHandle, brokenDependencyEnumHandle):  # noqa: N802,N803
+        """Install all available components."""
         with self._func_lock:
             if self._InstallAll_cfunc is None:
                 self._InstallAll_cfunc = self._library.windll.NISysCfgInstallAll
@@ -456,6 +509,7 @@ class Library(object):
         return self._InstallAll_cfunc(sessionHandle, autoRestart, deselectConflicts, installedComponentEnumHandle, brokenDependencyEnumHandle)
 
     def InstallUninstallComponents(self, sessionHandle, autoRestart, autoSelectDependencies, componentToInstallEnumHandle, numComponentsToUninstall, componentIDsToUninstall, brokenDependencyEnumHandle):  # noqa: N802,N803
+        """Install and uninstall components."""
         with self._func_lock:
             if self._InstallUninstallComponents_cfunc is None:
                 self._InstallUninstallComponents_cfunc = self._library.windll.NISysCfgInstallUninstallComponents
@@ -464,6 +518,7 @@ class Library(object):
         return self._InstallUninstallComponents_cfunc(sessionHandle, autoRestart, autoSelectDependencies, componentToInstallEnumHandle, numComponentsToUninstall, componentIDsToUninstall, brokenDependencyEnumHandle)
 
     def InstallUninstallComponents2(self, sessionHandle, autoRestart, autoSelectDependencies, autoSelectRecommends, componentToInstallEnumHandle, numComponentsToUninstall, componentIDsToUninstall, brokenDependencyEnumHandle):  # noqa: N802,N803
+        """Install and uninstall components using extended options."""
         with self._func_lock:
             if self._InstallUninstallComponents2_cfunc is None:
                 self._InstallUninstallComponents2_cfunc = self._library.windll.NISysCfgInstallUninstallComponents2
@@ -472,6 +527,7 @@ class Library(object):
         return self._InstallUninstallComponents2_cfunc(sessionHandle, autoRestart, autoSelectDependencies, autoSelectRecommends, componentToInstallEnumHandle, numComponentsToUninstall, componentIDsToUninstall, brokenDependencyEnumHandle)
 
     def InstallSoftwareSet(self, sessionHandle, autoRestart, softwareSetID, version, addonEnumHandle, brokenDependencyEnumHandle):  # noqa: N802,N803
+        """Install a software set."""
         with self._func_lock:
             if self._InstallSoftwareSet_cfunc is None:
                 self._InstallSoftwareSet_cfunc = self._library.windll.NISysCfgInstallSoftwareSet
@@ -480,6 +536,7 @@ class Library(object):
         return self._InstallSoftwareSet_cfunc(sessionHandle, autoRestart, softwareSetID, version, addonEnumHandle, brokenDependencyEnumHandle)
 
     def InstallStartup(self, sessionHandle, autoRestart, startupEnumHandle, uninstallConflicts, installedComponentEnumHandle, uninstalledComponentEnumHandle, brokenDependencyEnumHandle):  # noqa: N802,N803
+        """Perform startup software installation."""
         with self._func_lock:
             if self._InstallStartup_cfunc is None:
                 self._InstallStartup_cfunc = self._library.windll.NISysCfgInstallStartup
@@ -488,6 +545,7 @@ class Library(object):
         return self._InstallStartup_cfunc(sessionHandle, autoRestart, startupEnumHandle, uninstallConflicts, installedComponentEnumHandle, uninstalledComponentEnumHandle, brokenDependencyEnumHandle)
 
     def UninstallAll(self, sessionHandle, autoRestart):  # noqa: N802,N803
+        """Uninstall all installed components."""
         with self._func_lock:
             if self._UninstallAll_cfunc is None:
                 self._UninstallAll_cfunc = self._library.windll.NISysCfgUninstallAll
@@ -496,6 +554,7 @@ class Library(object):
         return self._UninstallAll_cfunc(sessionHandle, autoRestart)
 
     def GetSoftwareFeeds(self, sessionHandle, feedEnumHandle):  # noqa: N802,N803
+        """Retrieve configured software feeds."""
         with self._func_lock:
             if self._GetSoftwareFeeds_cfunc is None:
                 self._GetSoftwareFeeds_cfunc = self._library.windll.NISysCfgGetSoftwareFeeds
@@ -504,6 +563,7 @@ class Library(object):
         return self._GetSoftwareFeeds_cfunc(sessionHandle, feedEnumHandle)
 
     def AddSoftwareFeed(self, sessionHandle, feedName, uri, enabled, trusted):  # noqa: N802,N803
+        """Add a software feed."""
         with self._func_lock:
             if self._AddSoftwareFeed_cfunc is None:
                 self._AddSoftwareFeed_cfunc = self._library.windll.NISysCfgAddSoftwareFeed
@@ -512,6 +572,7 @@ class Library(object):
         return self._AddSoftwareFeed_cfunc(sessionHandle, feedName, uri, enabled, trusted)
 
     def ModifySoftwareFeed(self, sessionHandle, feedName, newFeedName, uri, enabled, trusted):  # noqa: N802,N803
+        """Modify a software feed."""
         with self._func_lock:
             if self._ModifySoftwareFeed_cfunc is None:
                 self._ModifySoftwareFeed_cfunc = self._library.windll.NISysCfgModifySoftwareFeed
@@ -520,6 +581,7 @@ class Library(object):
         return self._ModifySoftwareFeed_cfunc(sessionHandle, feedName, newFeedName, uri, enabled, trusted)
 
     def RemoveSoftwareFeed(self, sessionHandle, feedName):  # noqa: N802,N803
+        """Remove a software feed."""
         with self._func_lock:
             if self._RemoveSoftwareFeed_cfunc is None:
                 self._RemoveSoftwareFeed_cfunc = self._library.windll.NISysCfgRemoveSoftwareFeed
@@ -528,6 +590,7 @@ class Library(object):
         return self._RemoveSoftwareFeed_cfunc(sessionHandle, feedName)
 
     def ChangeAdministratorPassword(self, sessionHandle, newPassword):  # noqa: N802,N803
+        """Change the administrator password."""
         with self._func_lock:
             if self._ChangeAdministratorPassword_cfunc is None:
                 self._ChangeAdministratorPassword_cfunc = self._library.windll.NISysCfgChangeAdministratorPassword
@@ -536,6 +599,7 @@ class Library(object):
         return self._ChangeAdministratorPassword_cfunc(sessionHandle, newPassword)
 
     def ExportConfiguration(self, sessionHandle, destinationFile, expertNames, overwriteIfExists):  # noqa: N802,N803
+        """Export system configuration."""
         with self._func_lock:
             if self._ExportConfiguration_cfunc is None:
                 self._ExportConfiguration_cfunc = self._library.windll.NISysCfgExportConfiguration
@@ -544,6 +608,7 @@ class Library(object):
         return self._ExportConfiguration_cfunc(sessionHandle, destinationFile, expertNames, overwriteIfExists)
 
     def ImportConfiguration(self, sessionHandle, sourceFile, expertNames, importMode, detailedResult):  # noqa: N802,N803
+        """Import system configuration."""
         with self._func_lock:
             if self._ImportConfiguration_cfunc is None:
                 self._ImportConfiguration_cfunc = self._library.windll.NISysCfgImportConfiguration
@@ -552,6 +617,7 @@ class Library(object):
         return self._ImportConfiguration_cfunc(sessionHandle, sourceFile, expertNames, importMode, detailedResult)
 
     def GenerateMAXReport(self, sessionHandle, outputFilename, reportType, overwriteIfExists):  # noqa: N802,N803
+        """Generate a MAX report."""
         with self._func_lock:
             if self._GenerateMAXReport_cfunc is None:
                 self._GenerateMAXReport_cfunc = self._library.windll.NISysCfgGenerateMAXReport
@@ -560,6 +626,7 @@ class Library(object):
         return self._GenerateMAXReport_cfunc(sessionHandle, outputFilename, reportType, overwriteIfExists)
 
     def CreateComponentsEnum(self, componentEnumHandle):  # noqa: N802,N803
+        """Create a component enumeration."""
         with self._func_lock:
             if self._CreateComponentsEnum_cfunc is None:
                 self._CreateComponentsEnum_cfunc = self._library.windll.NISysCfgCreateComponentsEnum
@@ -568,6 +635,7 @@ class Library(object):
         return self._CreateComponentsEnum_cfunc(componentEnumHandle)
 
     def AddComponentToEnum(self, componentEnumHandle, ID, version, mode):  # noqa: N802,N803
+        """Add a component to an enumeration."""
         with self._func_lock:
             if self._AddComponentToEnum_cfunc is None:
                 self._AddComponentToEnum_cfunc = self._library.windll.NISysCfgAddComponentToEnum
@@ -576,6 +644,7 @@ class Library(object):
         return self._AddComponentToEnum_cfunc(componentEnumHandle, ID, version, mode)
 
     def FreeDetailedString(self, str):  # noqa: N802,N803
+        """Free a detailed string allocated by the library."""
         with self._func_lock:
             if self._FreeDetailedString_cfunc is None:
                 self._FreeDetailedString_cfunc = self._library.windll.NISysCfgFreeDetailedString
@@ -584,6 +653,7 @@ class Library(object):
         return self._FreeDetailedString_cfunc(str)
 
     def NextResource(self, sessionHandle, resourceEnumHandle, resourceHandle):  # noqa: N802,N803
+        """Retrieve the next resource in an enumeration."""
         with self._func_lock:
             if self._NextResource_cfunc is None:
                 self._NextResource_cfunc = self._library.windll.NISysCfgNextResource
@@ -592,6 +662,7 @@ class Library(object):
         return self._NextResource_cfunc(sessionHandle, resourceEnumHandle, resourceHandle)
 
     def NextSystemInfo(self, systemEnumHandle, system):  # noqa: N802,N803
+        """Retrieve the next system info in an enumeration."""
         with self._func_lock:
             if self._NextSystemInfo_cfunc is None:
                 self._NextSystemInfo_cfunc = self._library.windll.NISysCfgNextSystemInfo
@@ -600,6 +671,7 @@ class Library(object):
         return self._NextSystemInfo_cfunc(systemEnumHandle, system)
 
     def NextExpertInfo(self, expertEnumHandle, expertName, displayName, version):  # noqa: N802,N803
+        """Retrieve the next expert info in an enumeration."""
         with self._func_lock:
             if self._NextExpertInfo_cfunc is None:
                 self._NextExpertInfo_cfunc = self._library.windll.NISysCfgNextExpertInfo
@@ -608,6 +680,7 @@ class Library(object):
         return self._NextExpertInfo_cfunc(expertEnumHandle, expertName, displayName, version)
 
     def NextComponentInfo(self, componentEnumHandle, ID, version, title, itemType, detailedDescription):  # noqa: N802,N803
+        """Retrieve the next component info in an enumeration."""
         with self._func_lock:
             if self._NextComponentInfo_cfunc is None:
                 self._NextComponentInfo_cfunc = self._library.windll.NISysCfgNextComponentInfo
@@ -616,6 +689,7 @@ class Library(object):
         return self._NextComponentInfo_cfunc(componentEnumHandle, ID, version, title, itemType, detailedDescription)
 
     def NextSoftwareSet(self, setEnumHandle, setHandle):  # noqa: N802,N803
+        """Retrieve the next software set in an enumeration."""
         with self._func_lock:
             if self._NextSoftwareSet_cfunc is None:
                 self._NextSoftwareSet_cfunc = self._library.windll.NISysCfgNextSoftwareSet
@@ -624,6 +698,7 @@ class Library(object):
         return self._NextSoftwareSet_cfunc(setEnumHandle, setHandle)
 
     def GetSoftwareSetInfo(self, setHandle, itemTypes, includeAddOnDeps, ID, version, title, setType, detailedDescription, addOnEnumHandle, itemEnumHandle):  # noqa: N802,N803
+        """Retrieve information about a software set."""
         with self._func_lock:
             if self._GetSoftwareSetInfo_cfunc is None:
                 self._GetSoftwareSetInfo_cfunc = self._library.windll.NISysCfgGetSoftwareSetInfo
@@ -632,6 +707,7 @@ class Library(object):
         return self._GetSoftwareSetInfo_cfunc(setHandle, itemTypes, includeAddOnDeps, ID, version, title, setType, detailedDescription, addOnEnumHandle, itemEnumHandle)
 
     def NextDependencyInfo(self, dependencyEnumHandle, dependerID, dependerVersion, dependerTitle, dependerDetailedDescription, dependeeID, dependeeVersion, dependeeTitle, dependeeDetailedDescription):  # noqa: N802,N803
+        """Retrieve the next dependency info in an enumeration."""
         with self._func_lock:
             if self._NextDependencyInfo_cfunc is None:
                 self._NextDependencyInfo_cfunc = self._library.windll.NISysCfgNextDependencyInfo
@@ -640,6 +716,7 @@ class Library(object):
         return self._NextDependencyInfo_cfunc(dependencyEnumHandle, dependerID, dependerVersion, dependerTitle, dependerDetailedDescription, dependeeID, dependeeVersion, dependeeTitle, dependeeDetailedDescription)
 
     def NextSoftwareFeed(self, feedEnumHandle, feedName, uri, enabled, trusted):  # noqa: N802,N803
+        """Retrieve the next software feed in an enumeration."""
         with self._func_lock:
             if self._NextSoftwareFeed_cfunc is None:
                 self._NextSoftwareFeed_cfunc = self._library.windll.NISysCfgNextSoftwareFeed
@@ -648,6 +725,7 @@ class Library(object):
         return self._NextSoftwareFeed_cfunc(feedEnumHandle, feedName, uri, enabled, trusted)
 
     def ResetEnumeratorGetCount(self, enumHandle, count):  # noqa: N802,N803
+        """Reset an enumerator and retrieve the count of items."""
         with self._func_lock:
             if self._ResetEnumeratorGetCount_cfunc is None:
                 self._ResetEnumeratorGetCount_cfunc = self._library.windll.NISysCfgResetEnumeratorGetCount
@@ -656,6 +734,7 @@ class Library(object):
         return self._ResetEnumeratorGetCount_cfunc(enumHandle, count)
 
     def GetStatusDescription(self, sessionHandle, status, detailedDescription):  # noqa: N802,N803
+        """Retrieve a description of a status code."""
         with self._func_lock:
             if self._GetStatusDescription_cfunc is None:
                 self._GetStatusDescription_cfunc = self._library.windll.NISysCfgGetStatusDescription
@@ -664,6 +743,7 @@ class Library(object):
         return self._GetStatusDescription_cfunc(sessionHandle, status, detailedDescription)
 
     def TimestampFromValues(self, secondsSinceEpoch1970, fractionalSeconds, timestamp):  # noqa: N802,N803
+        """Create a timestamp structure from numeric values."""
         with self._func_lock:
             if self._TimestampFromValues_cfunc is None:
                 self._TimestampFromValues_cfunc = self._library.windll.NISysCfgTimestampFromValues
@@ -672,6 +752,7 @@ class Library(object):
         return self._TimestampFromValues_cfunc(secondsSinceEpoch1970, fractionalSeconds, timestamp)
 
     def ValuesFromTimestamp(self, timestamp, secondsSinceEpoch1970, fractionalSeconds):  # noqa: N802,N803
+        """Create numeric values from a timestamp structure."""
         with self._func_lock:
             if self._ValuesFromTimestamp_cfunc is None:
                 self._ValuesFromTimestamp_cfunc = self._library.windll.NISysCfgValuesFromTimestamp

@@ -76,13 +76,29 @@ jobs:
       contents: read
     with:
       package-name: ${{ needs.get_publish_info.outputs.package-name }}
-  # TODO: Call analyze package post including analyze package file which uses ni/python-actions/analyze-project  
-  # TODO: Call check docs post including check docs file which generates docs.
+  analyze_package:
+    name: Analyze package for ${{ needs.get_publish_info.outputs.package-name }}
+    if: ${{ github.event_name == 'release' || inputs.package-name != 'none' }}
+    uses: ./.github/workflows/analyze_package.yml
+    needs: [get_publish_info, get_package_info]
+    with:
+      package-name: ${{ needs.get_publish_info.outputs.package-name }}
+      package-basepath: ${{ needs.get_package_info.outputs.package-basepath }}
+      install-extras: ${{ needs.get_package_info.outputs.install-extras }}
+  check_docs:
+    name: Check docs
+    if: ${{ github.event_name == 'release' || inputs.package-name != 'none' }}
+    uses: ./.github/workflows/check_docs.yml
+    needs: [get_publish_info, get_package_info]
+    with:
+      check-docs: ${{ needs.get_package_info.outputs.should-check-docs }}
+      package-name: ${{ needs.get_publish_info.outputs.package-name }}
+      package-basepath: ${{ needs.get_package_info.outputs.package-basepath }}
   build_package:
     name: Build ${{ needs.get_publish_info.outputs.package-name }}
     if: ${{ github.event_name == 'release' || inputs.package-name != 'none' }}
     runs-on: ubuntu-latest
-    needs: [get_publish_info, get_package_info] # TODO: Add analyze package and check docs to needs
+    needs: [get_publish_info, get_package_info, analyze_package, check_docs]
     steps:
       - name: Check out repo
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
@@ -134,7 +150,7 @@ jobs:
       run: ls -lR dist/
       working-directory: ${{ github.workspace }}/${{ needs.get_package_info.outputs.package-basepath }}
     - name: Upload to ${{ env.environment }}
-      uses: pypa/gh-action-pypi-publish@ed0c53931b1dc9bd32cbe73a98c7f6766f8a527e # v1.13.0
+      uses: pypa/gh-action-pypi-publish@7245906fb61fa33a13554f9d5fb856fe61758086 # v1.14.3
       with:
         repository-url: ${{ fromJson(env.environment-info)[env.environment].upload-url }}
         packages-dir: ${{ github.workspace }}/${{ needs.get_package_info.outputs.package-basepath }}/dist/

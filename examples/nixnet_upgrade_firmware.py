@@ -1,12 +1,18 @@
-import nisyscfg
+"""Example demonstrating how to upgrade NI-XNET device firmware."""
+
 import sys
+
+import nisyscfg
 
 
 class DeviceNotFoundError(Exception):
+    """Raised when the specified NI-XNET device cannot be found."""
+
     pass
 
 
-def nixnet_upgrade_firmware(serial_number):
+def nixnet_upgrade_firmware(serial_number: str) -> None:
+    """Upgrade firmware for the specified NI-XNET device."""
     with nisyscfg.Session() as session:
         # Search for the NI-XNET device with the specified serial number.
         device_filter = session.create_filter()

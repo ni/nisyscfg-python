@@ -1,7 +1,11 @@
+"""PXI-specific enumeration definitions for NI System Configuration."""
+
 from nisyscfg.enums import BaseEnum, BaseFlag
 
 
 class Clock10Sources(BaseEnum):
+    """Available PXI 10 MHz clock sources."""
+
     UNKNOWN = -1  #: Not applicable, or not software-readable
     INTERNAL = 0  #: Internal Oscillator
     BUILT_IN_CONNECTOR = 1  #: Supplied by the dedicated 10 MHz REF IN connector (e.g. SMA or SMB)
@@ -10,18 +14,24 @@ class Clock10Sources(BaseEnum):
 
 
 class ExternalClockOutputSources(BaseEnum):
+    """Available external clock output sources."""
+
     UNKNOWN = -1  #: Not applicable, or not software-readable
     PXI_CLK10 = 0  #: PXI_CLK10 from the chassis backplane
     INTERNAL_OSCILLATOR = 1  #: Internal Oscillator
 
 
 class InternalOscillators(BaseEnum):
+    """Supported internal oscillator types."""
+
     UNSUPPORTED = -1  #: Not software-readable
     VCXO = 0  #: Voltage-controlled Oscillator
     OCXO = 1  #: Oven-controlled Oscillator
 
 
 class PxiHighDensityTrigPortState(BaseEnum):
+    """PXI high-density trigger port connection states."""
+
     DISCONNECTED = 0  #: The port is disconnected
     CONNECTED = 1  #: The port is connected to another device known to this host
     CONNECTED_UNKNOWN = 2  #: The port is connected, but the remote device cannot be found
@@ -29,6 +39,8 @@ class PxiHighDensityTrigPortState(BaseEnum):
 
 
 class FanModes(BaseFlag):
+    """PXI chassis fan operating modes."""
+
     AUTO = 1  #: Default operating mode
     SAFE_MANUAL = (
         2  #: Allows caller to manipulate the fan speed within safe boundaries by setting FanUserRpm
@@ -37,6 +49,8 @@ class FanModes(BaseFlag):
 
 
 class CoolingProfiles(BaseFlag):
+    """PXI chassis cooling profiles."""
+
     WATTS_38 = 1  #: Default operating mode
     WATTS_58 = (
         2  #: More aggressive cooling profile for cooling modules requiring 58W or less of cooling
@@ -47,15 +61,19 @@ class CoolingProfiles(BaseFlag):
 
 
 class CoolingProfileSource(BaseEnum):
-    UNKNOWN = (-1,)  #: Not software-readable
-    USER_SPECIFIED = (1,)  #: The cooling profile reflects the user configured value
-    MODULE_REQUEST = (2,)  #: A module is requesting the current cooling profile
+    """PXI chassis cooling profile sources."""
+
+    UNKNOWN = -1  #: Not software-readable
+    USER_SPECIFIED = 1  #: The cooling profile reflects the user configured value
+    MODULE_REQUEST = 2  #: A module is requesting the current cooling profile
     USER_OVERRIDE_OF_MODULE_REQUEST = (
         3  #: The user is overriding the cooling profile requested by a module
     )
 
 
 class PowerSupplyStates(BaseEnum):
+    """PXI chassis power supply states."""
+
     OFF = 0
     ON = 1
     FAULTED = 2
@@ -89,17 +107,23 @@ class PowerSupplyStates(BaseEnum):
 
 
 class InhibitModes(BaseFlag):
+    """PXI chassis inhibit modes."""
+
     DEFAULT = 1  #: Chassis power controlled by the power button and OS
     MANUAL = 2  #: Chassis power controlled by the Remote Inhibit signal
 
 
 class CalExtActions(BaseEnum):
+    """PXI chassis calibration extension actions."""
+
     CANCEL = 0
     OCXO_START = 1
     COMMIT = 2
 
 
 class ChassisLedBlinkPattern(BaseFlag):
+    """PXI chassis LED blink patterns."""
+
     CHASSIS_CONTROLLED = 1
     ONE_BLINK = 2
     THREE_BLINK_BLINK_BLINK = 4

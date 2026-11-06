@@ -1,21 +1,22 @@
 import ctypes
 import pathlib
+from typing import Any, Callable, Iterator, cast
+from unittest import mock
+from unittest.mock import MagicMock
 
 import hightime
-import nisyscfg as nisyscfg
-import nisyscfg.enums
-import nisyscfg.errors
-import nisyscfg.properties
-import nisyscfg.timestamp
 import pytest
 
-try:
-    from unittest import mock
-except ImportError:
-    import mock
+import nisyscfg
+import nisyscfg._library_singleton
+import nisyscfg.enums
+import nisyscfg.errors
+import nisyscfg.hardware_resource
+import nisyscfg.properties
+import nisyscfg.timestamp
 
 
-def test_import():
+def test_import() -> None:
     nisyscfg.Session
 
 
@@ -32,56 +33,79 @@ STATUS_DESCRIPTION_VOID_P = ctypes.cast(STATUS_DESCRIPTION, ctypes.c_void_p)
 
 
 class CVoidPMatcher(object):
-    def __init__(self, value):
+    """Helper class for comparing ctypes void pointers in tests."""
+
+    def __init__(self, value: int | None) -> None:
+        """Initialize the matcher with an expected pointer value."""
         self.value = value
 
-    def __eq__(self, other):
+    def __eq__(self, other: Any) -> bool:
+        """Compare the pointer value."""
         return ctypes.cast(other, ctypes.c_void_p).value == self.value
 
-    def __repr__(self):
+    def __repr__(self) -> str:
+        """Return a string representation of the matcher."""
         return "c_void_p({})".format(self.value)
 
 
 class CIntPMatcher(object):
-    def __init__(self, value):
+    """Helper class for comparing ctypes integer pointers in tests."""
+
+    def __init__(self, value: int) -> None:
+        """Initialize the matcher with an expected value."""
         self.value = value
 
-    def __eq__(self, other):
-        return other.value == self.value
+    def __eq__(self, other: Any) -> bool:
+        """Compare the integer value."""
+        return cast(bool, other.value == self.value)
 
-    def __repr__(self):
+    def __repr__(self) -> str:
+        """Return a string representation of the matcher."""
         return "{}".format(ctypes.c_int(self.value))
 
 
 class CUIntPMatcher(object):
-    def __init__(self, value):
+    """Helper class for comparing ctypes unsigned integer pointers in tests."""
+
+    def __init__(self, value: int) -> None:
+        """Initialize the matcher with an expected value."""
         self.value = value
 
-    def __eq__(self, other):
-        return other.value == self.value
+    def __eq__(self, other: Any) -> bool:
+        """Compare the unsigned integer value."""
+        return cast(bool, other.value == self.value)
 
-    def __repr__(self):
+    def __repr__(self) -> str:
+        """Return a string representation of the matcher."""
         return "{}".format(ctypes.c_uint(self.value))
 
 
 class TimestampMatcher(object):
-    def __init__(self, value):
+    """Helper class for comparing timestamp structures in tests."""
+
+    def __init__(self, value: Any) -> None:
+        """Initialize the matcher with an expected timestamp."""
         self.value = value
 
-    def __eq__(self, other):
-        return other[:] == self.value[:]
+    def __eq__(self, other: Any) -> bool:
+        """Compare timestamp values."""
+        return cast(bool, other[:] == self.value[:])
 
-    def __repr__(self):
+    def __repr__(self) -> str:
+        """Return a string representation of the timestamp."""
         return "{:08X}-{:08X}-{:08X}-{:08X}".format(*self.value[:])
 
 
 class ExpertInfoSideEffect(object):
-    def __init__(self, expert_name, display_name, version):
+    """Mock side effect for expert information retrieval."""
+
+    def __init__(self, expert_name: bytes, display_name: bytes, version: bytes) -> None:
+        """Initialize mock expert information."""
         self.expert_name = expert_name
         self.display_name = display_name
         self.version = version
 
-    def __call__(self, handle, expert_name, display_name, version):
+    def __call__(self, handle: Any, expert_name: Any, display_name: Any, version: Any) -> Any:
         expert_name.value = self.expert_name
         display_name.value = self.display_name
         version.value = self.version
@@ -89,72 +113,85 @@ class ExpertInfoSideEffect(object):
 
 
 class NextResourceSideEffect(object):
-    def __init__(self, resource_handle):
+    """Mock side effect for resource enumeration."""
+
+    def __init__(self, resource_handle: int) -> None:
+        """Initialize the mock resource handle."""
         self.resource_handle = resource_handle
 
-    def __call__(self, session_handle, resource_enum_handle, resource_handle):
+    def __call__(self, session_handle: Any, resource_enum_handle: Any, resource_handle: Any) -> Any:
         resource_handle.contents.value = self.resource_handle
         return nisyscfg.errors.Status.OK
 
 
 def initialize_session_mock(
-    target_name,
-    username,
-    password,
-    language,
-    force_property_refresh,
-    connect_timeout_msec,
-    expert_enum_handle,
-    session_handle,
-):
+    target_name: Any,
+    username: Any,
+    password: Any,
+    language: Any,
+    force_property_refresh: Any,
+    connect_timeout_msec: Any,
+    expert_enum_handle: Any,
+    session_handle: Any,
+) -> Any:
     session_handle.contents.value = SESSION_HANDLE
     if expert_enum_handle:
         expert_enum_handle.contents.value = EXPERT_ENUM_HANDLE
     return nisyscfg.errors.Status.OK
 
 
-def _get_status_description_mock(session_handle, status, detailed_description):
+def _get_status_description_mock(
+    session_handle: Any, status: Any, detailed_description: Any
+) -> Any:
     ctypes.cast(detailed_description, ctypes.POINTER(ctypes.c_void_p)).contents.value = (
         STATUS_DESCRIPTION_VOID_P.value
     )
     return nisyscfg.errors.Status.OK
 
 
-def get_system_experts_mock(session_handle, expert_names, expert_enum_handle):
+def get_system_experts_mock(session_handle: Any, expert_names: Any, expert_enum_handle: Any) -> Any:
     expert_enum_handle.contents.value = EXPERT_ENUM_HANDLE
     return nisyscfg.errors.Status.OK
 
 
-def find_hardware_mock(session_handle, mode, filter_handle, expert_names, resource_enum_handle):
+def find_hardware_mock(
+    session_handle: Any,
+    mode: Any,
+    filter_handle: Any,
+    expert_names: Any,
+    resource_enum_handle: Any,
+) -> Any:
     resource_enum_handle.contents.value = RESOURCE_ENUM_HANDLE
     return nisyscfg.errors.Status.OK
 
 
-def create_filter_mock(session_handle, filter_handle):
+def create_filter_mock(session_handle: Any, filter_handle: Any) -> Any:
     filter_handle.contents.value = FILTER_HANDLE
     return nisyscfg.errors.Status.OK
 
 
-def get_available_software_components_mock(session_handle, item_types, software_component_handle):
+def get_available_software_components_mock(
+    session_handle: Any, item_types: Any, software_component_handle: Any
+) -> Any:
     software_component_handle.contents.value = SOFTWARE_COMPONENT_HANDLE
     return nisyscfg.errors.Status.OK
 
 
 def get_installed_software_components_mock(
-    session_handle, item_types, cached, software_component_handle
-):
+    session_handle: Any, item_types: Any, cached: Any, software_component_handle: Any
+) -> Any:
     software_component_handle.contents.value = SOFTWARE_COMPONENT_HANDLE
     return nisyscfg.errors.Status.OK
 
 
-def get_system_property_mock(session_handle, id, value):
+def get_system_property_mock(session_handle: Any, id: int, value: Any) -> Any:
     if id == 16941086:
         value.contents.value = RESOURCE_HANDLE
     return nisyscfg.errors.Status.OK
 
 
 @pytest.fixture(scope="function")
-def lib_mock():
+def lib_mock() -> Iterator[MagicMock]:
     with mock.patch("platform.system") as platform_system_mock:
         with mock.patch("platform.architecture") as platform_architecture_mock:
             with mock.patch("ctypes.CDLL") as ctypes_mock:
@@ -188,24 +225,27 @@ def lib_mock():
 
 
 @pytest.fixture(scope="function")
-def config_next_resource_side_effect_mock(lib_mock):
-    side_effect_functions = (
-        func
-        for func in [
+def config_next_resource_side_effect_mock(lib_mock: MagicMock) -> None:
+    side_effect_functions: Iterator[Callable[..., Any]] = iter(
+        [
             NextResourceSideEffect(10),
             lambda *x: nisyscfg.errors.Status.END_OF_ENUM,
         ]
     )
 
-    def next_resource_side_effect(session_handle, resource_enum_handle, resource_handle):
+    def next_resource_side_effect(
+        session_handle: Any, resource_enum_handle: Any, resource_handle: Any
+    ) -> Any:
         return next(side_effect_functions)(session_handle, resource_enum_handle, resource_handle)
 
     lib_mock.return_value.NISysCfgNextResource.side_effect = next_resource_side_effect
 
 
 @pytest.fixture(scope="function")
-def config_get_resource_property_mock(lib_mock, expected_value):
-    def get_resource_property_mock(resource_handle, property_id, property_value):
+def config_get_resource_property_mock(lib_mock: MagicMock, expected_value: Any) -> None:
+    def get_resource_property_mock(
+        resource_handle: Any, property_id: Any, property_value: Any
+    ) -> Any:
         if property_value.__class__.__name__.startswith("c_char_Array"):
             property_value.value = expected_value.encode("ascii")
         else:
@@ -215,7 +255,7 @@ def config_get_resource_property_mock(lib_mock, expected_value):
     lib_mock.return_value.NISysCfgGetResourceProperty.side_effect = get_resource_property_mock
 
 
-def test_open_close_session_invokes_nisyscfg_c_api(lib_mock):
+def test_open_close_session_invokes_nisyscfg_c_api(lib_mock: MagicMock) -> None:
     session = nisyscfg.Session()
     session.close()
     expected_calls = [
@@ -235,7 +275,7 @@ def test_open_close_session_invokes_nisyscfg_c_api(lib_mock):
     assert lib_mock.mock_calls == expected_calls
 
 
-def test_session_in_with_statement_invokes_nisyscfg_c_api(lib_mock):
+def test_session_in_with_statement_invokes_nisyscfg_c_api(lib_mock: MagicMock) -> None:
     with nisyscfg.Session():
         pass
     expected_calls = [
@@ -255,7 +295,7 @@ def test_session_in_with_statement_invokes_nisyscfg_c_api(lib_mock):
     assert lib_mock.mock_calls == expected_calls
 
 
-def test_session_passes_target_name_to_initialize_session(lib_mock):
+def test_session_passes_target_name_to_initialize_session(lib_mock: MagicMock) -> None:
     with nisyscfg.Session("localhost"):
         pass
     expected_calls = [
@@ -273,7 +313,7 @@ def test_session_passes_target_name_to_initialize_session(lib_mock):
     assert lib_mock().NISysCfgInitializeSession.mock_calls == expected_calls
 
 
-def test_session_passes_username_and_password_to_initialize_session(lib_mock):
+def test_session_passes_username_and_password_to_initialize_session(lib_mock: MagicMock) -> None:
     with nisyscfg.Session("localhost", "username", "password"):
         pass
     expected_calls = [
@@ -291,7 +331,7 @@ def test_session_passes_username_and_password_to_initialize_session(lib_mock):
     assert lib_mock().NISysCfgInitializeSession.mock_calls == expected_calls
 
 
-def test__get_status_description(lib_mock):
+def test__get_status_description(lib_mock: MagicMock) -> None:
     with nisyscfg.Session() as session:
         assert "description" == session._get_status_description(
             nisyscfg.errors.Status.OUT_OF_MEMORY
@@ -319,7 +359,7 @@ def test__get_status_description(lib_mock):
     assert lib_mock.mock_calls == expected_calls
 
 
-def test_get_system_experts_with_no_experts(lib_mock):
+def test_get_system_experts_with_no_experts(lib_mock: MagicMock) -> None:
     with nisyscfg.Session() as session:
         session.get_system_experts()
     expected_calls = [
@@ -341,25 +381,26 @@ def test_get_system_experts_with_no_experts(lib_mock):
     assert lib_mock.mock_calls == expected_calls
 
 
-def test_expert_info_iterator_raises_error_after_close(lib_mock):
+def test_expert_info_iterator_stops_after_close(lib_mock: MagicMock) -> None:
     with nisyscfg.Session() as session:
         expert_info = session.get_system_experts()
         expert_info.close()
-        with pytest.raises(Exception):
-            expert_info.next()
+        with pytest.raises(StopIteration):
+            next(expert_info)
 
 
-def test_get_system_experts_with_two_experts(lib_mock):
-    side_effect_functions = (
-        func
-        for func in [
+def test_get_system_experts_with_two_experts(lib_mock: MagicMock) -> None:
+    side_effect_functions: Iterator[Callable[..., Any]] = iter(
+        [
             ExpertInfoSideEffect(b"sync", b"NI-Sync", b"1.2.0"),
             ExpertInfoSideEffect(b"xnet", b"NI-XNET", b"10.0"),
             lambda *x: nisyscfg.errors.Status.END_OF_ENUM,
         ]
     )
 
-    def expert_info_side_effect(handle, expert_name, display_name, version):
+    def expert_info_side_effect(
+        handle: Any, expert_name: Any, display_name: Any, version: Any
+    ) -> Any:
         return next(side_effect_functions)(handle, expert_name, display_name, version)
 
     lib_mock.return_value.NISysCfgNextExpertInfo.side_effect = expert_info_side_effect
@@ -401,7 +442,7 @@ def test_get_system_experts_with_two_experts(lib_mock):
     assert expert_info[1].version == "10.0"
 
 
-def test_get_system_experts_with_csv_expert_names(lib_mock):
+def test_get_system_experts_with_csv_expert_names(lib_mock: MagicMock) -> None:
     with nisyscfg.Session() as session:
         session.get_system_experts("xnet,sync")
     expected_calls = [
@@ -410,16 +451,7 @@ def test_get_system_experts_with_csv_expert_names(lib_mock):
     assert lib_mock().NISysCfgGetSystemExperts.mock_calls == expected_calls
 
 
-def test_get_system_experts_with_list_of_expert_names(lib_mock):
-    with nisyscfg.Session() as session:
-        session.get_system_experts(["xnet", "sync"])
-    expected_calls = [
-        mock.call().NISysCfgGetSystemExperts(CVoidPMatcher(SESSION_HANDLE), b"xnet,sync", mock.ANY),
-    ]
-    assert lib_mock().NISysCfgGetSystemExperts.mock_calls == expected_calls
-
-
-def test_find_hardware_with_default_arguments(lib_mock):
+def test_find_hardware_with_default_arguments(lib_mock: MagicMock) -> None:
     with nisyscfg.Session() as session:
         session.find_hardware()
     expected_calls = [
@@ -447,7 +479,7 @@ def test_find_hardware_with_default_arguments(lib_mock):
     assert lib_mock.mock_calls == expected_calls
 
 
-def test_find_hardware_with_filter_properties_specified(lib_mock):
+def test_find_hardware_with_filter_properties_specified(lib_mock: MagicMock) -> None:
     with nisyscfg.Session() as session:
         filter = session.create_filter()
         filter.expert_name = "my_expert"
@@ -485,18 +517,9 @@ def test_find_hardware_with_filter_properties_specified(lib_mock):
     assert lib_mock.mock_calls == expected_calls
 
 
-def test_find_hardware_with_csv_expert_names(lib_mock):
+def test_find_hardware_with_csv_expert_names(lib_mock: MagicMock) -> None:
     with nisyscfg.Session() as session:
         session.find_hardware(expert_names="xnet,sync")
-    expected_calls = [
-        mock.call().NISysCfgFindHardware(mock.ANY, mock.ANY, mock.ANY, b"xnet,sync", mock.ANY),
-    ]
-    assert lib_mock().NISysCfgFindHardware.mock_calls == expected_calls
-
-
-def test_find_hardware_with_list_of_expert_names(lib_mock):
-    with nisyscfg.Session() as session:
-        session.find_hardware(expert_names=["xnet", "sync"])
     expected_calls = [
         mock.call().NISysCfgFindHardware(mock.ANY, mock.ANY, mock.ANY, b"xnet,sync", mock.ANY),
     ]
@@ -519,8 +542,12 @@ def test_find_hardware_with_list_of_expert_names(lib_mock):
     ],
 )
 def test_find_hardware_with_passed_filter_properties_specified(
-    lib_mock, property_name, property_type, assigned_value, expected_value
-):
+    lib_mock: MagicMock,
+    property_name: Any,
+    property_type: Any,
+    assigned_value: Any,
+    expected_value: Any,
+) -> None:
     with nisyscfg.Session() as session:
         filter = session.create_filter()
         setattr(filter, property_name.lower(), assigned_value)
@@ -556,7 +583,7 @@ def test_find_hardware_with_passed_filter_properties_specified(
     assert lib_mock.mock_calls == expected_calls
 
 
-def test_create_filter(lib_mock):
+def test_create_filter(lib_mock: MagicMock) -> None:
     with nisyscfg.Session() as session:
         session.create_filter()
     expected_calls = [
@@ -578,7 +605,7 @@ def test_create_filter(lib_mock):
     assert lib_mock.mock_calls == expected_calls
 
 
-def test_create_filter_and_set_syscfg_filter_property(lib_mock):
+def test_create_filter_and_set_syscfg_filter_property(lib_mock: MagicMock) -> None:
     with nisyscfg.Session() as session:
         filter = session.create_filter()
         filter.expert_name = "my_expert"
@@ -607,7 +634,7 @@ def test_create_filter_and_set_syscfg_filter_property(lib_mock):
     assert lib_mock.mock_calls == expected_calls
 
 
-def test_restart_with_default_arguments(lib_mock):
+def test_restart_with_default_arguments(lib_mock: MagicMock) -> None:
     with nisyscfg.Session() as session:
         session.restart()
     expected_calls = [
@@ -630,7 +657,7 @@ def test_restart_with_default_arguments(lib_mock):
     assert lib_mock.mock_calls == expected_calls
 
 
-def test_get_available_software_components_with_default_arguments(lib_mock):
+def test_get_available_software_components_with_default_arguments(lib_mock: MagicMock) -> None:
     with nisyscfg.Session() as session:
         session.get_available_software_components()
     expected_calls = [
@@ -654,7 +681,7 @@ def test_get_available_software_components_with_default_arguments(lib_mock):
     assert lib_mock.mock_calls == expected_calls
 
 
-def test_get_installed_software_components_with_default_arguments(lib_mock):
+def test_get_installed_software_components_with_default_arguments(lib_mock: MagicMock) -> None:
     with nisyscfg.Session() as session:
         session.get_installed_software_components()
     expected_calls = [
@@ -678,10 +705,9 @@ def test_get_installed_software_components_with_default_arguments(lib_mock):
     assert lib_mock.mock_calls == expected_calls
 
 
-def test_interating_over_hardware_resources(lib_mock):
-    side_effect_functions = (
-        func
-        for func in [
+def test_interating_over_hardware_resources(lib_mock: MagicMock) -> None:
+    side_effect_functions: Iterator[Callable[..., Any]] = iter(
+        [
             NextResourceSideEffect(10),
             NextResourceSideEffect(11),
             NextResourceSideEffect(12),
@@ -689,7 +715,9 @@ def test_interating_over_hardware_resources(lib_mock):
         ]
     )
 
-    def next_resource_side_effect(session_handle, resource_enum_handle, resource_handle):
+    def next_resource_side_effect(
+        session_handle: Any, resource_enum_handle: Any, resource_handle: Any
+    ) -> Any:
         return next(side_effect_functions)(session_handle, resource_enum_handle, resource_handle)
 
     lib_mock.return_value.NISysCfgNextResource.side_effect = next_resource_side_effect
@@ -732,12 +760,30 @@ def test_interating_over_hardware_resources(lib_mock):
     assert lib_mock.mock_calls == expected_calls
 
 
-def test_hardware_resource_raises_error_after_close(lib_mock):
+def test_hardware_resource_iterator_stops_after_close(lib_mock: MagicMock) -> None:
     with nisyscfg.Session() as session:
-        resource = session.find_hardware()
-        resource.close()
-        with pytest.raises(Exception):
-            resource.next()
+        resource_iterator = session.find_hardware()
+        resource_iterator.close()
+        with pytest.raises(StopIteration):
+            next(resource_iterator)
+
+
+def test_null_enumeration_handles_return_none(lib_mock: MagicMock) -> None:
+    lib = lib_mock.return_value
+    lib.NISysCfgGetAvailableSoftwareComponents.side_effect = None
+    lib.NISysCfgGetAvailableSoftwareComponents.return_value = nisyscfg.errors.Status.OK
+    lib.NISysCfgGetInstalledSoftwareComponents.side_effect = None
+    lib.NISysCfgGetInstalledSoftwareComponents.return_value = nisyscfg.errors.Status.OK
+    lib.NISysCfgGetFilteredBaseSystemImages.side_effect = None
+    lib.NISysCfgGetFilteredBaseSystemImages.return_value = nisyscfg.errors.Status.OK
+    lib.NISysCfgGetSoftwareFeeds.side_effect = None
+    lib.NISysCfgGetSoftwareFeeds.return_value = nisyscfg.errors.Status.OK
+
+    with nisyscfg.Session() as session:
+        assert session.get_available_software_components() is None
+        assert session.get_installed_software_components() is None
+        assert session.get_filtered_base_system_images() is None
+        assert session.get_software_feeds() is None
 
 
 @pytest.mark.parametrize(
@@ -752,12 +798,12 @@ def test_hardware_resource_raises_error_after_close(lib_mock):
     ],
 )
 def test_get_hardware_resource_property(
-    lib_mock,
-    config_next_resource_side_effect_mock,
-    config_get_resource_property_mock,
-    property_name,
-    expected_value,
-):
+    lib_mock: MagicMock,
+    config_next_resource_side_effect_mock: None,
+    config_get_resource_property_mock: None,
+    property_name: Any,
+    expected_value: Any,
+) -> None:
     with nisyscfg.Session() as session:
         resource = next(session.find_hardware())
         assert expected_value == getattr(resource, property_name.lower())
@@ -786,19 +832,23 @@ def test_get_hardware_resource_property(
 
 
 def test_get_hardware_resource_timestamp_property(
-    lib_mock,
-    config_next_resource_side_effect_mock,
-):
+    lib_mock: MagicMock,
+    config_next_resource_side_effect_mock: None,
+) -> None:
     timestamp = nisyscfg.types.TimestampUTC()
     timestamp[2] = 0x7C25B080
 
-    def get_resource_property_side_effect(resource_handle, property_id, property_value):
+    def get_resource_property_side_effect(
+        resource_handle: Any, property_id: Any, property_value: Any
+    ) -> Any:
         property_value.contents[:] = timestamp[:]
         return nisyscfg.errors.Status.OK
 
-    def values_from_timestamp_side_effect(timestamp, secondsSinceEpoch1970, fractionalSeconds):
-        secondsSinceEpoch1970.contents.value = 0
-        fractionalSeconds.contents.value = 0.0
+    def values_from_timestamp_side_effect(
+        timestamp: Any, seconds_since_epoch_1970: Any, fractional_seconds: Any
+    ) -> Any:
+        seconds_since_epoch_1970.contents.value = 0
+        fractional_seconds.contents.value = 0.0
         return nisyscfg.errors.Status.OK
 
     lib_mock.return_value.NISysCfgGetResourceProperty.side_effect = (
@@ -845,17 +895,20 @@ def test_get_hardware_resource_timestamp_property(
     ],
 )
 def test_get_hardware_resource_name(
-    lib_mock,
-    config_next_resource_side_effect_mock,
-    user_alias,
-    resource_name,
-    expected_value,
-):
-    with mock.patch.object(
-        nisyscfg.hardware_resource.HardwareResource, "expert_user_alias"
-    ) as expert_user_alias_mock, mock.patch.object(
-        nisyscfg.hardware_resource.HardwareResource, "expert_resource_name"
-    ) as expert_resource_name_mock:
+    lib_mock: MagicMock,
+    config_next_resource_side_effect_mock: None,
+    user_alias: str,
+    resource_name: str,
+    expected_value: str,
+) -> None:
+    with (
+        mock.patch.object(
+            nisyscfg.hardware_resource.HardwareResource, "expert_user_alias"
+        ) as expert_user_alias_mock,
+        mock.patch.object(
+            nisyscfg.hardware_resource.HardwareResource, "expert_resource_name"
+        ) as expert_resource_name_mock,
+    ):
         expert_user_alias_mock.__getitem__.return_value = user_alias
         expert_resource_name_mock.__getitem__.return_value = resource_name
 
@@ -865,8 +918,8 @@ def test_get_hardware_resource_name(
 
 
 def test_get_hardware_resource_property_catches_prop_does_not_exist_and_raises_attribute_error(
-    lib_mock, config_next_resource_side_effect_mock
-):
+    lib_mock: MagicMock, config_next_resource_side_effect_mock: None
+) -> None:
     lib_mock.return_value.NISysCfgGetResourceProperty.return_value = (
         nisyscfg.errors.Status.PROP_DOES_NOT_EXIST
     )
@@ -878,8 +931,8 @@ def test_get_hardware_resource_property_catches_prop_does_not_exist_and_raises_a
 
 
 def test_get_hardware_resource_property_raises_library_error_when_error_code_is_not_prop_does_not_exist(
-    lib_mock, config_next_resource_side_effect_mock
-):
+    lib_mock: MagicMock, config_next_resource_side_effect_mock: None
+) -> None:
     lib_mock.return_value.NISysCfgGetResourceProperty.return_value = (
         nisyscfg.errors.Status.OUT_OF_MEMORY
     )
@@ -891,8 +944,8 @@ def test_get_hardware_resource_property_raises_library_error_when_error_code_is_
 
 
 def test_hardware_resource_get_property_raises_library_error_when_error_code_is_not_prop_does_not_exist(
-    lib_mock, config_next_resource_side_effect_mock
-):
+    lib_mock: MagicMock, config_next_resource_side_effect_mock: None
+) -> None:
     lib_mock.return_value.NISysCfgGetResourceProperty.return_value = (
         nisyscfg.errors.Status.PROP_DOES_NOT_EXIST
     )
@@ -904,8 +957,8 @@ def test_hardware_resource_get_property_raises_library_error_when_error_code_is_
 
 
 def test_hardware_resource_get_property_returns_default_when_error_code_is_not_prop_does_not_exist(
-    lib_mock, config_next_resource_side_effect_mock
-):
+    lib_mock: MagicMock, config_next_resource_side_effect_mock: None
+) -> None:
     lib_mock.return_value.NISysCfgGetResourceProperty.return_value = (
         nisyscfg.errors.Status.PROP_DOES_NOT_EXIST
     )
@@ -937,23 +990,33 @@ def test_hardware_resource_get_property_returns_default_when_error_code_is_not_p
         ),
     ],
 )
-def test_get_hardware_index_property(lib_mock, property_name, count_property, expected_values):
-    side_effect_functions = (
-        func
-        for func in [
+def test_get_hardware_index_property(
+    lib_mock: MagicMock,
+    property_name: str,
+    count_property: str,
+    expected_values: list[Any],
+) -> None:
+    side_effect_functions: Iterator[Callable[..., Any]] = iter(
+        [
             NextResourceSideEffect(10),
             lambda *x: nisyscfg.errors.Status.END_OF_ENUM,
         ]
     )
 
-    def next_resource_side_effect(session_handle, resource_enum_handle, resource_handle):
+    def next_resource_side_effect(
+        session_handle: Any, resource_enum_handle: Any, resource_handle: Any
+    ) -> Any:
         return next(side_effect_functions)(session_handle, resource_enum_handle, resource_handle)
 
-    def get_resource_property_mock(resource_handle, property_id, property_value):
+    def get_resource_property_mock(
+        resource_handle: Any, property_id: Any, property_value: Any
+    ) -> Any:
         property_value.contents.value = len(expected_values)
         return nisyscfg.errors.Status.OK
 
-    def get_indexed_property_mock(resource_handle, property_id, index, property_value):
+    def get_indexed_property_mock(
+        resource_handle: Any, property_id: Any, index: int, property_value: Any
+    ) -> Any:
         try:
             if property_value.__class__.__name__.startswith("c_char_Array"):
                 property_value.value = expected_values[index].encode("ascii")
@@ -1003,12 +1066,14 @@ def test_get_hardware_index_property(lib_mock, property_name, count_property, ex
 
 
 def test_set_hardware_resource_timestamp_property(
-    lib_mock,
-    config_next_resource_side_effect_mock,
-):
+    lib_mock: MagicMock,
+    config_next_resource_side_effect_mock: None,
+) -> None:
     ctypes_timestamp = nisyscfg.types.TimestampUTC(100, 200, 300, 400)  # random values
 
-    def timestamp_from_values_side_effect(secondsSinceEpoch1970, fractionalSeconds, timestamp):
+    def timestamp_from_values_side_effect(
+        seconds_since_epoch_1970: Any, fractional_seconds: Any, timestamp: Any
+    ) -> Any:
         timestamp.contents[:] = ctypes_timestamp
         return nisyscfg.errors.Status.OK
 
@@ -1048,49 +1113,49 @@ def test_set_hardware_resource_timestamp_property(
     assert lib_mock.mock_calls == expected_calls
 
 
-def test_session_has_resource(lib_mock):
+def test_session_has_resource(lib_mock: MagicMock) -> None:
     with nisyscfg.Session() as session:
         assert "resource" in dir(session)
 
 
-def test_session_resource_has_pxi(lib_mock):
+def test_session_resource_has_pxi(lib_mock: MagicMock) -> None:
     with nisyscfg.Session() as session:
         assert "pxi" in dir(session.resource)
 
 
-def test_sesssion_resource_pxi_has_fan_mode(lib_mock):
+def test_sesssion_resource_pxi_has_fan_mode(lib_mock: MagicMock) -> None:
     with nisyscfg.Session() as session:
         assert "fan_mode" in dir(session.resource.pxi)
 
 
-def test_session_resource_pxi_has_power_supply_name(lib_mock):
+def test_session_resource_pxi_has_power_supply_name(lib_mock: MagicMock) -> None:
     with nisyscfg.Session() as session:
         assert "power_supply_name" in dir(session.resource.pxi)
 
 
-def test_session_resource_has_xnet(lib_mock):
+def test_session_resource_has_xnet(lib_mock: MagicMock) -> None:
     with nisyscfg.Session() as session:
         assert "xnet" in dir(session.resource)
 
 
-def test_session_resource_xnet_has_protocol(lib_mock):
+def test_session_resource_xnet_has_protocol(lib_mock: MagicMock) -> None:
     with nisyscfg.Session() as session:
         assert "protocol" in dir(session.resource.xnet)
 
 
-def test_filter_has_xnet(lib_mock):
+def test_filter_has_xnet(lib_mock: MagicMock) -> None:
     with nisyscfg.Session() as session:
         filter = session.create_filter()
         assert "xnet" in dir(filter)
 
 
-def test_filter_xnet_has_protocol(lib_mock):
+def test_filter_xnet_has_protocol(lib_mock: MagicMock) -> None:
     with nisyscfg.Session() as session:
         filter = session.create_filter()
         assert "protocol" in dir(filter.xnet)
 
 
-def test_session_set_system_image_with_folder(lib_mock, tmp_path):
+def test_session_set_system_image_with_folder(lib_mock: MagicMock, tmp_path: pathlib.Path) -> None:
     lib_mock.return_value.NISysCfgSetSystemImageFromFolder2.return_value = nisyscfg.errors.Status.OK
 
     with nisyscfg.Session() as session:
@@ -1116,7 +1181,7 @@ def test_session_set_system_image_with_folder(lib_mock, tmp_path):
     assert lib_mock.mock_calls == expected_calls
 
 
-def test_session_set_system_image_with_file(lib_mock, tmp_path):
+def test_session_set_system_image_with_file(lib_mock: MagicMock, tmp_path: pathlib.Path) -> None:
     lib_mock.return_value.NISysCfgSetSystemImageFromFolder2.return_value = nisyscfg.errors.Status.OK
     system_image_path = pathlib.Path(__file__).parent.parent / "assets" / "mock_system_image.zip"
 
@@ -1145,8 +1210,12 @@ def test_session_set_system_image_with_file(lib_mock, tmp_path):
     assert lib_mock.mock_calls == expected_calls
 
 
-def test_session_set_system_image_with_invalid_file(lib_mock, tmp_path):
-    system_image_path = pathlib.Path(__file__).parent.parent / "assets" / "mock_invalid_system_image.bin"
+def test_session_set_system_image_with_invalid_file(
+    lib_mock: MagicMock, tmp_path: pathlib.Path
+) -> None:
+    system_image_path = (
+        pathlib.Path(__file__).parent.parent / "assets" / "mock_invalid_system_image.bin"
+    )
 
     with mock.patch("tempfile.TemporaryDirectory") as mock_tempdir:
         mock_tempdir.return_value.__enter__.return_value = tmp_path

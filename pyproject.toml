@@ -29,6 +29,7 @@ classifiers = [
 [project.urls]
 repository = "https://github.com/ni/nisyscfg-python"
 changelog = "https://github.com/ni/nisyscfg-python/blob/main/CHANGELOG.md"
+documentation = "https://nisyscfg-python.readthedocs.io"
 
 [build-system]
 requires = ["poetry-core>=2.1.0,<3.0.0"]
@@ -47,26 +48,44 @@ pytest = ">=7.2"
 pytest-cov = ">=4.0"
 
 [tool.poetry.group.lint.dependencies]
-flake8 = ">=7.0"
-flake8-pyproject = ">=1.2.4"
+ni-python-styleguide = ">=0.5.1"
+mypy = ">=2.4,<3.0"
+pyright = { version = ">=1.1.414,<2.0", extras = ["nodejs"] }
+bandit = ">=1.9.4,<2.0"
 
 [tool.pytest.ini_options]
 addopts = "--cov=nisyscfg --cov-report=term --cov-report=xml --cov-report=html -svv --strict-markers"
 testpaths = ["tests"]
 
-[tool.flake8]
-show_source = true
-max_line_length = 120
-exclude = ["build", "docs", "tests", ".tox", "__pycache__", ".venv*"]
-
-# H404: Multi line docstrings should start without a leading new line.
-# H405: Multi line docstrings should start with a one line summary followed by an empty line.
-# H903: Windows style line endings not allowed in code
-# E501: Line length
-# W391: Blank line at end of file
-# W503: Line break occurred before a binary operator (not PEP8 compatible)
-# W504: Line break occurred after a binary operator (not PEP8 compatible)
-ignore = ["H404", "H405", "H903", "E501", "W391", "W503", "W504"]
+[tool.ni-python-styleguide]
+application-import-names = "nisyscfg,tests"
+extend_exclude = ".tox,docs,build,__pycache__,.venv*,generated"
 
 [tool.black]
 line-length = 100
+
+[tool.bandit]
+skips = [
+  "B101", # assert_used
+]
+
+[tool.poetry.group.docs]
+optional = true
+
+[tool.poetry.group.docs.dependencies]
+sphinx = ">=8.2,<9.0"
+sphinx-rtd-theme = ">=3.0,<4.0"
+sphinx-autoapi = ">=3.8,<4.0"
+
+[tool.mypy]
+files = "examples/,src/,tests/"
+namespace_packages = true
+strict = true
+
+
+[tool.pyright]
+include = [
+    "src",
+    "examples",
+    "tests"
+]
