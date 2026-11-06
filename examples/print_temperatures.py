@@ -1,16 +1,22 @@
+"""Example demonstrating how to read and print temperature values."""
+
 import itertools
 
 import nisyscfg
+from nisyscfg.hardware_resource import HardwareResource
+from nisyscfg.system import Session
 
 
-def print_resource_temperature(resource, indent):
+def print_resource_temperature(resource: HardwareResource, indent: str) -> None:
+    """Print temperature readings for the specified resource."""
     for name, reading in itertools.zip_longest(
         resource.temperature_name, resource.temperature_reading
     ):
         print(indent + "{}: {}".format(name or "Temperature", reading))
 
 
-def print_device_temperatures(session, provides_link_name, indent=""):
+def print_device_temperatures(session: Session, provides_link_name: str, indent: str = "") -> None:
+    """Print temperature information for devices connected to a link."""
     print(indent + "Devices:")
     filter = session.create_filter()
     filter.is_present = True
@@ -22,7 +28,8 @@ def print_device_temperatures(session, provides_link_name, indent=""):
         print_resource_temperature(device, indent + "        ")
 
 
-def print_chassis_temperatures(session):
+def print_chassis_temperatures(session: Session) -> None:
+    """Print temperature information for all detected chassis."""
     print("Chassis:")
     filter = session.create_filter()
     filter.is_present = True
@@ -34,7 +41,8 @@ def print_chassis_temperatures(session):
         print_device_temperatures(session, chassis.provides_link_name, indent="        ")
 
 
-def print_temperatures():
+def print_temperatures() -> None:
+    """Print temperature information for devices and chassis."""
     with nisyscfg.Session() as session:
         print_device_temperatures(session, provides_link_name="")
         print_chassis_temperatures(session)

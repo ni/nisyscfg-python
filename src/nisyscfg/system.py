@@ -1,3 +1,5 @@
+"""Session and system management functionality for NI System Configuration."""
+
 from __future__ import annotations
 
 import ctypes
@@ -5,6 +7,7 @@ import pathlib
 import tempfile
 import zipfile
 from contextlib import ExitStack
+from typing import Any, List, NamedTuple, Optional, Union, cast
 
 import nisyscfg
 import nisyscfg._library_singleton
@@ -18,12 +21,7 @@ import nisyscfg.pxi.properties
 import nisyscfg.software_feed
 import nisyscfg.system_info
 import nisyscfg.xnet.properties
-
-from nisyscfg._lib import c_string_decode
-from nisyscfg._lib import c_string_encode
-
-from typing import List, NamedTuple, Union
-
+from nisyscfg._lib import c_string_decode, c_string_encode
 
 InstallAllResult = NamedTuple(
     "InstallAllResult",
@@ -37,15 +35,14 @@ SaveChangesResult = NamedTuple(
     "SaveChangesResult",
     [
         ("restart_required", bool),
-        ("details", str),
+        ("details", Optional[str]),
     ],
 )
 
 
 @nisyscfg.properties.PropertyBag(nisyscfg.properties.System)
 class Session(object):
-    """
-    Initializes a system configuration session with a specific system.
+    """Initializes a system configuration session with a specific system.
 
     This function communicates to the device at the specified address. If the
     device is no longer online, but it has previously been discovered in
@@ -101,8 +98,9 @@ class Session(object):
         force_property_refresh: bool = True,
         timeout: float = 300.0,
     ) -> None:
-        self._children = []
-        self._session = nisyscfg.types.SessionHandle()
+        """Initialize a system configuration session."""
+        self._children: List[Any] = []
+        self._session: Any = nisyscfg.types.SessionHandle()
         self._library = nisyscfg._library_singleton.get()
         self._property_accessor = nisyscfg.properties.PropertyAccessor(
             setter=self._set_property,
@@ -121,20 +119,27 @@ class Session(object):
         nisyscfg.errors.handle_error(self, error_code)
         self.target_name = target
 
-    def __del__(self):
+    def __del__(self) -> None:
+        """Close the session when the object is destroyed."""
         self.close()
 
-    def __enter__(self):
+    def __enter__(self) -> "Session":
+        """Return the session context manager instance."""
         return self
 
-    def __exit__(self, type, value, traceback):
+    def __exit__(self, type: Any, value: Any, traceback: Any) -> None:
+        """Close the session when exiting a context manager."""
         self.close()
 
-    def _get_status_description(self, status):
+    def _get_status_description(
+        self, status: Union[int, "nisyscfg.errors.Status"]
+    ) -> Optional[str]:
         c_detailed_description = ctypes.POINTER(ctypes.c_char)()
         error_code = self._library.GetStatusDescription(
             self._session, status, ctypes.pointer(c_detailed_description)
         )
+        detailed_description: Optional[str] = ""
+        error_code_2 = 0
         if c_detailed_description:
             detailed_description = c_string_decode(
                 ctypes.cast(c_detailed_description, ctypes.c_char_p).value
@@ -144,25 +149,24 @@ class Session(object):
         nisyscfg.errors.handle_error(self, error_code_2, is_error_handling=True)
         return detailed_description
 
-    def close(self):
-        """
-        Closes references to previously allocated session, filters, resources,
-        and enumerators.
+    def close(self) -> None:
+        """Closes references to previously allocated session, filters, resources and enumerators.
 
         Raises an nisyscfg.errors.LibraryError exception in the event of an
         error.
         """
         self._children.reverse()
         for child in self._children:
-            child.close()
+            cast(Any, child).close()
         if self._session:
             error_code = self._library.CloseHandle(self._session)
             nisyscfg.errors.handle_error(self, error_code)
             self._session = None
 
-    def get_system_experts(self, expert_names: str = "") -> nisyscfg.expert_info.ExpertInfoIterator:
-        """
-        Returns the experts available on the system.
+    def get_system_experts(
+        self, expert_names: Union[str, List[str]] = ""
+    ) -> nisyscfg.expert_info.ExpertInfoIterator:
+        """Returns the experts available on the system.
 
         expert_names - This is a case-insensitive comma-separated string
         specifying which experts to query. If None or empty string, all
@@ -186,10 +190,9 @@ class Session(object):
         self,
         filter: Union[None, nisyscfg.filter.Filter] = None,
         mode: nisyscfg.enums.FilterMode = nisyscfg.enums.FilterMode.MATCH_VALUES_ALL,
-        expert_names: str = "",
+        expert_names: Union[str, List[str]] = "",
     ) -> nisyscfg.hardware_resource.HardwareResourceIterator:
-        """
-        Returns an iterator of hardware in a specified system.
+        """Returns an iterator of hardware in a specified system.
 
         filter - Specifies a filter you can use to limit the results to hardware
         matching specific properties. The default is no filter.
@@ -219,16 +222,22 @@ class Session(object):
         if filter is None:
 
             class DummyFilter(object):
-                _handle = None
+                _handle: Optional["nisyscfg.types.FilterHandle"] = None
 
-            filter = DummyFilter()
+            # Use a local variable narrowed to the Filter type so subsequent
+            # attribute access (._handle) is well-typed. We cast the dummy to
+            # the Filter interface to preserve runtime behavior while satisfying
+            # the type checker.
+            flt = cast(nisyscfg.filter.Filter, DummyFilter())
+        else:
+            flt = filter
         resource_handle = nisyscfg.types.EnumResourceHandle()
         if isinstance(expert_names, list):
             expert_names = ",".join(expert_names)
         error_code = self._library.FindHardware(
             self._session,
             mode,
-            filter._handle,
+            flt._handle,
             c_string_encode(expert_names),
             ctypes.pointer(resource_handle),
         )
@@ -246,8 +255,7 @@ class Session(object):
         timeout: float = 4.0,
         only_installable_systems: bool = False,
     ) -> nisyscfg.system_info.SystemInfoIterator:
-        """
-        Retrieves systems on the network.
+        """Retrieves systems on the network.
 
         device_class - Specifies the class of device for which you are
         searching. Common values are "PXI" and "cRIO". To specify multiple
@@ -322,10 +330,9 @@ class Session(object):
         return nisyscfg.system_info.SystemInfoIterator(system_handle)
 
     def create_filter(self) -> nisyscfg.filter.Filter:
-        """
-        Creates a hardware filter object that is used to query for specific
-        resources in a system. After creating a filter, set one or more
-        properties to limit the set of  detected resources.
+        """Creates a hardware filter used to query for specific resources in a system.
+
+        After creating a filter, set one or more properties to limit the set of  detected resources.
 
         Raises an nisyscfg.errors.LibraryError exception in the event of an
         error.
@@ -341,8 +348,7 @@ class Session(object):
         flush_dns: bool = False,
         timeout: float = 90.0,
     ) -> str:
-        """
-        Reboots a system or network device.
+        """Reboots a system or network device.
 
         sync_call - Waits until the reboot has finished before the function
         operation is completed, by default. Select FALSE to not wait until the
@@ -385,10 +391,8 @@ class Session(object):
         device_class: Union[None, str] = None,
         os: Union[None, str] = None,
         product_id: int = 0,
-    ) -> nisyscfg.component_info.ComponentInfoIterator:
-        """
-        Retrieves a collection of base system images available from a
-        repository path.
+    ) -> Optional[nisyscfg.component_info.ComponentInfoIterator]:
+        """Retrieves a collection of base system images available from a repository path.
 
         These include a base operating system and are intended to be used
         with format().
@@ -421,6 +425,7 @@ class Session(object):
             iter = nisyscfg.component_info.ComponentInfoIterator(software_component_handle)
             self._children.append(iter)
             return iter
+        return None
 
     def format(
         self,
@@ -431,15 +436,12 @@ class Session(object):
         system_image_version: Union[None, str] = None,
         timeout: float = 90.0,
     ) -> None:
-        """
-        Erases all data from the primary hard drive of a system and formats it
-        with the base system image, network settings, and filesystem specified.
-        The operation will fail if you choose not to restart the target
-        automatically and the target's boot flow requires it to be in safe mode
-        or restart after the operation. Refer to the the definition of safe
-        mode to understand the differences between safe mode for different
-        target boot flows. This function can only be used to format Real-Time
-        systems.
+        """Erase all data from the primary hard drive and format the system.
+
+        The system is formatted using the specified base system image, network
+        settings, and filesystem. The operation will fail if you choose not to
+        restart the target automatically and the target's boot flow requires it
+        to be in safe mode or restart after the operation.
 
         auto_restart - Restarts the system before and/or after the operation as
         required by the target's boot flow. The operation will fail if you
@@ -508,10 +510,8 @@ class Session(object):
     def get_available_software_components(
         self,
         item_types: nisyscfg.enums.IncludeComponentTypes = nisyscfg.enums.IncludeComponentTypes.ALL_VISIBLE,
-    ) -> nisyscfg.component_info.ComponentInfoIterator:
-        """
-        Retrieves a list of software components on the local system that are
-        available for installation to the specified target.
+    ) -> Optional[nisyscfg.component_info.ComponentInfoIterator]:
+        """Retrieve software components available for installation.
 
         item_types - Allows inclusion of hidden software installed on the target
         when ALL_VISIBLE_AND_HIDDEN is selected. Hidden software is not listed
@@ -542,14 +542,14 @@ class Session(object):
             iter = nisyscfg.component_info.ComponentInfoIterator(software_component_handle)
             self._children.append(iter)
             return iter
+        return None
 
     def get_installed_software_components(
         self,
         item_types: nisyscfg.enums.IncludeComponentTypes = nisyscfg.enums.IncludeComponentTypes.ALL_VISIBLE,
         cached: bool = False,
-    ) -> nisyscfg.component_info.ComponentInfoIterator:
-        """
-        Retrieves a list of software components installed on a system.
+    ) -> Optional[nisyscfg.component_info.ComponentInfoIterator]:
+        """Retrieve installed software components.
 
         item_types - Allows inclusion of hidden software installed on the target
         when ALL_VISIBLE_AND_HIDDEN is selected. Hidden software is not listed
@@ -584,10 +584,10 @@ class Session(object):
             iter = nisyscfg.component_info.ComponentInfoIterator(software_component_handle)
             self._children.append(iter)
             return iter
+        return None
 
     def add_software_feed(self, name: str, uri: str, enabled: bool, trusted: bool) -> None:
-        """
-        Adds a software feed to the system.
+        """Adds a software feed to the system.
 
         Note: This requires Secure Shell Server (sshd) to be enabled on the
         target.
@@ -619,8 +619,7 @@ class Session(object):
     def modify_software_feed(
         self, old_name: str, new_name: str, uri: str, enabled: bool, trusted: bool
     ) -> None:
-        """
-        Modifies an existing software feed by name.
+        """Modifies an existing software feed by name.
 
         Note: This requires Secure Shell Server (sshd) to be enabled on the
         target.
@@ -653,9 +652,8 @@ class Session(object):
         )
         nisyscfg.errors.handle_error(self, error_code)
 
-    def remove_software_feed(self, name: str):
-        """
-        Removes an existing software feed by name.
+    def remove_software_feed(self, name: str) -> None:
+        """Removes an existing software feed by name.
 
         Note: This requires Secure Shell Server (sshd) to be enabled on the
         target.
@@ -671,8 +669,7 @@ class Session(object):
     def install_all(
         self, auto_restart: bool = True, deselect_conflicts: bool = True
     ) -> InstallAllResult:
-        """
-        Installs software on a Real-Time system.
+        """Installs software on a Real-Time system.
 
         auto_restart - Restarts the system into install mode by default before
         the operation is performed, and restarts back to a running state after
@@ -721,9 +718,8 @@ class Session(object):
 
         return result
 
-    def uninstall_all(self, auto_restart: bool = True):
-        """
-        Uninstalls all software from a specified system.
+    def uninstall_all(self, auto_restart: bool = True) -> None:
+        """Uninstalls all software from a specified system.
 
         auto_restart - Restarts the system before and/or after the operation as
         required by the target's boot flow. The operation will fail if you
@@ -745,10 +741,10 @@ class Session(object):
         auto_select_recommends: bool = True,
         item_types: nisyscfg.enums.IncludeComponentTypes = nisyscfg.enums.IncludeComponentTypes.ALL_VISIBLE,
     ) -> nisyscfg.dependency_info.DependencyInfoIterator:
-        """
-        Allows you to install components, uninstall components, or both install
-        and uninstall components simultaneously (as long as two components do
-        not overlap each other).
+        """Allows you to install components, uninstall components, or both simultaneously.
+
+        Components can be installed and uninstalled in the same operation as long
+        as the selected components do not overlap with each other.
 
         components_to_install - List of software components IDs or titles to
         install.
@@ -842,8 +838,7 @@ class Session(object):
         auto_select_recommends: bool = True,
         item_types: nisyscfg.enums.IncludeComponentTypes = nisyscfg.enums.IncludeComponentTypes.ALL_VISIBLE,
     ) -> nisyscfg.dependency_info.DependencyInfoIterator:
-        """
-        Allows you to install components.
+        """Allows you to install components.
 
         components - List of software components IDs or titles to install.
 
@@ -903,8 +898,7 @@ class Session(object):
         auto_select_recommends: bool = True,
         item_types: nisyscfg.enums.IncludeComponentTypes = nisyscfg.enums.IncludeComponentTypes.ALL_VISIBLE,
     ) -> nisyscfg.dependency_info.DependencyInfoIterator:
-        """
-        Allows you to uninstall components.
+        """Allows you to uninstall components.
 
         components - List of software components IDs to remove.
 
@@ -963,7 +957,10 @@ class Session(object):
     ) -> nisyscfg.component_info.ComponentInfo:
         components = [
             component
-            for component in self.get_available_software_components(item_types)
+            for component in cast(
+                nisyscfg.component_info.ComponentInfoIterator,
+                self.get_available_software_components(item_types),
+            )
             if (component.title == component_name) or (component.id == component_name)
         ]
 
@@ -976,11 +973,13 @@ class Session(object):
 
         return max(components, key=lambda comp: comp.version.split("."))
 
-    def get_software_feeds(self) -> nisyscfg.software_feed.SoftwareFeedIterator:
-        """
-        Retrieves a list of configured software feeds. A feed represents a
-        location that the package manager uses to find and download available
-        software.
+    def get_software_feeds(
+        self,
+    ) -> Optional[nisyscfg.software_feed.SoftwareFeedIterator]:
+        """Retrieves a list of configured software feeds.
+
+        A feed represents a location that the package manager uses to find and
+        download available software.
 
         Note: This requires Secure Shell Server (sshd) to be enabled on the
         target.
@@ -997,17 +996,23 @@ class Session(object):
             iter = nisyscfg.software_feed.SoftwareFeedIterator(software_feed_handle)
             self._children.append(iter)
             return iter
+        return None
 
     @property
     def resource(self) -> nisyscfg.hardware_resource.HardwareResource:
-        """System resource properties"""
+        """System resource properties."""
         if not hasattr(self, "_resource"):
             resource_handle = self._get_property(16941086, nisyscfg.types.ResourceHandle)
             self._resource = nisyscfg.hardware_resource.HardwareResource(resource_handle)
             self._children.append(self._resource)
         return self._resource
 
-    def _get_property(self, id, c_type):
+    def _get_property(self, id: int, c_type: Any) -> Any:
+        # The C API uses different ctypes return locations based on type. Keep
+        # the implementation dynamically typed but expose a typed signature
+        # to satisfy mypy for callers.
+        value: Any
+        value_arg: Any
         if c_type == ctypes.c_char_p:
             value = nisyscfg.types.simple_string()
             value_arg = value
@@ -1033,7 +1038,7 @@ class Session(object):
 
         return c_string_decode(value.value)
 
-    def _set_property(self, id, value, c_type, nisyscfg_type):
+    def _set_property(self, id: int, value: Any, c_type: Any, nisyscfg_type: int) -> None:
         if c_type == ctypes.c_char_p:
             value = c_string_encode(value)
         elif issubclass(c_type, nisyscfg.enums.BaseEnum) or issubclass(
@@ -1047,8 +1052,7 @@ class Session(object):
         nisyscfg.errors.handle_error(self, error_code)
 
     def save_changes(self) -> SaveChangesResult:
-        """
-        Saves changes made to systems.
+        """Saves changes made to systems.
 
         Returns tuple (restart_required, details)
 
@@ -1066,6 +1070,8 @@ class Session(object):
         error_code = self._library.SaveSystemChanges(
             self._session, restart_required, ctypes.pointer(c_details)
         )
+        details: Optional[str] = ""
+        error_code_2 = 0
         if c_details:
             details = c_string_decode(ctypes.cast(c_details, ctypes.c_char_p).value)
             error_code_2 = self._library.FreeDetailedString(c_details)

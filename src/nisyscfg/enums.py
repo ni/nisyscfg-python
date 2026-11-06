@@ -1,27 +1,39 @@
 # This file is code generated
+"""Enumeration definitions used by NI System Configuration."""
 
 from enum import IntEnum, IntFlag
+from typing import SupportsInt
 
 
 class BaseEnum(IntEnum):
+    """Base class for NI System Configuration enumerations."""
+
     @classmethod
-    def from_param(cls, obj):
+    def from_param(cls: type["BaseEnum"], obj: SupportsInt | str) -> int:
+        """Convert an enum value for use with ctypes."""
         return int(obj)
 
 
 class BaseFlag(IntFlag):
+    """Base class for NI System Configuration flag enumerations."""
+
     @classmethod
-    def from_param(cls, obj):
+    def from_param(cls: type["BaseFlag"], obj: SupportsInt | str) -> int:
+        """Convert a flag value for use with ctypes."""
         return int(obj)
 
 
 class IncludeCachedResults(BaseEnum):
+    """Options for including cached system discovery results."""
+
     NONE = 0
     ONLY_IF_ONLINE = 1
     ALL = 3
 
 
 class SystemNameFormat(BaseEnum):
+    """System name display formats."""
+
     HOSTNAME = 16
     HOSTNAME_IP = 18
     HOSTNAME_MAC = 19
@@ -34,6 +46,8 @@ class SystemNameFormat(BaseEnum):
 
 
 class FileSystemMode(BaseEnum):
+    """Supported file system modes."""
+
     DEFAULT = 0
     FAT = 1
     RELIANCE = 2
@@ -42,6 +56,8 @@ class FileSystemMode(BaseEnum):
 
 
 class NetworkInterfaceSettings(BaseEnum):
+    """Network interface configuration options."""
+
     RESET_PRIMARY_RESET_OTHERS = 0
     PRESERVE_PRIMARY_RESET_OTHERS = 1
     PRESERVE_PRIMARY_PRESERVE_OTHERS = 2
@@ -52,6 +68,8 @@ class NetworkInterfaceSettings(BaseEnum):
 
 
 class ComponentType(BaseEnum):
+    """Component classification types."""
+
     STANDARD = 0
     HIDDEN = 1
     SYSTEM = 2
@@ -62,6 +80,8 @@ class ComponentType(BaseEnum):
 
 
 class IncludeComponentTypes(BaseEnum):
+    """Component inclusion filter options."""
+
     ALL_VISIBLE = 0
     ALL_VISIBLE_AND_HIDDEN = 1
     ONLY_STANDARD = 2
@@ -69,23 +89,31 @@ class IncludeComponentTypes(BaseEnum):
 
 
 class VersionSelectionMode(BaseEnum):
+    """Software version selection modes."""
+
     HIGHEST = 0
     EXACT = 1
 
 
 class ImportMode(BaseEnum):
+    """Configuration import modes."""
+
     MERGE_ITEMS = 0
     DELETE_CONFIG_FIRST = 1048576
     PRESERVE_CONFLICT_ITEMS = 2097152
 
 
 class ReportType(BaseEnum):
+    """Report output formats."""
+
     XML = 0
     HTML = 1
     TECHNICAL_SUPPORT_ZIP = 2
 
 
 class BusType(BaseEnum):
+    """Bus types for devices."""
+
     BUILT_IN = 0
     PCI_PXI = 1
     USB = 2
@@ -105,12 +133,16 @@ class BusType(BaseEnum):
 
 
 class HasDriverType(BaseEnum):
+    """Types of driver availability."""
+
     UNKNOWN = -1
     NOT_INSTALLED = 0
     INSTALLED = 1
 
 
 class IsPresentType(BaseEnum):
+    """Types of device presence status."""
+
     INITIALIZING = -2
     UNKNOWN = -1
     NOT_PRESENT = 0
@@ -118,6 +150,8 @@ class IsPresentType(BaseEnum):
 
 
 class IpAddressMode(BaseEnum):
+    """IP address configuration modes."""
+
     STATIC = 1
     DHCP_OR_LINK_LOCAL = 2
     LINK_LOCAL_ONLY = 4
@@ -125,11 +159,15 @@ class IpAddressMode(BaseEnum):
 
 
 class Bool(BaseEnum):
+    """Boolean values."""
+
     FALSE = 0
     TRUE = 1
 
 
 class Locale(BaseEnum):
+    """Supported locale identifiers."""
+
     DEFAULT = 0
     CHINESE_SIMPLIFIED = 2052
     ENGLISH = 1033
@@ -140,6 +178,8 @@ class Locale(BaseEnum):
 
 
 class FilterMode(BaseEnum):
+    """Filter matching modes."""
+
     MATCH_VALUES_ALL = 1
     MATCH_VALUES_ANY = 2
     MATCH_VALUES_NONE = 3
@@ -147,6 +187,8 @@ class FilterMode(BaseEnum):
 
 
 class ServiceType(BaseEnum):
+    """Service types for network discovery."""
+
     MDNS_NI_TCP = 0
     MDNS_NI_REALTIME = 1
     MDNS_NI_SYSAPI = 2
@@ -160,11 +202,15 @@ class ServiceType(BaseEnum):
 
 
 class AdapterType(BaseEnum):
+    """Network adapter types."""
+
     ETHERNET = 1
     WLAN = 2
 
 
 class AdapterMode(BaseEnum):
+    """Network adapter modes."""
+
     DISABLED = 1
     TCP_IP_ETHERNET = 2
     DETERMINISTIC = 4
@@ -174,6 +220,8 @@ class AdapterMode(BaseEnum):
 
 
 class LinkSpeed(BaseEnum):
+    """Network link speeds."""
+
     NONE = 0
     AUTO = 1
     TEN_MEGABIT_HALF = 2
@@ -190,6 +238,8 @@ class LinkSpeed(BaseEnum):
 
 
 class PacketDetection(BaseEnum):
+    """Packet detection methods."""
+
     NONE = 0
     LINE_INTERRUPT = 1
     POLLING = 2
@@ -197,12 +247,16 @@ class PacketDetection(BaseEnum):
 
 
 class ConnectionType(BaseEnum):
+    """Wireless connection types."""
+
     NONE = 0
     INFRASTRUCTURE = 1
     AD_HOC = 2
 
 
 class SecurityType(BaseEnum):
+    """Wireless security types."""
+
     NONE = 0
     NOT_SUPPORTED = 1
     OPEN = 2
@@ -214,6 +268,8 @@ class SecurityType(BaseEnum):
 
 
 class EapType(BaseEnum):
+    """EAP types for wireless security."""
+
     NONE = 0
     EAP_TLS = 1
     EAP_TTLS = 2
@@ -223,6 +279,8 @@ class EapType(BaseEnum):
 
 
 class FirmwareStatus(BaseEnum):
+    """Firmware update status codes."""
+
     READY_PENDING_AUTO_RESTART = -4
     VERIFYING_NEW_IMAGE = -3
     WRITING_FLASHING_NEW_IMAGE = -2
@@ -236,6 +294,8 @@ class FirmwareStatus(BaseEnum):
 
 
 class DeleteValidationMode(BaseEnum):
+    """Validation modes for deleting items from the configuration."""
+
     VALIDATE_BUT_DO_NOT_DELETE = -1
     DELETE_IF_NO_DEPENDENCIES_EXIST = 0
     DELETE_ITEM_AND_ANY_DEPENDENCIES = 1
@@ -243,11 +303,15 @@ class DeleteValidationMode(BaseEnum):
 
 
 class AccessType(BaseEnum):
+    """Access control modes."""
+
     LOCAL_ONLY = 0
     LOCAL_AND_REMOTE = 1
 
 
 class LedState(BaseEnum):
+    """LED state values."""
+
     OFF = 0
     SOLID_GREEN = 1
     SOLID_YELLOW = 2
@@ -258,17 +322,23 @@ class LedState(BaseEnum):
 
 
 class SwitchState(BaseEnum):
+    """Switch state values."""
+
     DISABLED = 0
     ENABLED = 1
 
 
 class FirmwareUpdateMode(BaseEnum):
+    """Firmware update modes."""
+
     NONE = 0
     MANUAL = 1
     DRIVER_MANAGED = 2
 
 
 class ModuleProgramMode(BaseEnum):
+    """Module programming modes."""
+
     NONE = 0
     REALTIME_CPU = 1
     REALTIME_SCAN = 2
@@ -276,6 +346,8 @@ class ModuleProgramMode(BaseEnum):
 
 
 class PropertyType(BaseEnum):
+    """Property data types."""
+
     BOOL = 1
     INT = 2
     UNSIGNED_INT = 3
