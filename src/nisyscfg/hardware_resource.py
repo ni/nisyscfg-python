@@ -535,7 +535,8 @@ class HardwareResource(object):
 
         Returns:
             nisyscfg.hardware_resource.SaveChangesResult: A result containing
-                whether the changes require a restart and details of any errors.
+                whether the changes require a restart and any additional
+                operation details returned by the API.
 
         Raises:
             nisyscfg.errors.LibraryError: An error occurs while saving the
@@ -762,17 +763,21 @@ class HardwareResource(object):
         Note: Not all devices can be deleted; consult your product documentation.
 
         Args:
-            mode: Deletion conditions: ``VALIDATE_BUT_DO_NOT_DELETE`` checks
-                whether deletion is allowed and whether dependencies exist;
-                ``DELETE_IF_NO_DEPENDENCIES_EXIST`` deletes only when there
-                are no dependencies; ``DELETE_ITEM_AND_ANY_DEPENDENCIES``
-                deletes the resource and its dependencies; and
-                ``DELETE_ITEM_BUT_KEEP_DEPENDENCIES`` deletes the resource but
-                leaves dependencies unusable.
+            mode: Deletion behavior:
+
+                * ``VALIDATE_BUT_DO_NOT_DELETE`` checks whether deletion is
+                  allowed and whether dependencies exist without deleting.
+                * ``DELETE_IF_NO_DEPENDENCIES_EXIST`` deletes only when there
+                  are no dependencies.
+                * ``DELETE_ITEM_AND_ANY_DEPENDENCIES`` deletes the resource
+                  and its dependencies.
+                * ``DELETE_ITEM_BUT_KEEP_DEPENDENCIES`` deletes the resource
+                  but leaves dependencies unusable.
 
         Returns:
             nisyscfg.hardware_resource.DeleteResult: Whether dependent
-                resources were deleted and details of any errors.
+                resources were deleted and any additional operation details
+                returned by the API.
 
         Raises:
             nisyscfg.errors.LibraryError: If deleting the resource fails.
