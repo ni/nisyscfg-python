@@ -1,13 +1,23 @@
+
+
+
+##################################
 NI System Configuration Python API
-==================================
+##################################
+
+.. include:: intro.inc
+
+Table of Contents
+=================
 
 .. toctree::
-   :maxdepth: 3
+   :maxdepth: 4
 
-   autoapi/nisyscfg/index
+   autoapi/index
 
 Indices and tables
-------------------
+==================
 
+* :ref:`genindex`
 * :ref:`modindex`
 * :ref:`search`

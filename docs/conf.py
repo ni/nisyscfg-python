@@ -11,7 +11,6 @@ import autoapi.extension
 # ones.
 extensions = [
     "autoapi.extension",
-    "myst_parser",
     "sphinx.ext.autodoc",
     "sphinx.ext.intersphinx",
     "sphinx.ext.napoleon",
@@ -20,7 +19,8 @@ extensions = [
 
 root_path = pathlib.Path(__file__).parent.parent
 pyproj_file = root_path / "pyproject.toml"
-proj_config = tomllib.loads(pyproj_file.read_text(encoding="utf-8"))
+with pyproj_file.open("rb") as file:
+    proj_config = tomllib.load(file)
 
 project = proj_config["project"]["name"]
 company = "National Instruments"
@@ -44,19 +44,13 @@ htmlhelp_basename = f"{project}doc"
 autoapi_options = list(autoapi.extension._DEFAULT_OPTIONS)
 autoapi_options.remove("private-members")  # note: remove this to include "_" members in docs
 autoapi_dirs = [root_path / "src" / "nisyscfg"]
-autoapi_add_toctree_entry = False
 autoapi_type = "python"
 autodoc_typehints = "description"
 
 # List of patterns, relative to source directory, that match files and
 # directories to ignore when looking for source files.
 # This patterns also effect to html_static_path and html_extra_path
-exclude_patterns = [
-    "_build",
-    "Thumbs.db",
-    ".DS_Store",
-    "**.ipynb_checkpoints",
-]
+exclude_patterns = ["_build", "Thumbs.db", ".DS_Store"]
 
 intersphinx_mapping = {
     "python": ("https://docs.python.org/3", None),
@@ -73,8 +67,6 @@ html_theme = "sphinx_rtd_theme"
 html_theme_options = {
     "navigation_depth": -1,
 }
-
-templates_path = ["_templates"]
 
 # Napoleon settings
 napoleon_numpy_docstring = False
