@@ -7,7 +7,7 @@ import pathlib
 import tempfile
 import zipfile
 from contextlib import ExitStack
-from typing import Any, List, NamedTuple, Optional, Union, cast
+from typing import Any, cast, List, NamedTuple, Optional, Union
 
 import nisyscfg
 import nisyscfg._library_singleton
@@ -147,9 +147,7 @@ class Session(object):
             error_code_2 = self._library.FreeDetailedString(c_detailed_description)
         nisyscfg.errors.handle_error(self, error_code, is_error_handling=True)
         if error_code_2 is not None:
-            nisyscfg.errors.handle_error(
-                self, error_code_2, is_error_handling=True
-            )
+            nisyscfg.errors.handle_error(self, error_code_2, is_error_handling=True)
         return detailed_description
 
     def close(self) -> None:
