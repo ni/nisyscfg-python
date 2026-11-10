@@ -63,7 +63,7 @@ def get() -> _library.Library:
                 if library_type == "dual":
                     ctypes_library = CTypesLibrary(
                         ctypes.CDLL(_get_library_name(), ctypes.RTLD_GLOBAL),
-                        ctypes.WinDLL(_get_library_name()),  # type: ignore[attr-defined]
+                        ctypes.WinDLL(_get_library_name()),  # type: ignore[attr-defined,unused-ignore]
                     )
                 else:
                     assert library_type == "cdll"
