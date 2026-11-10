@@ -84,16 +84,16 @@ class DependencyInfoIterator(object):
 
         return DependencyInfo(
             depender=nisyscfg.component_info.ComponentInfo(
-                id=c_string_decode(depender_id.value),
-                version=c_string_decode(depender_version.value),
-                title=c_string_decode(depender_title.value),
+                id=c_string_decode(cast(bytes, depender_id)),
+                version=c_string_decode(cast(bytes, depender_version)),
+                title=c_string_decode(cast(bytes, depender_title)),
                 type=nisyscfg.enums.ComponentType.UNKNOWN,
                 details=depender_detailed_description,
             ),
             dependee=nisyscfg.component_info.ComponentInfo(
-                id=c_string_decode(dependee_id.value),
-                version=c_string_decode(dependee_version.value),
-                title=c_string_decode(dependee_title.value),
+                id=c_string_decode(cast(bytes, dependee_id)),
+                version=c_string_decode(cast(bytes, dependee_version)),
+                title=c_string_decode(cast(bytes, dependee_title)),
                 type=nisyscfg.enums.ComponentType.UNKNOWN,
                 details=dependee_detailed_description,
             ),

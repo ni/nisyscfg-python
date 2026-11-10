@@ -138,16 +138,18 @@ class Session(object):
         error_code = self._library.GetStatusDescription(
             self._session, status, ctypes.pointer(c_detailed_description)
         )
-        detailed_description: Optional[str] = ""
-        error_code_2 = 0
         if c_detailed_description:
             detailed_description = c_string_decode(
                 ctypes.cast(c_detailed_description, ctypes.c_char_p).value
             )
             error_code_2 = self._library.FreeDetailedString(c_detailed_description)
         nisyscfg.errors.handle_error(self, error_code, is_error_handling=True)
-        nisyscfg.errors.handle_error(self, error_code_2, is_error_handling=True)
-        return detailed_description
+        nisyscfg.errors.handle_error(
+            self,
+            error_code_2,  # pyright: ignore[reportPossiblyUnboundVariable]
+            is_error_handling=True,
+        )
+        return detailed_description  # pyright: ignore[reportPossiblyUnboundVariable]
 
     def close(self) -> None:
         """Closes references to previously allocated session, filters, resources and enumerators.
@@ -164,13 +166,13 @@ class Session(object):
             self._session = None
 
     def get_system_experts(
-        self, expert_names: Union[str, List[str]] = ""
+        self, expert_names: str | None = ""
     ) -> nisyscfg.expert_info.ExpertInfoIterator:
         """Returns the experts available on the system.
 
-        expert_names - This is a case-insensitive comma-separated string
-        specifying which experts to query. If None or empty string, all
-        supported experts are queried.
+        expert_names - A case-insensitive, comma-separated string specifying
+        which experts to query. If None or an empty string, all supported
+        experts are queried.
 
         Raises an nisyscfg.errors.LibraryError exception in the event of an
         error.
@@ -190,7 +192,7 @@ class Session(object):
         self,
         filter: Union[None, nisyscfg.filter.Filter] = None,
         mode: nisyscfg.enums.FilterMode = nisyscfg.enums.FilterMode.MATCH_VALUES_ALL,
-        expert_names: Union[str, List[str]] = "",
+        expert_names: str | None = "",
     ) -> nisyscfg.hardware_resource.HardwareResourceIterator:
         """Returns an iterator of hardware in a specified system.
 
@@ -212,9 +214,9 @@ class Session(object):
                              property.
         ==================== ===================================================
 
-        expert_names - This is a case-insensitive comma-separated string
-        specifying which experts to query. If None or empty-string, all
-        supported experts are queried.
+        expert_names - A case-insensitive, comma-separated string specifying
+        which experts to query. If None or an empty string, all supported
+        experts are queried.
 
         Raises an nisyscfg.errors.LibraryError exception in the event of an
         error.
@@ -442,6 +444,10 @@ class Session(object):
         settings, and filesystem. The operation will fail if you choose not to
         restart the target automatically and the target's boot flow requires it
         to be in safe mode or restart after the operation.
+
+        Refer to the definition of safe mode to understand the differences
+        between safe mode for different target boot flows. This function can
+        only be used to format Real-Time systems.
 
         auto_restart - Restarts the system before and/or after the operation as
         required by the target's boot flow. The operation will fail if you
@@ -1070,14 +1076,17 @@ class Session(object):
         error_code = self._library.SaveSystemChanges(
             self._session, restart_required, ctypes.pointer(c_details)
         )
-        details: Optional[str] = ""
-        error_code_2 = 0
         if c_details:
             details = c_string_decode(ctypes.cast(c_details, ctypes.c_char_p).value)
             error_code_2 = self._library.FreeDetailedString(c_details)
         nisyscfg.errors.handle_error(self, error_code)
-        nisyscfg.errors.handle_error(self, error_code_2)
-        return SaveChangesResult(restart_required=restart_required.value != 0, details=details)
+        nisyscfg.errors.handle_error(
+            self, error_code_2  # pyright: ignore[reportPossiblyUnboundVariable]
+        )
+        return SaveChangesResult(
+            restart_required=restart_required.value != 0,
+            details=details,  # pyright: ignore[reportPossiblyUnboundVariable]
+        )
 
     def set_system_image(
         self,

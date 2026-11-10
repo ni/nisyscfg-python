@@ -11,9 +11,19 @@ from nisyscfg._lib import c_string_encode
 from nisyscfg.properties import PropertyAccessor
 
 if TYPE_CHECKING:
+    import nisyscfg.enums
+    import nisyscfg.xnet.enums
 
     class _XnetFilterProperties(Protocol):
+        number_of_ports: int
         port_number: int
+        protocol: nisyscfg.xnet.enums.Protocol
+        can_termination_capability: nisyscfg.enums.Bool
+        can_transceiver_capability: nisyscfg.xnet.enums.CanTransceiverCapability
+        dongle_id: nisyscfg.xnet.enums.DongleId
+        enet_phy_state: nisyscfg.xnet.enums.EnetPhyState
+        enet_port_mode: nisyscfg.xnet.enums.EnetPortMode
+        enet_link_speed_configured: nisyscfg.xnet.enums.EnetLinkSpeed
 
 
 @nisyscfg.properties.PropertyBag(nisyscfg.properties.Filter)
@@ -23,12 +33,24 @@ class Filter(object):
 
     if TYPE_CHECKING:
         is_device: bool
-        is_present: bool
+        is_present: bool | nisyscfg.enums.IsPresentType
         is_ni_product: bool
         is_chassis: bool
-        serial_number: str
-        user_alias: str
+        service_type: nisyscfg.enums.ServiceType
+        connects_to_bus_type: nisyscfg.enums.BusType
         connects_to_link_name: str
+        provides_bus_type: nisyscfg.enums.BusType
+        vendor_id: int
+        product_id: int
+        serial_number: str
+        is_simulated: bool
+        slot_number: int
+        has_driver: nisyscfg.enums.HasDriverType
+        supports_calibration: bool
+        supports_firmware_update: bool
+        provides_link_name: str
+        resource_name: str
+        user_alias: str
         expert_name: str
         xnet: _XnetFilterProperties
 

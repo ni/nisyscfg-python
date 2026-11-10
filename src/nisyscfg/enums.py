@@ -187,7 +187,7 @@ class FilterMode(BaseEnum):
 
 
 class ServiceType(BaseEnum):
-    """Service types for network discovery."""
+    """Types of system services (network discovery and local services)."""
 
     MDNS_NI_TCP = 0
     MDNS_NI_REALTIME = 1
@@ -303,7 +303,7 @@ class DeleteValidationMode(BaseEnum):
 
 
 class AccessType(BaseEnum):
-    """Access control modes."""
+    """System Configuration access mode (local only or local and remote)."""
 
     LOCAL_ONLY = 0
     LOCAL_AND_REMOTE = 1

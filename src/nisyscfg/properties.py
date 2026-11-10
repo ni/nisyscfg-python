@@ -1,7 +1,7 @@
 """Property definitions and access helpers for NI System Configuration."""
 
 import ctypes
-from typing import Any, Callable, Iterator, Optional, Type, TypeVar, Union, cast
+from typing import TYPE_CHECKING, Any, Callable, Iterator, Optional, Type, TypeVar, Union, cast
 
 import nisyscfg.timestamp
 from nisyscfg.enums import (
@@ -151,16 +151,15 @@ class TypeProperty(object):
         self._readable: bool = readable
         self._writeable: bool = writeable
 
-    # Provide a typed base API so static checkers know subclasses implement these.
-    def get(self, accessor: PropertyAccessor) -> Any:  # pragma: no cover - abstract surface
-        """Get a property value."""
-        raise NotImplementedError
+    if TYPE_CHECKING:
 
-    def set(
-        self, accessor: PropertyAccessor, value: Any
-    ) -> None:  # pragma: no cover - abstract surface
-        """Set a property value."""
-        raise NotImplementedError
+        def get(self, accessor: PropertyAccessor) -> Any:
+            """Get a property value."""
+            ...
+
+        def set(self, accessor: PropertyAccessor, value: Any) -> None:
+            """Set a property value."""
+            ...
 
 
 class BoolProperty(TypeProperty):
@@ -304,9 +303,6 @@ class IndexedPropertyItems(object):
                 self._properties = properties
                 self._index = -1
 
-            def __iter__(self) -> "IndexedPropertyItemsIter":
-                return self
-
             def __next__(self) -> Any:
                 """Return the next indexed value."""
                 self._index += 1
@@ -319,7 +315,7 @@ class IndexedPropertyItems(object):
                 """Return the next indexed value."""
                 return self.__next__()
 
-        return IndexedPropertyItemsIter(self)
+        return cast(Iterator[Any], IndexedPropertyItemsIter(self))
 
 
 class IndexedProperty(TypeProperty):

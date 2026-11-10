@@ -57,7 +57,7 @@ testpaths = ["tests"]
 
 [tool.ni-python-styleguide]
 application-import-names = "nisyscfg,tests"
-extend_exclude = ".tox,docs,build,__pycache__,.venv*,generated"
+extend_exclude = ".tox,docs,build,__pycache__,.venv*,generated,src/nisyscfg/_library.py"
 
 [tool.black]
 line-length = 100
