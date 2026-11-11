@@ -1,6 +1,6 @@
 import ctypes
 import pathlib
-from typing import Any, Callable, Iterator, cast
+from typing import Any, Callable, cast, Iterator
 from unittest import mock
 from unittest.mock import MagicMock
 
@@ -451,6 +451,16 @@ def test_get_system_experts_with_csv_expert_names(lib_mock: MagicMock) -> None:
     assert lib_mock().NISysCfgGetSystemExperts.mock_calls == expected_calls
 
 
+def test_get_system_experts_with_list_of_expert_names(lib_mock: MagicMock) -> None:
+    """Ensure list inputs are normalized to CSV and passed to the C API."""
+    with nisyscfg.Session() as session:
+        session.get_system_experts(cast(Any, ["xnet", "sync"]))
+    expected_calls = [
+        mock.call().NISysCfgGetSystemExperts(CVoidPMatcher(SESSION_HANDLE), b"xnet,sync", mock.ANY),
+    ]
+    assert lib_mock().NISysCfgGetSystemExperts.mock_calls == expected_calls
+
+
 def test_find_hardware_with_default_arguments(lib_mock: MagicMock) -> None:
     with nisyscfg.Session() as session:
         session.find_hardware()
@@ -520,6 +530,16 @@ def test_find_hardware_with_filter_properties_specified(lib_mock: MagicMock) -> 
 def test_find_hardware_with_csv_expert_names(lib_mock: MagicMock) -> None:
     with nisyscfg.Session() as session:
         session.find_hardware(expert_names="xnet,sync")
+    expected_calls = [
+        mock.call().NISysCfgFindHardware(mock.ANY, mock.ANY, mock.ANY, b"xnet,sync", mock.ANY),
+    ]
+    assert lib_mock().NISysCfgFindHardware.mock_calls == expected_calls
+
+
+def test_find_hardware_with_list_of_expert_names(lib_mock: MagicMock) -> None:
+    """Ensure list inputs are normalized to CSV and passed to the C API."""
+    with nisyscfg.Session() as session:
+        session.find_hardware(expert_names=cast(Any, ["xnet", "sync"]))
     expected_calls = [
         mock.call().NISysCfgFindHardware(mock.ANY, mock.ANY, mock.ANY, b"xnet,sync", mock.ANY),
     ]
