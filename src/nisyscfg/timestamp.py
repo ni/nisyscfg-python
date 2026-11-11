@@ -19,7 +19,7 @@ def is_blank_timestamp(timestamp: Iterable[int]) -> bool:
     return all(num == 0 for num in timestamp)
 
 
-def _convert_ctype_to_datetime(timestamp: Iterable[int]) -> datetime:
+def convert_ctype_to_datetime(timestamp: Iterable[int]) -> datetime:
     # This method returns 1 Jan 1904 if blank datetime is found(zero timestamp value).
     # Else it converts the timestamp to datetime and returns
     if is_blank_timestamp(timestamp):
@@ -45,6 +45,7 @@ def _convert_ctype_to_datetime(timestamp: Iterable[int]) -> datetime:
 
 def _convert_datetime_to_ctype(timestamp: datetime) -> ctypes.Array[ctypes.c_uint]:
     """Convert a hightime.datetime to a TimestampUTC ctypes array."""
+
     if timestamp == datetime(year=1904, month=1, day=1):
         return nisyscfg.types.TimestampUTC(0, 0, 0, 0)
 

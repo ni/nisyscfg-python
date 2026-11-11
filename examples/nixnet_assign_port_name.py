@@ -3,7 +3,6 @@
 import sys
 
 import nisyscfg
-import nisyscfg.xnet
 
 
 class DeviceNotFoundError(Exception):

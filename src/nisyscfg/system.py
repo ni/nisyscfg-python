@@ -17,10 +17,8 @@ import nisyscfg.expert_info
 import nisyscfg.filter
 import nisyscfg.hardware_resource
 import nisyscfg.properties
-import nisyscfg.pxi.properties
 import nisyscfg.software_feed
 import nisyscfg.system_info
-import nisyscfg.xnet.properties
 from nisyscfg._lib import c_string_decode, c_string_encode
 
 InstallAllResult = NamedTuple(
@@ -159,7 +157,7 @@ class Session(object):
         """
         self._children.reverse()
         for child in self._children:
-            cast(Any, child).close()
+            child.close()
         if self._session:
             error_code = self._library.CloseHandle(self._session)
             nisyscfg.errors.handle_error(self, error_code)

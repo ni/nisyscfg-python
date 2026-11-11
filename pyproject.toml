@@ -75,6 +75,11 @@ strict = true
 
 
 [tool.pyright]
+typeCheckingMode = "strict"
+
+exclude = [
+    "src/nisyscfg/_library.py",
+]
 include = [
     "src",
     "examples",

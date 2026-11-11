@@ -2,18 +2,18 @@
 
 import ctypes
 from typing import (
+    TYPE_CHECKING,
     Any,
     Callable,
-    cast,
     Iterator,
     Optional,
     Type,
-    TYPE_CHECKING,
     TypeVar,
     Union,
+    cast,
 )
 
-import nisyscfg.timestamp
+import nisyscfg
 from nisyscfg.enums import (
     AccessType,
     AdapterMode,
