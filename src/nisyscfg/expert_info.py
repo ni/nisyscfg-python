@@ -46,9 +46,9 @@ class ExpertInfoIterator(object):
             raise StopIteration()
         nisyscfg.errors.handle_error(self, error_code)
         return ExpertInfo(
-            c_string_decode(expert_name.value),
-            c_string_decode(display_name.value),
-            c_string_decode(version.value),
+            typing.cast(str, c_string_decode(expert_name.value)),
+            typing.cast(str, c_string_decode(display_name.value)),
+            typing.cast(str, c_string_decode(version.value)),
         )
 
     def close(self) -> None:

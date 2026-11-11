@@ -1,6 +1,7 @@
 """System discovery and enumeration functionality for NI System Configuration."""
 
 from typing import Optional
+import typing
 
 import nisyscfg.errors
 from nisyscfg import _library_singleton
@@ -33,7 +34,7 @@ class SystemInfoIterator(object):
         if error_code == nisyscfg.errors.Status.END_OF_ENUM:
             raise StopIteration()
         nisyscfg.errors.handle_error(self, error_code)
-        return c_string_decode(system_name.value)
+        return typing.cast(str, c_string_decode(system_name.value))
 
     def close(self) -> None:
         """Close the system enumeration handle."""

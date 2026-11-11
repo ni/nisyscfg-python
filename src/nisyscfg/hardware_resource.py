@@ -393,7 +393,7 @@ class HardwareResource(object):
         if c_type == nisyscfg.types.TimestampUTC:
             return nisyscfg.timestamp.convert_ctype_to_datetime(value)
 
-        return c_string_decode(value.value)
+        return typing.cast(str, c_string_decode(value.value))
 
     def _get_indexed_property(
         self,
@@ -434,7 +434,7 @@ class HardwareResource(object):
         if c_type == nisyscfg.types.TimestampUTC:
             return nisyscfg.timestamp.convert_ctype_to_datetime(value)
 
-        return c_string_decode(value.value)
+        return typing.cast(str, c_string_decode(value.value))
 
     def get_property(self, name: str, default: typing.Any = _NoDefault()) -> typing.Any:
         """Returns value of hardware resource property.

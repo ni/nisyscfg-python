@@ -383,7 +383,7 @@ class Session(object):
             new_ip_address,
         )
         nisyscfg.errors.handle_error(self, error_code)
-        return c_string_decode(new_ip_address.value)
+        return cast(str, c_string_decode(new_ip_address.value))
 
     def get_filtered_base_system_images(
         self,
@@ -1040,7 +1040,7 @@ class Session(object):
         if issubclass(c_type, ctypes.c_void_p):
             return value
 
-        return c_string_decode(value.value)
+        return cast(str, c_string_decode(value.value))
 
     def _set_property(self, id: int, value: Any, c_type: Any, nisyscfg_type: int) -> None:
         if c_type == ctypes.c_char_p:
