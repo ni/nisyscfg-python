@@ -237,7 +237,7 @@ class Session(object):
         error_code = self._library.FindHardware(
             self._session,
             mode,
-            hw_filter._handle,
+            hw_filter._handle,  # pyright: ignore[reportPrivateUsage]
             c_string_encode(expert_names),
             ctypes.pointer(resource_handle),
         )
@@ -383,7 +383,7 @@ class Session(object):
             new_ip_address,
         )
         nisyscfg.errors.handle_error(self, error_code)
-        return c_string_decode(new_ip_address.value)
+        return c_string_decode(new_ip_address.value)  # pyright: ignore[reportUnknownVariableType]
 
     def get_filtered_base_system_images(
         self,
