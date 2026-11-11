@@ -16,6 +16,15 @@ import nisyscfg.properties
 import nisyscfg.timestamp
 
 
+def _end_of_enum(*args: Any) -> "nisyscfg.errors.Status":
+    """Helper used as a typed side-effect callable that signals end of enumeration.
+
+    Accepts any arguments (matching the lambdas) and returns the sentinel
+    nisyscfg.errors.Status.END_OF_ENUM value with a precise type for Pyright.
+    """
+    return nisyscfg.errors.Status.END_OF_ENUM
+
+
 def test_import() -> None:
     nisyscfg.Session
 
@@ -221,16 +230,19 @@ def lib_mock() -> Iterator[MagicMock]:
                 lib.NISysCfgNextComponentInfo.return_value = nisyscfg.errors.Status.END_OF_ENUM
                 lib.NISysCfgGetSystemProperty.side_effect = get_system_property_mock
                 yield ctypes_mock
-    nisyscfg._library_singleton._instance = None
+    nisyscfg._library_singleton._instance = None  # pyright: ignore[reportPrivateUsage]
 
 
 @pytest.fixture(scope="function")
 def config_next_resource_side_effect_mock(lib_mock: MagicMock) -> None:
-    side_effect_functions: Iterator[Callable[..., Any]] = iter(
-        [
-            NextResourceSideEffect(10),
-            lambda *x: nisyscfg.errors.Status.END_OF_ENUM,
-        ]
+    side_effect_functions = cast(
+        Iterator[Callable[..., Any]],
+        iter(
+            [
+                NextResourceSideEffect(10),
+                _end_of_enum,
+            ]
+        ),
     )
 
     def next_resource_side_effect(
@@ -333,8 +345,11 @@ def test_session_passes_username_and_password_to_initialize_session(lib_mock: Ma
 
 def test__get_status_description(lib_mock: MagicMock) -> None:
     with nisyscfg.Session() as session:
-        assert "description" == session._get_status_description(
-            nisyscfg.errors.Status.OUT_OF_MEMORY
+        assert (
+            "description"
+            == session._get_status_description(  # pyright: ignore[reportPrivateUsage]
+                nisyscfg.errors.Status.OUT_OF_MEMORY
+            )
         )
     expected_calls = [
         mock.call(mock.ANY, mock.ANY),
@@ -390,12 +405,15 @@ def test_expert_info_iterator_stops_after_close(lib_mock: MagicMock) -> None:
 
 
 def test_get_system_experts_with_two_experts(lib_mock: MagicMock) -> None:
-    side_effect_functions: Iterator[Callable[..., Any]] = iter(
-        [
-            ExpertInfoSideEffect(b"sync", b"NI-Sync", b"1.2.0"),
-            ExpertInfoSideEffect(b"xnet", b"NI-XNET", b"10.0"),
-            lambda *x: nisyscfg.errors.Status.END_OF_ENUM,
-        ]
+    side_effect_functions = cast(
+        Iterator[Callable[..., Any]],
+        iter(
+            [
+                ExpertInfoSideEffect(b"sync", b"NI-Sync", b"1.2.0"),
+                ExpertInfoSideEffect(b"xnet", b"NI-XNET", b"10.0"),
+                _end_of_enum,
+            ]
+        ),
     )
 
     def expert_info_side_effect(
@@ -509,7 +527,7 @@ def test_find_hardware_with_filter_properties_specified(lib_mock: MagicMock) -> 
         mock.call().NISysCfgCreateFilter(CVoidPMatcher(SESSION_HANDLE), mock.ANY),
         mock.call().NISysCfgSetFilterPropertyWithType(
             CVoidPMatcher(FILTER_HANDLE),
-            nisyscfg.properties.Filter.EXPERT_NAME._id,
+            nisyscfg.properties.Filter.EXPERT_NAME._id,  # pyright: ignore[reportPrivateUsage]
             nisyscfg.enums.PropertyType.STRING,
             b"my_expert",
         ),
@@ -572,7 +590,9 @@ def test_find_hardware_with_passed_filter_properties_specified(
         filter = session.create_filter()
         setattr(filter, property_name.lower(), assigned_value)
         session.find_hardware(filter)
-        property_id = getattr(nisyscfg.properties.Filter, property_name)._id
+        property_id = getattr(
+            nisyscfg.properties.Filter, property_name
+        )._id  # pyright: ignore[reportPrivateUsage]
     expected_calls = [
         mock.call(mock.ANY, mock.ANY),
         mock.call().NISysCfgInitializeSession(
@@ -644,7 +664,7 @@ def test_create_filter_and_set_syscfg_filter_property(lib_mock: MagicMock) -> No
         mock.call().NISysCfgCreateFilter(CVoidPMatcher(SESSION_HANDLE), mock.ANY),
         mock.call().NISysCfgSetFilterPropertyWithType(
             CVoidPMatcher(FILTER_HANDLE),
-            nisyscfg.properties.Filter.EXPERT_NAME._id,
+            nisyscfg.properties.Filter.EXPERT_NAME._id,  # pyright: ignore[reportPrivateUsage]
             nisyscfg.enums.PropertyType.STRING,
             b"my_expert",
         ),
@@ -726,13 +746,16 @@ def test_get_installed_software_components_with_default_arguments(lib_mock: Magi
 
 
 def test_interating_over_hardware_resources(lib_mock: MagicMock) -> None:
-    side_effect_functions: Iterator[Callable[..., Any]] = iter(
-        [
-            NextResourceSideEffect(10),
-            NextResourceSideEffect(11),
-            NextResourceSideEffect(12),
-            lambda *x: nisyscfg.errors.Status.END_OF_ENUM,
-        ]
+    side_effect_functions = cast(
+        Iterator[Callable[..., Any]],
+        iter(
+            [
+                NextResourceSideEffect(10),
+                NextResourceSideEffect(11),
+                NextResourceSideEffect(12),
+                _end_of_enum,
+            ]
+        ),
     )
 
     def next_resource_side_effect(
@@ -827,7 +850,9 @@ def test_get_hardware_resource_property(
     with nisyscfg.Session() as session:
         resource = next(session.find_hardware())
         assert expected_value == getattr(resource, property_name.lower())
-        property_id = getattr(nisyscfg.properties.Resource, property_name)._id
+        property_id = getattr(
+            nisyscfg.properties.Resource, property_name
+        )._id  # pyright: ignore[reportPrivateUsage]
 
     expected_calls = [
         mock.call(mock.ANY, mock.ANY),
@@ -881,7 +906,9 @@ def test_get_hardware_resource_timestamp_property(
     with nisyscfg.Session() as session:
         resource = next(session.find_hardware())
         assert nisyscfg.timestamp.tai_epoch == resource.current_time
-        property_id = nisyscfg.properties.Resource.CURRENT_TIME._id
+        property_id = (
+            nisyscfg.properties.Resource.CURRENT_TIME._id  # pyright: ignore[reportPrivateUsage]
+        )
 
     expected_calls = [
         mock.call(mock.ANY, mock.ANY),
@@ -1016,11 +1043,14 @@ def test_get_hardware_index_property(
     count_property: str,
     expected_values: list[Any],
 ) -> None:
-    side_effect_functions: Iterator[Callable[..., Any]] = iter(
-        [
-            NextResourceSideEffect(10),
-            lambda *x: nisyscfg.errors.Status.END_OF_ENUM,
-        ]
+    side_effect_functions = cast(
+        Iterator[Callable[..., Any]],
+        iter(
+            [
+                NextResourceSideEffect(10),
+                _end_of_enum,
+            ]
+        ),
     )
 
     def next_resource_side_effect(
@@ -1102,7 +1132,9 @@ def test_set_hardware_resource_timestamp_property(
     lib_mock.return_value.NISysCfgTimestampFromValues.side_effect = (
         timestamp_from_values_side_effect
     )
-    property_id = nisyscfg.properties.Resource.CURRENT_TIME._id
+    property_id = (
+        nisyscfg.properties.Resource.CURRENT_TIME._id  # pyright: ignore[reportPrivateUsage]
+    )
 
     with nisyscfg.Session() as session:
         resource = next(session.find_hardware())

@@ -61,9 +61,9 @@ class ComponentInfoIterator(object):
             details = None
 
         return ComponentInfo(
-            id=typing.cast(str, c_string_decode(id.value)),
-            version=typing.cast(str, c_string_decode(version.value)),
-            title=typing.cast(str, c_string_decode(title.value)),
+            id=c_string_decode(id.value),
+            version=c_string_decode(version.value),
+            title=c_string_decode(title.value),
             type=nisyscfg.enums.ComponentType(item_type.value),
             details=details,
         )

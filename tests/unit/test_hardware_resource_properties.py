@@ -50,9 +50,13 @@ def test_hardware_resource_property_declarations_match_property_bag() -> None:
     pxi_descriptor = vars(nisyscfg.hardware_resource.HardwareResource)["pxi"]
     assert isinstance(pxi_descriptor, nisyscfg.properties.Expert)
     pxi_protocol = _class_node(module, "_PxiResourceProperties")
-    assert _annotated_names(pxi_protocol.body) == _runtime_property_names(pxi_descriptor._expert)
+    assert _annotated_names(pxi_protocol.body) == _runtime_property_names(
+        pxi_descriptor._expert  # pyright: ignore[reportPrivateUsage]
+    )
 
     xnet_descriptor = vars(nisyscfg.hardware_resource.HardwareResource)["xnet"]
     assert isinstance(xnet_descriptor, nisyscfg.properties.Expert)
     xnet_protocol = _class_node(module, "_XnetResourceProperties")
-    assert _annotated_names(xnet_protocol.body) == _runtime_property_names(xnet_descriptor._expert)
+    assert _annotated_names(xnet_protocol.body) == _runtime_property_names(
+        xnet_descriptor._expert  # pyright: ignore[reportPrivateUsage]
+    )
