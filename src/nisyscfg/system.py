@@ -166,13 +166,13 @@ class Session(object):
             self._session = None
 
     def get_system_experts(
-        self, expert_names: str | None = ""
+        self, expert_names: str | list[str] | None = ""
     ) -> nisyscfg.expert_info.ExpertInfoIterator:
         """Returns the experts available on the system.
 
-        expert_names - A case-insensitive, comma-separated string specifying
-        which experts to query. If None or an empty string, all supported
-        experts are queried.
+        expert_names - A case-insensitive, comma-separated string or a list of
+        strings specifying which experts to query. If None or an empty
+        string/list, all supported experts are queried.
 
         Raises an nisyscfg.errors.LibraryError exception in the event of an
         error.
@@ -192,7 +192,7 @@ class Session(object):
         self,
         filter: Union[None, nisyscfg.filter.Filter] = None,
         mode: nisyscfg.enums.FilterMode = nisyscfg.enums.FilterMode.MATCH_VALUES_ALL,
-        expert_names: str | None = "",
+        expert_names: str | list[str] | None = "",
     ) -> nisyscfg.hardware_resource.HardwareResourceIterator:
         """Returns an iterator of hardware in a specified system.
 
@@ -214,9 +214,9 @@ class Session(object):
                              property.
         ==================== ===================================================
 
-        expert_names - A case-insensitive, comma-separated string specifying
-        which experts to query. If None or an empty string, all supported
-        experts are queried.
+        expert_names - A case-insensitive, comma-separated string or a list of
+        strings specifying which experts to query. If None or an empty
+        string/list, all supported experts are queried.
 
         Raises an nisyscfg.errors.LibraryError exception in the event of an
         error.

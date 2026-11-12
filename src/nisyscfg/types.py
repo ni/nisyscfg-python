@@ -2,15 +2,6 @@
 """Generated ctypes aliases and handle types for NI System Configuration."""
 
 import ctypes
-from typing import TYPE_CHECKING
-
-if TYPE_CHECKING:
-    from typing import Tuple, TypeAlias
-
-    # Statically, expose a private alias for timestamp values. Use a private
-    # name so runtime code can still call the ctypes constructor named
-    # `TimestampUTC` without mypy thinking it's the type alias.
-    _TimestampUTCType: TypeAlias = Tuple[int, int, int, int]
 
 simple_string = ctypes.c_char * 1024
 
