@@ -23,7 +23,6 @@ permissions: {}
 
 jobs:
   analyze_package:
-    name: Analyze package for ${{ inputs.package-name }}
     strategy:
       matrix:
         os: [windows-latest, ubuntu-latest]
@@ -32,6 +31,7 @@ jobs:
           # PyYAML has no Python 3.15 Windows wheel, and its source build currently fails.
           - os: windows-latest
             python-version: '3.15'
+    name: Analyze package for ${{ inputs.package-name }} (${{ matrix.python-version }} - ${{ matrix.os }})
     runs-on: ${{ matrix.os }}
     defaults:
       run:
