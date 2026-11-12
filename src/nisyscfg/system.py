@@ -7,7 +7,7 @@ import pathlib
 import tempfile
 import zipfile
 from contextlib import ExitStack
-from typing import Any, List, NamedTuple, Optional, Union, cast
+from typing import Any, NamedTuple, Optional, Union, cast
 
 import nisyscfg
 import nisyscfg._library_singleton
@@ -99,7 +99,7 @@ class Session(object):
         timeout: float = 300.0,
     ) -> None:
         """Initialize a system configuration session."""
-        self._children: List[Any] = []
+        self._children: list[Any] = []
         self._session: Any = nisyscfg.types.SessionHandle()
         self._library = nisyscfg._library_singleton.get()
         self._property_accessor = nisyscfg.properties.PropertyAccessor(
@@ -230,16 +230,16 @@ class Session(object):
             # attribute access (._handle) is well-typed. We cast the dummy to
             # the Filter interface to preserve runtime behavior while satisfying
             # the type checker.
-            flt = cast(nisyscfg.filter.Filter, DummyFilter())
+            hw_filter = cast(nisyscfg.filter.Filter, DummyFilter())
         else:
-            flt = filter
+            hw_filter = filter
         resource_handle = nisyscfg.types.EnumResourceHandle()
         if isinstance(expert_names, list):
             expert_names = ",".join(expert_names)
         error_code = self._library.FindHardware(
             self._session,
             mode,
-            flt._handle,
+            hw_filter._handle,
             c_string_encode(expert_names),
             ctypes.pointer(resource_handle),
         )
@@ -517,7 +517,7 @@ class Session(object):
         self,
         item_types: nisyscfg.enums.IncludeComponentTypes = nisyscfg.enums.IncludeComponentTypes.ALL_VISIBLE,
     ) -> Optional[nisyscfg.component_info.ComponentInfoIterator]:
-        """Retrieve software components available for installation.
+        """Retrieve software components available for installation to the specified target.
 
         item_types - Allows inclusion of hidden software installed on the target
         when ALL_VISIBLE_AND_HIDDEN is selected. Hidden software is not listed
@@ -740,8 +740,8 @@ class Session(object):
 
     def _install_uninstall(
         self,
-        components_to_install: Union[None, List[str]] = None,
-        components_to_uninstall: Union[None, List[str]] = None,
+        components_to_install: Union[None, list[str]] = None,
+        components_to_uninstall: Union[None, list[str]] = None,
         auto_restart: bool = True,
         auto_select_dependencies: bool = True,
         auto_select_recommends: bool = True,
@@ -838,7 +838,7 @@ class Session(object):
 
     def install(
         self,
-        components: Union[None, List[str]] = None,
+        components: Union[None, list[str]] = None,
         auto_restart: bool = True,
         auto_select_dependencies: bool = True,
         auto_select_recommends: bool = True,
@@ -898,7 +898,7 @@ class Session(object):
 
     def uninstall(
         self,
-        components: Union[None, List[str]] = None,
+        components: Union[None, list[str]] = None,
         auto_restart: bool = True,
         auto_select_dependencies: bool = True,
         auto_select_recommends: bool = True,
@@ -1093,7 +1093,7 @@ class Session(object):
         source: str | pathlib.Path,
         auto_restart: bool = True,
         encryption_passphrase: str | None = None,
-        exclude_paths: List[str] | None = None,
+        exclude_paths: list[str] | None = None,
         original_system_only: bool = False,
         network_settings: nisyscfg.enums.NetworkInterfaceSettings = nisyscfg.enums.NetworkInterfaceSettings.PRESERVE_PRIMARY_PRESERVE_OTHERS,
     ) -> None:

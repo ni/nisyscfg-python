@@ -1,7 +1,17 @@
 """Property definitions and access helpers for NI System Configuration."""
 
 import ctypes
-from typing import TYPE_CHECKING, Any, Callable, Iterator, Optional, Type, TypeVar, Union, cast
+from typing import (
+    Any,
+    Callable,
+    cast,
+    Iterator,
+    Optional,
+    Type,
+    TYPE_CHECKING,
+    TypeVar,
+    Union,
+)
 
 import nisyscfg.timestamp
 from nisyscfg.enums import (
@@ -155,11 +165,9 @@ class TypeProperty(object):
 
         def get(self, accessor: PropertyAccessor) -> Any:
             """Get a property value."""
-            ...
 
         def set(self, accessor: PropertyAccessor, value: Any) -> None:
             """Set a property value."""
-            ...
 
 
 class BoolProperty(TypeProperty):
