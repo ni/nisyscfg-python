@@ -7,7 +7,7 @@ import pathlib
 import tempfile
 import zipfile
 from contextlib import ExitStack
-from typing import Any, cast, List, NamedTuple, Optional, Union
+from typing import Any, List, NamedTuple, Optional, Union, cast
 
 import nisyscfg
 import nisyscfg._library_singleton
@@ -138,17 +138,18 @@ class Session(object):
         error_code = self._library.GetStatusDescription(
             self._session, status, ctypes.pointer(c_detailed_description)
         )
-        detailed_description: Optional[str] = None
-        error_code_2: Optional[Union[int, nisyscfg.enums.BaseEnum]] = None
         if c_detailed_description:
             detailed_description = c_string_decode(
                 ctypes.cast(c_detailed_description, ctypes.c_char_p).value
             )
             error_code_2 = self._library.FreeDetailedString(c_detailed_description)
         nisyscfg.errors.handle_error(self, error_code, is_error_handling=True)
-        if error_code_2 is not None:
-            nisyscfg.errors.handle_error(self, error_code_2, is_error_handling=True)
-        return detailed_description
+        nisyscfg.errors.handle_error(
+            self,
+            error_code_2,  # pyright: ignore[reportPossiblyUnboundVariable]
+            is_error_handling=True,
+        )
+        return detailed_description  # pyright: ignore[reportPossiblyUnboundVariable]
 
     def close(self) -> None:
         """Closes references to previously allocated session, filters, resources and enumerators.
@@ -1075,17 +1076,16 @@ class Session(object):
         error_code = self._library.SaveSystemChanges(
             self._session, restart_required, ctypes.pointer(c_details)
         )
-        details = ""
-        error_code_2: Optional[Union[int, nisyscfg.enums.BaseEnum]] = None
         if c_details:
-            details = c_string_decode(ctypes.cast(c_details, ctypes.c_char_p).value) or ""
+            details = c_string_decode(ctypes.cast(c_details, ctypes.c_char_p).value)
             error_code_2 = self._library.FreeDetailedString(c_details)
         nisyscfg.errors.handle_error(self, error_code)
-        if error_code_2 is not None:
-            nisyscfg.errors.handle_error(self, error_code_2)
+        nisyscfg.errors.handle_error(
+            self, error_code_2  # pyright: ignore[reportPossiblyUnboundVariable]
+        )
         return SaveChangesResult(
             restart_required=restart_required.value != 0,
-            details=details,
+            details=details,  # pyright: ignore[reportPossiblyUnboundVariable]
         )
 
     def set_system_image(

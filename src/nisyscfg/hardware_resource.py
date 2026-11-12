@@ -547,18 +547,17 @@ class HardwareResource(object):
         error_code = self._library.SaveResourceChanges(
             self._handle, restart_required, ctypes.pointer(c_details)
         )
-        details = ""
-        error_code_2: typing.Optional[int] = None
         if c_details:
-            details = c_string_decode(ctypes.cast(c_details, ctypes.c_char_p).value) or ""
+            details = c_string_decode(ctypes.cast(c_details, ctypes.c_char_p).value)
             error_code_2 = self._library.FreeDetailedString(c_details)
         nisyscfg.errors.handle_error(self, error_code)
-        if error_code_2 is not None:
-            nisyscfg.errors.handle_error(self, error_code_2)
+        nisyscfg.errors.handle_error(
+            self, error_code_2  # pyright: ignore[reportPossiblyUnboundVariable]
+        )
 
         return SaveChangesResult(
             restart_required=restart_required.value != 0,
-            details=details,
+            details=details,  # pyright: ignore[reportPossiblyUnboundVariable]
         )
 
     def self_calibrate(self) -> typing.Optional[str]:
@@ -582,16 +581,15 @@ class HardwareResource(object):
         """
         c_details = ctypes.POINTER(ctypes.c_char)()
         error_code = self._library.SelfCalibrateHardware(self._handle, ctypes.pointer(c_details))
-        details = ""
-        error_code_2: typing.Optional[int] = None
         if c_details:
-            details = c_string_decode(ctypes.cast(c_details, ctypes.c_char_p).value) or ""
+            details = c_string_decode(ctypes.cast(c_details, ctypes.c_char_p).value)
             error_code_2 = self._library.FreeDetailedString(c_details)
         nisyscfg.errors.handle_error(self, error_code)
-        if error_code_2 is not None:
-            nisyscfg.errors.handle_error(self, error_code_2)
+        nisyscfg.errors.handle_error(
+            self, error_code_2  # pyright: ignore[reportPossiblyUnboundVariable]
+        )
 
-        return details
+        return details  # pyright: ignore[reportPossiblyUnboundVariable]
 
     def self_test(self, mode: int = 0) -> typing.Optional[str]:
         """Verifies that system devices are able to perform basic I/O functions.
@@ -611,16 +609,15 @@ class HardwareResource(object):
         """
         c_details = ctypes.POINTER(ctypes.c_char)()
         error_code = self._library.SelfTestHardware(self._handle, mode, ctypes.pointer(c_details))
-        details = ""
-        error_code_2: typing.Optional[int] = None
         if c_details:
-            details = c_string_decode(ctypes.cast(c_details, ctypes.c_char_p).value) or ""
+            details = c_string_decode(ctypes.cast(c_details, ctypes.c_char_p).value)
             error_code_2 = self._library.FreeDetailedString(c_details)
         nisyscfg.errors.handle_error(self, error_code)
-        if error_code_2 is not None:
-            nisyscfg.errors.handle_error(self, error_code_2)
+        nisyscfg.errors.handle_error(
+            self, error_code_2  # pyright: ignore[reportPossiblyUnboundVariable]
+        )
 
-        return details
+        return details  # pyright: ignore[reportPossiblyUnboundVariable]
 
     def upgrade_firmware(
         self,
@@ -702,18 +699,17 @@ class HardwareResource(object):
             raise ValueError(
                 "upgrade_firmware() requires either version or filepath to be specified"
             )
-        details = ""
-        error_code_2: typing.Optional[int] = None
         if c_details:
-            details = c_string_decode(ctypes.cast(c_details, ctypes.c_char_p).value) or ""
+            details = c_string_decode(ctypes.cast(c_details, ctypes.c_char_p).value)
             error_code_2 = self._library.FreeDetailedString(c_details)
         nisyscfg.errors.handle_error(self, error_code)
-        if error_code_2 is not None:
-            nisyscfg.errors.handle_error(self, error_code_2)
+        nisyscfg.errors.handle_error(
+            self, error_code_2  # pyright: ignore[reportPossiblyUnboundVariable]
+        )
 
         return UpgradeFirmwareResult(
             status=nisyscfg.enums.FirmwareStatus(firmware_status.value),
-            details=details,
+            details=details,  # pyright: ignore[reportPossiblyUnboundVariable]
         )
 
     @property
@@ -744,19 +740,18 @@ class HardwareResource(object):
         error_code = self._library.CheckFirmwareStatus(
             self._handle, percent_complete, firmware_status, ctypes.pointer(c_details)
         )
-        details = ""
-        error_code_2: typing.Optional[int] = None
         if c_details:
-            details = c_string_decode(ctypes.cast(c_details, ctypes.c_char_p).value) or ""
+            details = c_string_decode(ctypes.cast(c_details, ctypes.c_char_p).value)
             error_code_2 = self._library.FreeDetailedString(c_details)
         nisyscfg.errors.handle_error(self, error_code)
-        if error_code_2 is not None:
-            nisyscfg.errors.handle_error(self, error_code_2)
+        nisyscfg.errors.handle_error(
+            self, error_code_2  # pyright: ignore[reportPossiblyUnboundVariable]
+        )
 
         return FirmwareStatusResult(
             percent_complete=percent_complete.value,
             status=nisyscfg.enums.FirmwareStatus(firmware_status.value),
-            details=details,
+            details=details,  # pyright: ignore[reportPossiblyUnboundVariable]
         )
 
     def delete(
@@ -802,16 +797,15 @@ class HardwareResource(object):
         error_code = self._library.DeleteResource(
             self._handle, mode, dependent_items_deleted, ctypes.pointer(c_details)
         )
-        details = ""
-        error_code_2: typing.Optional[int] = None
         if c_details:
-            details = c_string_decode(ctypes.cast(c_details, ctypes.c_char_p).value) or ""
+            details = c_string_decode(ctypes.cast(c_details, ctypes.c_char_p).value)
             error_code_2 = self._library.FreeDetailedString(c_details)
         nisyscfg.errors.handle_error(self, error_code)
-        if error_code_2 is not None:
-            nisyscfg.errors.handle_error(self, error_code_2)
+        nisyscfg.errors.handle_error(
+            self, error_code_2  # pyright: ignore[reportPossiblyUnboundVariable]
+        )
 
         return DeleteResult(
             dependent_items_deleted=dependent_items_deleted.value != 0,
-            details=details,
+            details=details,  # pyright: ignore[reportPossiblyUnboundVariable]
         )
