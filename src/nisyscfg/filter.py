@@ -66,8 +66,6 @@ class Filter(object):
             setter=self._set_property_with_type
         )
 
-        # ctypes.pointer expects a C compatible handle.
-        # mypy can't verify the dynamic ctypes types here.
         error_code = self._library.CreateFilter(session, ctypes.pointer(self._handle))
         nisyscfg.errors.handle_error(self, error_code)
 

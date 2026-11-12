@@ -19,9 +19,6 @@ ResourceHandle = ctypes.c_void_p
 EnumResourceHandle = ctypes.c_void_p
 EnumSoftwareFeedHandle = ctypes.c_void_p
 SessionHandle = ctypes.c_void_p
-# At runtime, TimestampUTC must be the ctypes array type used by the C API.
-# Statically we use a Tuple[int, int, int, int], but at runtime the C API
-# expects a ctypes array. Silence the type-checker for the runtime assignment.
 TimestampUTC = ctypes.c_uint * 4
 EnumSoftwareComponentHandle = ctypes.c_void_p
 EnumDependencyHandle = ctypes.c_void_p
