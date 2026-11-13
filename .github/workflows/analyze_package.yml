@@ -45,14 +45,14 @@ jobs:
           persist-credentials: false
           submodules: true
       - name: Set up Python
-        uses: ni/python-actions/setup-python@dee640bba235ae28fdc6b7337c643bd06358ae90 # v0.9.0
+        uses: ni/python-actions/setup-python@edaf1454897cb4cd5f6fc0757cb62dee455e57fd # v0.10.1
         id: setup-python
         with:
           python-version: ${{ matrix.python-version }}
       - name: Set up Poetry
-        uses: ni/python-actions/setup-poetry@dee640bba235ae28fdc6b7337c643bd06358ae90 # v0.9.0
+        uses: ni/python-actions/setup-poetry@edaf1454897cb4cd5f6fc0757cb62dee455e57fd # v0.10.1
       - name: Analyze Python Project
-        uses: ni/python-actions/analyze-project@dee640bba235ae28fdc6b7337c643bd06358ae90 # v0.9.0
+        uses: ni/python-actions/analyze-project@edaf1454897cb4cd5f6fc0757cb62dee455e57fd # v0.10.1
         with:
           project-directory: ${{ inputs.package-basepath == '.' && github.workspace || format('{0}/{1}', github.workspace, inputs.package-basepath) }}
           install-args: ${{ inputs.install-extras && format('--extras ''{0}''', inputs.install-extras) || '' }}
