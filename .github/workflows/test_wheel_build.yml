@@ -18,7 +18,7 @@ jobs:
       - name: Set up Python 3.11
         uses: ni/python-actions/setup-python@edaf1454897cb4cd5f6fc0757cb62dee455e57fd # v0.10.1
         with:
-          python-version: 3.15
+          python-version: 3.11
 
       - name: Set up Poetry
         uses: ni/python-actions/setup-poetry@edaf1454897cb4cd5f6fc0757cb62dee455e57fd # v0.10.1
