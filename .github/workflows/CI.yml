@@ -42,7 +42,6 @@ jobs:
     name: Test wheel build
     needs: check_packages
     uses: ./.github/workflows/test_wheel_build.yml
-
   # Saves the triggering event so the workflow_run reporter can attribute
   # results to the right PR/commit. No write permissions needed.
   upload_event_file:
