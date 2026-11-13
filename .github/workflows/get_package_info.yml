@@ -16,6 +16,9 @@ on:
       install-extras:
         description: 'A space-separated list of package extras to install.'
         value: ${{ jobs.get_package_info.outputs.install-extras }}
+      should-check-docs:
+        description: 'Whether to check documentation generation.'
+        value: ${{ jobs.get_package_info.outputs.should-check-docs }}
 permissions: {}
 
 jobs:
