@@ -52,7 +52,7 @@ jobs:
       - name: Set up Poetry
         uses: ni/python-actions/setup-poetry@dee640bba235ae28fdc6b7337c643bd06358ae90 # v0.9.0
       - name: Cache ${{ inputs.package-name }} virtualenv
-        uses: actions/cache@668228422ae6a00e4ad889ee87cd7109ec5666a7 # v5.0.4
+        uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
         with:
           path: ${{ github.workspace }}/${{ needs.get_package_info.outputs.package-basepath == '.' && '.venv' || format('{0}/.venv', needs.get_package_info.outputs.package-basepath) }}
           key:  ${{ inputs.package-name }}-${{ matrix.os }}-py${{ matrix.python-version }}-${{ steps.setup-python.outputs.python-version }}-${{ hashFiles('**/poetry.lock') }}
@@ -70,7 +70,7 @@ jobs:
         working-directory: ${{ github.workspace }}/${{ needs.get_package_info.outputs.package-basepath }}
         shell: bash
       - name: Upload ${{ inputs.package-name }} test results
-        uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # v6.0.0
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
           name: test_results_unit_${{ inputs.package-name }}_${{ matrix.os }}_py${{ steps.setup-python.outputs.python-version }}
           path: ${{ github.workspace }}/${{ needs.get_package_info.outputs.package-basepath == '.' && 'test_results/*.xml' || format('{0}/test_results/*.xml', needs.get_package_info.outputs.package-basepath) }}
