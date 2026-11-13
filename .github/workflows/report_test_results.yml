@@ -1,8 +1,12 @@
 name: Report test results
 
-on:
-  workflow_call:
-  workflow_dispatch:
+# Runs in the base repo's context with a write token, so it can post PR
+# comments and check runs even for PRs opened from forks.
+# SECURITY: never check out or execute PR code in this workflow.
+on: # zizmor: ignore[dangerous-triggers] -- no checkout; artifacts treated as data only
+  workflow_run:
+    workflows: ["PR"]
+    types: [completed]
 
 permissions: {}
 
@@ -10,24 +14,29 @@ jobs:
   report_test_results:
     name: Report test results
     runs-on: ubuntu-latest
+    if: github.event.workflow_run.conclusion == 'success' || github.event.workflow_run.conclusion == 'failure'
     permissions:
       checks: write
       pull-requests: write
+      actions: read
     steps:
-      - name: Check out repo
-        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-        with:
-          persist-credentials: false
-      - name: Download test results
+      - name: Download test results and event file
         uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
         with:
-          path: test_results
-          pattern: test_results_*
-          merge-multiple: true
+          github-token: ${{ github.token }}
+          run-id: ${{ github.event.workflow_run.id }}
+          path: artifacts
+
       - name: List downloaded files
-        run: ls -lR
+        run: ls -R artifacts
+
       - name: Publish test results
         uses: EnricoMi/publish-unit-test-result-action@c950f6fb443cb5af20a377fd0dfaa78838901040 # v2.23.0
         with:
-          files: "test_results/**/*.xml"
-        if: always()
+          commit: ${{ github.event.workflow_run.head_sha }}
+          event_file: artifacts/event_file/event.json
+          event_name: ${{ github.event.workflow_run.event }}
+          files: "artifacts/**/*.xml"
+          checks: "Report-Test-Results"
+          comment_title: "pull request comment"
+          comment_mode: ${{ (github.event.workflow_run.event == 'pull_request' || github.event_name == 'pull_request') && 'always' || 'off' }}

@@ -3,19 +3,21 @@ name: CI
 on:
   push:
     branches:
-      - main  
+      - main
   workflow_call:
   workflow_dispatch:
 
 permissions: {}
-  
+
 jobs:
   check_workflows:
     name: Check workflows
     uses: ./.github/workflows/check_workflows.yml
+
   get_package_names:
     name: Get package names
     uses: ./.github/workflows/get_package_names.yml
+
   check_packages:
     name: Check ${{ matrix.package-name }}
     needs: get_package_names
@@ -25,6 +27,7 @@ jobs:
     uses: ./.github/workflows/check_package.yml
     with:
       package-name: ${{ matrix.package-name }}
+
   test_packages:
     name: Test ${{ matrix.package-name }}
     needs: get_package_names
@@ -39,14 +42,15 @@ jobs:
     name: Test wheel build
     needs: check_packages
     uses: ./.github/workflows/test_wheel_build.yml
-    
-  report_test_results:
-    name: Report test results
-    if: ${{ always() }}
-    needs: test_packages
-    uses: ./.github/workflows/report_test_results.yml
-    permissions:
-      checks: write # needed to push the aggregated report
-      pull-requests: write # needed to post the report to the PR
-      
-      
+
+  # Saves the triggering event so the workflow_run reporter can attribute
+  # results to the right PR/commit. No write permissions needed.
+  upload_event_file:
+    name: Upload event file
+    runs-on: ubuntu-latest
+    steps:
+      - name: Upload event file
+        uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # v6.0.0
+        with:
+          name: event_file
+          path: ${{ github.event_path }}
