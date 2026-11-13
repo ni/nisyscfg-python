@@ -25,11 +25,13 @@ def c_string_encode(value: Optional[Union[str, bytes]]) -> Optional[bytes]:
 
 
 @overload
-def c_string_decode(value: None) -> None: ...
+def c_string_decode(value: None) -> None:
+    pass
 
 
 @overload
-def c_string_decode(value: Union[bytes, str]) -> str: ...
+def c_string_decode(value: Union[bytes, str]) -> str:
+    pass
 
 
 def c_string_decode(value: Optional[Union[bytes, str]]) -> Optional[str]:

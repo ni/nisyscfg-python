@@ -3,7 +3,7 @@
 import ctypes
 import typing
 from functools import reduce
-from typing import TYPE_CHECKING, Protocol, Callable
+from typing import Protocol, TYPE_CHECKING
 
 import nisyscfg.errors
 import nisyscfg.properties
@@ -15,6 +15,8 @@ from nisyscfg import _library_singleton
 from nisyscfg._lib import c_string_decode, c_string_encode
 
 if TYPE_CHECKING:
+    from typing import Callable
+
     import hightime
 
     import nisyscfg.enums
