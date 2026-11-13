@@ -97,14 +97,14 @@ jobs:
         with:
           persist-credentials: false
       - name: Set up Python
-        uses: ni/python-actions/setup-python@dee640bba235ae28fdc6b7337c643bd06358ae90 # v0.9.0
+        uses: ni/python-actions/setup-python@edaf1454897cb4cd5f6fc0757cb62dee455e57fd # v0.10.1
       - name: Set up Poetry
-        uses: ni/python-actions/setup-poetry@dee640bba235ae28fdc6b7337c643bd06358ae90 # v0.9.0
+        uses: ni/python-actions/setup-poetry@edaf1454897cb4cd5f6fc0757cb62dee455e57fd # v0.10.1
         with:
           use-cache: false
       - name: Check project version
         if: github.event_name == 'release'
-        uses: ni/python-actions/check-project-version@dee640bba235ae28fdc6b7337c643bd06358ae90 # v0.9.0
+        uses: ni/python-actions/check-project-version@edaf1454897cb4cd5f6fc0757cb62dee455e57fd # v0.10.1
         with:
           project-directory: ${{ github.workspace }}/${{ needs.get_package_info.outputs.package-basepath }}
           expected-version: ${{ needs.get_publish_info.outputs.package-version }}
@@ -160,11 +160,11 @@ jobs:
         with:
           persist-credentials: false
       - name: Set up Python
-        uses: ni/python-actions/setup-python@dee640bba235ae28fdc6b7337c643bd06358ae90 # v0.9.0
+        uses: ni/python-actions/setup-python@edaf1454897cb4cd5f6fc0757cb62dee455e57fd # v0.10.1
       - name: Set up Poetry
-        uses: ni/python-actions/setup-poetry@dee640bba235ae28fdc6b7337c643bd06358ae90 # v0.9.0
+        uses: ni/python-actions/setup-poetry@edaf1454897cb4cd5f6fc0757cb62dee455e57fd # v0.10.1
       - name: Update project version
-        uses: ni/python-actions/update-project-version@dee640bba235ae28fdc6b7337c643bd06358ae90 # v0.9.0
+        uses: ni/python-actions/update-project-version@edaf1454897cb4cd5f6fc0757cb62dee455e57fd # v0.10.1
         with:
           project-directory: ${{ github.workspace }}/${{ needs.get_package_info.outputs.package-basepath }}
           branch-prefix: users/build/${{ needs.get_publish_info.outputs.package-name }}-
