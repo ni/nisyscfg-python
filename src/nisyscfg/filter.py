@@ -92,6 +92,5 @@ class Filter(object):
         else:
             value = c_type(value)
 
-        # The SetFilterPropertyWithType call is to a C library; mypy cannot type-check it.
         error_code = self._library.SetFilterPropertyWithType(self._handle, id, nisyscfg_type, value)
         nisyscfg.errors.handle_error(self, error_code)

@@ -56,93 +56,97 @@ class PropertyAccessor(object):
 
     def set_bool_property(self, id: int, value: Any) -> None:
         """Set a Boolean property."""
-        cast(Callable[[int, Any, type, int], None], self._setter)(
+        cast("Callable[[int, Any, type, int], None]", self._setter)(
             id, value, Bool, PropertyType.BOOL
         )
 
     def set_int_property(self, id: int, value: Any) -> None:
         """Set an integer property."""
-        cast(Callable[[int, Any, type, int], None], self._setter)(
+        cast("Callable[[int, Any, type, int], None]", self._setter)(
             id, value, ctypes.c_int, PropertyType.INT
         )
 
     def set_unsigned_int_property(self, id: int, value: Any) -> None:
         """Set an unsigned integer property."""
-        cast(Callable[[int, Any, type, int], None], self._setter)(
+        cast("Callable[[int, Any, type, int], None]", self._setter)(
             id, value, ctypes.c_uint, PropertyType.UNSIGNED_INT
         )
 
     def set_double_property(self, id: int, value: float) -> None:
         """Set a floating-point property."""
-        cast(Callable[[int, Any, type, int], None], self._setter)(
+        cast("Callable[[int, Any, type, int], None]", self._setter)(
             id, value, ctypes.c_double, PropertyType.DOUBLE
         )
 
     def set_string_property(self, id: int, value: str) -> None:
         """Set a string property."""
-        cast(Callable[[int, Any, type, int], None], self._setter)(
+        cast("Callable[[int, Any, type, int], None]", self._setter)(
             id, value, ctypes.c_char_p, PropertyType.STRING
         )
 
     def set_timestamp_property(self, id: int, value: Any) -> None:
         """Set a timestamp property."""
-        cast(Callable[[int, Any, type, int], None], self._setter)(
+        cast("Callable[[int, Any, type, int], None]", self._setter)(
             id, value, cast(type, nisyscfg.types.TimestampUTC), PropertyType.TIMESTAMP
         )
 
     def get_bool_property(self, id: int) -> Any:
         """Get a Boolean property."""
-        return cast(Callable[[int, type], Any], self._getter)(id, Bool)
+        return cast("Callable[[int, type], Any]", self._getter)(id, Bool)
 
     def get_int_property(self, id: int) -> Any:
         """Get an integer property."""
-        return cast(Callable[[int, type], Any], self._getter)(id, ctypes.c_int)
+        return cast("Callable[[int, type], Any]", self._getter)(id, ctypes.c_int)
 
     def get_unsigned_int_property(self, id: int) -> Any:
         """Get an unsigned integer property."""
-        return cast(Callable[[int, type], Any], self._getter)(id, ctypes.c_uint)
+        return cast("Callable[[int, type], Any]", self._getter)(id, ctypes.c_uint)
 
     def get_double_property(self, id: int) -> float:
         """Get a floating-point property."""
-        return cast(Callable[[int, type], float], self._getter)(id, ctypes.c_double)
+        return cast("Callable[[int, type], float]", self._getter)(id, ctypes.c_double)
 
     def get_string_property(self, id: int) -> str:
         """Get a string property."""
-        return cast(Callable[[int, type], str], self._getter)(id, ctypes.c_char_p)
+        return cast("Callable[[int, type], str]", self._getter)(id, ctypes.c_char_p)
 
     def get_timestamp_property(self, id: int) -> Any:
         """Get a timestamp property."""
-        return cast(Callable[[int, type], Any], self._getter)(
+        return cast("Callable[[int, type], Any]", self._getter)(
             id, cast(type, nisyscfg.types.TimestampUTC)
         )
 
     def get_indexed_bool_property(self, id: int, index: int) -> Any:
         """Get a Boolean property at a specific index."""
-        return cast(Callable[[int, int, type], Any], self._indexed_getter)(id, index, Bool)
+        return cast("Callable[[int, int, type], Any]", self._indexed_getter)(id, index, Bool)
 
     def get_indexed_int_property(self, id: int, index: int) -> Any:
         """Get an integer property at a specific index."""
-        return cast(Callable[[int, int, type], Any], self._indexed_getter)(id, index, ctypes.c_int)
+        return cast("Callable[[int, int, type], Any]", self._indexed_getter)(
+            id, index, ctypes.c_int
+        )
 
     def get_indexed_unsigned_int_property(self, id: int, index: int) -> Any:
         """Get an unsigned integer property at a specific index."""
-        return cast(Callable[[int, int, type], Any], self._indexed_getter)(id, index, ctypes.c_uint)
+        return cast("Callable[[int, int, type], Any]", self._indexed_getter)(
+            id, index, ctypes.c_uint
+        )
 
     def get_indexed_double_property(self, id: int, index: int) -> float:
         """Get a floating-point property at a specific index."""
-        return cast(Callable[[int, int, type], float], self._indexed_getter)(
+        return cast("Callable[[int, int, type], float]", self._indexed_getter)(
             id, index, ctypes.c_double
         )
 
     def get_indexed_string_property(self, id: int, index: int) -> str:
         """Get a string property at a specific index."""
-        return cast(Callable[[int, int, type], str], self._indexed_getter)(
+        return cast("Callable[[int, int, type], str]", self._indexed_getter)(
             id, index, ctypes.c_char_p
         )
 
     def get_indexed_timestamp_property(self, id: int, index: int) -> Any:
         """Get a timestamp property at a specific index."""
-        return cast(Callable[[int, int, type], Any], self._indexed_getter)(
+        return cast("Callable[[int, int, type], Any]", self._indexed_getter)(
             id, index, nisyscfg.types.TimestampUTC
         )
 
