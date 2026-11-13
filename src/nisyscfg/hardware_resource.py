@@ -3,7 +3,7 @@
 import ctypes
 import typing
 from functools import reduce
-from typing import TYPE_CHECKING, Protocol
+from typing import TYPE_CHECKING, Protocol, Callable
 
 import nisyscfg.errors
 import nisyscfg.properties
@@ -377,7 +377,7 @@ class HardwareResource(object):
             value = ctypes.c_int()
             value_arg = ctypes.pointer(value)
         else:
-            ctor = typing.cast(typing.Callable[[typing.Any], typing.Any], c_type)
+            ctor = typing.cast("Callable[[typing.Any], typing.Any]", c_type)
             value = ctor(0)
             value_arg = ctypes.pointer(value)
 
@@ -412,7 +412,7 @@ class HardwareResource(object):
             value = ctypes.c_int()
             value_arg = ctypes.pointer(value)
         else:
-            ctor = typing.cast(typing.Callable[[], typing.Any], c_type)
+            ctor = typing.cast("Callable[[], typing.Any]", c_type)
             value = ctor()
             value_arg = ctypes.pointer(value)
 
@@ -461,7 +461,7 @@ class HardwareResource(object):
         elif c_type == nisyscfg.types.TimestampUTC:
             value = nisyscfg.timestamp._convert_datetime_to_ctype(value)
         else:
-            ctor = typing.cast(typing.Callable[[typing.Any], typing.Any], c_type)
+            ctor = typing.cast("Callable[[typing.Any], typing.Any]", c_type)
             value = ctor(value)
 
         error_code = self._library.SetResourceProperty(self._handle, id, value)

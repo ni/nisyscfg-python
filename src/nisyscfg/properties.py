@@ -45,9 +45,9 @@ class PropertyAccessor(object):
 
     def __init__(
         self,
-        setter: Optional[Callable[[int, Any, type, int], None]] = None,
-        getter: Optional[Callable[[int, type], Any]] = None,
-        indexed_getter: Optional[Callable[[int, int, type], Any]] = None,
+        setter: Optional["Callable[[int, Any, type, int], None]"] = None,
+        getter: Optional["Callable[[int, type], Any]"] = None,
+        indexed_getter: Optional["Callable[[int, int, type], Any]"] = None,
     ) -> None:
         """Initialize property access callbacks."""
         self._setter = setter
