@@ -1,17 +1,29 @@
+"""Example demonstrating how to assign a name to an  NI-XNET device port."""
+
+import sys
+
 import nisyscfg
 import nisyscfg.xnet
-import sys
 
 
 class DeviceNotFoundError(Exception):
+    """Raised when the specified NI-XNET device cannot be found."""
+
     pass
 
 
 class PortNotFoundError(Exception):
+    """Raised when the specified port cannot be found on the device."""
+
     pass
 
 
-def nixnet_assign_port_name(serial_number, port_number, port_name):
+def nixnet_assign_port_name(serial_number: str, port_number: int, port_name: str) -> None:
+    """Assign a user-defined name to an NI-XNET port.
+
+    Searches for the NI-XNET device with the specified serial number,
+    locates the requested port, and assigns the provided port name.
+    """
     with nisyscfg.Session() as session:
         # Search for the NI-XNET device with the specified serial number.
         device_filter = session.create_filter()

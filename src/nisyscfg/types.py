@@ -1,4 +1,5 @@
 # This file is code generated
+"""Generated ctypes aliases and handle types for NI System Configuration."""
 
 import ctypes
 

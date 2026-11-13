@@ -8,6 +8,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 #### Unreleased
 - Added
   - Python 3.14, Python 3.14 free-threaded (3.14t), and Python 3.15 support.
+  - Type checking support, including type annotations and .pyi type stubs.
 - Changed
 - Removed
   - Python 3.9 and Python 3.10 support.
+  - The six dependency.

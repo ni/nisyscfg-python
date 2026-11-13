@@ -1,14 +1,17 @@
 # This file is code generated
 # fmt: off
+# mypy: disable-error-code=no-untyped-def
 
 import ctypes
 import threading
+from typing import no_type_check
 
 from nisyscfg.enums import *  # noqa: F403
 from nisyscfg.errors import *  # noqa: F403
 from nisyscfg.types import *  # noqa: F403
 
 
+@no_type_check
 class Library(object):
     def __init__(self, ctypes_library):
         self._func_lock = threading.Lock()

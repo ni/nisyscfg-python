@@ -1,0 +1,61 @@
+name: Analyze package
+
+on:
+  workflow_call:
+    inputs:
+      package-name:
+        description: 'The name of the package folder to analyze.'
+        default: ''
+        required: true
+        type: string
+      package-basepath:
+        description: 'The base path of the package to analyze, relative to the repo root.'
+        default: ''
+        required: true
+        type: string
+      install-extras:
+        description: 'A space-separated list of package extras to install.'
+        default: ''
+        required: false
+        type: string
+
+permissions: {}
+
+jobs:
+  analyze_package:
+    strategy:
+      matrix:
+        os: [windows-latest, ubuntu-latest]
+        python-version: ['3.11', '3.12', '3.13', '3.14', '3.14t', '3.15']
+        exclude:
+          # TODO: Re-enable this matrix entry when PyYAML supports Python 3.15 on Windows.
+          # Current failure: no Windows wheel available and source builds fail.
+          - os: windows-latest
+            python-version: '3.15'
+    name: Analyze package for ${{ inputs.package-name }} (${{ matrix.python-version }} - ${{ matrix.os }})
+    runs-on: ${{ matrix.os }}
+    defaults:
+      run:
+        # Set the working-directory for all steps in this job.
+        working-directory: ${{ inputs.package-basepath }}
+    steps:
+      - name: Check out repo
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          persist-credentials: false
+          submodules: true
+      - name: Set up Python
+        uses: ni/python-actions/setup-python@dee640bba235ae28fdc6b7337c643bd06358ae90 # v0.9.0
+        id: setup-python
+        with:
+          python-version: ${{ matrix.python-version }}
+      - name: Set up Poetry
+        uses: ni/python-actions/setup-poetry@dee640bba235ae28fdc6b7337c643bd06358ae90 # v0.9.0
+      - name: Analyze Python Project
+        uses: ni/python-actions/analyze-project@dee640bba235ae28fdc6b7337c643bd06358ae90 # v0.9.0
+        with:
+          project-directory: ${{ inputs.package-basepath == '.' && github.workspace || format('{0}/{1}', github.workspace, inputs.package-basepath) }}
+          install-args: ${{ inputs.install-extras && format('--extras ''{0}''', inputs.install-extras) || '' }}
+      - name: Bandit security checks
+        run:  poetry run bandit -c pyproject.toml -r src/
+        working-directory: ${{ inputs.package-basepath }}
