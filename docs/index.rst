@@ -1,11 +1,5 @@
-
-
-
-##################################
-NI System Configuration Python API
-##################################
-
-.. include:: intro.inc
+.. include:: ../README.md
+   :parser: myst_parser.sphinx_
 
 Table of Contents
 =================

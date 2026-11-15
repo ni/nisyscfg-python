@@ -29,7 +29,7 @@ classifiers = [
 [project.urls]
 repository = "https://github.com/ni/nisyscfg-python"
 changelog = "https://github.com/ni/nisyscfg-python/blob/main/CHANGELOG.md"
-documentation = "https://nisyscfg-python.readthedocs.io"
+documentation = "https://nisyscfg.readthedocs.io"
 
 [build-system]
 requires = ["poetry-core>=2.1.0,<3.0.0"]

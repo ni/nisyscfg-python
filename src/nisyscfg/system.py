@@ -64,11 +64,22 @@ class Session(object):
     Leave this parameter None if no password has been set or if you are
     connecting to the local system.
 
-    language - Specifies the language:
+    language - Specifies the language.
 
-    * ``DEFAULT`` chooses based on local Windows settings.
-    * ``ENGLISH``, ``FRENCH``, ``GERMAN``, ``JAPANESE``, ``KOREAN``, or
-      ``CHINESE_SIMPLIFIED`` selects the corresponding language.
+    * ``DEFAULT`` - Automatically chooses the language based on local
+      Windows settings.
+
+    * ``ENGLISH`` - English
+
+    * ``FRENCH`` - French
+
+    * ``GERMAN`` - German
+
+    * ``JAPANESE`` - Japanese
+
+    * ``KOREAN`` - Korean
+
+    * ``CHINESE_SIMPLIFIED`` - Simplified Chinese
 
     force_property_refresh - Forces properties to be refreshed every time they
     are read by default. If FALSE, properties are queried once and cached in
@@ -164,11 +175,11 @@ class Session(object):
 
         Args:
             expert_names: A case-insensitive, comma-separated string or a list of
-            strings specifying which experts to query. If None or an empty
-            string/list, all supported experts are queried.
+                strings specifying which experts to query. If None or an empty
+                string/list, all supported experts are queried.
+
         Raises:
-            nisyscfg.errors.LibraryError: If retrieving the system experts
-                fails.
+            nisyscfg.errors.LibraryError: In the event of an error.
         """
         expert_handle = nisyscfg.types.EnumExpertHandle()
         if isinstance(expert_names, list):
@@ -190,27 +201,29 @@ class Session(object):
         """Returns an iterator of hardware in a specified system.
 
         Args:
-            expert_names - A case-insensitive, comma-separated string or a list of
-                strings specifying which experts to query. If None or an empty
-                string/list, all supported experts are queried.
             filter: Specifies a filter you can use to limit the results to hardware
                 matching specific properties. The default is no filter.
 
-            mode: Determines how filter properties are matched:
+            mode: The enumerated list of filter modes.
 
-                * ``MATCH_VALUES_ALL`` requires all specified properties to
-                  match.
-                * ``MATCH_VALUES_ANY`` requires any specified property to
-                  match.
-                * ``MATCH_VALUES_NONE`` requires none of the specified
-                  properties to match.
-                * ``ALL_PROPERTIES_EXIST`` matches specified properties
-                  regardless of value.
+                * ``MATCH_VALUES_ALL`` - (default) includes all of the properties
+                  specified in the input filter.
 
-                Defaults to ``MATCH_VALUES_ALL``.
+                * ``MATCH_VALUES_ANY`` - includes any of the properties specified in
+                  the input filter.
+
+                * ``MATCH_VALUES_NONE`` - includes none of the properties specified in
+                  the input filter.
+
+                * ``ALL_PROPERTIES_EXIST`` - includes all of the properties specified
+                  in the input filter, regardless of the value of each property.
+
+            expert_names: A case-insensitive, comma-separated string or a list of
+                strings specifying which experts to query. If None or an empty
+                string/list, all supported experts are queried.
 
         Raises:
-            nisyscfg.errors.LibraryError: If the native hardware search fails.
+            nisyscfg.errors.LibraryError: In the event of an error.
         """
         if filter is None:
 
@@ -250,57 +263,71 @@ class Session(object):
     ) -> nisyscfg.system_info.SystemInfoIterator:
         """Retrieves systems on the network.
 
-        device_class - Specifies the class of device for which you are
-        searching. Common values are "PXI" and "cRIO". To specify multiple
-        classes, use a comma to separate the values.
+        Args:
+            device_class: Specifies the class of device for which you are
+                searching. Common values are "PXI" and "cRIO". To specify multiple
+                classes, use a comma to separate the values.
 
-        detect_online_systems - Detects systems that are online. This option
-        checks for all local online systems by default. You must set this
-        parameter to TRUE on Real-Time targets. On Windows operating systems,
-        set this parameter to FALSE if you only want to return previously
-        detected results.
+            detect_online_systems: Detects systems that are online. This option
+                checks for all local online systems by default. You must set this
+                parameter to TRUE on Real-Time targets. On Windows operating systems,
+                set this parameter to FALSE if you only want to return previously
+                detected results.
 
-        cache_mode - Specifies cached results:
+            cache_mode: Specifies whether to include cached results.
 
-        * ``NONE`` returns only systems from a new scan. Systems previously
-          added to MAX on a remote subnet are not returned because they cannot
-          be detected on the local subnet.
-        * ``ONLY_IF_ONLINE`` includes previously discovered systems that are
-          online.
-        * ``ALL`` (default) includes all previously discovered systems.
+                * ``NONE`` - Only return systems discovered from a new scan. If you
+                  have added a system on a remote subnet to MAX, using NONE for the
+                  cached input will not return that system because it cannot be
+                  detected on the local subnet.
 
-        find_output_mode - Specifies the "preferred" output format of hostname
-        and IP addresses for systems on the network. The Initialize function
-        accepts these formats:
+                * ``ONLY_IF_ONLINE`` - Include previously discovered systems if they
+                  are online.
 
-        * ``HOSTNAME`` includes only the hostname.
-        * ``HOSTNAME_IP`` (default) includes the hostname and IP address.
-        * ``HOSTNAME_MAC`` includes the hostname and MAC address.
-        * ``IP`` includes only the IP address.
-        * ``IP_HOSTNAME`` includes the IP address and hostname.
-        * ``IP_MAC`` includes the IP address and MAC address.
-        * ``MAC`` includes only the MAC address.
-        * ``MAC_HOSTNAME`` includes the MAC address and hostname.
-        * ``MAC_IP`` includes the MAC address and IP address.
+                * ``ALL`` - Include all previously discovered systems (default).
 
-        Note: In some cases this parameter may return a system that is not in
-        the requested format. For example, if you request the default
-        HOSTNAME_IP but an unconfigured system is detected, that system is
-        returned as IP_MAC.
+            find_output_mode: Specifies the "preferred" output format of hostname
+                and IP addresses for systems on the network. The Initialize function
+                accepts all of these formats.
 
-        timeout - The time, in seconds, the function waits before it times out.
-        The default is 4 s. In some cases, the operation may take longer to
-        time out.
+                * ``HOSTNAME`` - Includes only the hostname.
 
-        only_installable_systems - Detects only the systems that support the
-        ability to install software remotely. This includes all Real-Time
-        systems.
+                * ``HOSTNAME_IP`` - (default) Includes both the hostname and IP
+                  address.
 
-        Returns an interator that yields the system names in the format
-        requested from the input parameter
+                * ``HOSTNAME_MAC`` - Includes both the hostname and MAC address.
 
-        Raises an nisyscfg.errors.LibraryError exception in the event of an
-        error.
+                * ``IP`` - Includes only the IP address.
+
+                * ``IP_HOSTNAME`` - Includes both the IP address and hostname.
+
+                * ``IP_MAC`` - Includes both the IP address and MAC address.
+
+                * ``MAC`` - Includes only the MAC address.
+
+                * ``MAC_HOSTNAME`` - Includes both the MAC address and hostname.
+
+                * ``MAC_IP`` - Includes both the MAC address and the IP address.
+
+                Note: In some cases this parameter may return a system that is not in
+                the requested format. For example, if you request the default
+                HOSTNAME_IP but an unconfigured system is detected, that system is
+                returned as IP_MAC.
+
+            timeout: The time, in seconds, the function waits before it times out.
+                The default is 4 s. In some cases, the operation may take longer to
+                time out.
+
+            only_installable_systems: Detects only the systems that support the
+                ability to install software remotely. This includes all Real-Time
+                systems.
+
+        Returns:
+            An interator that yields the system names in the format requested from
+            the input parameter.
+
+        Raises:
+            nisyscfg.errors.LibraryError: In the event of an error.
         """
         system_handle = nisyscfg.types.EnumSystemHandle()
         error_code = self._library.FindSystems(
@@ -435,51 +462,56 @@ class Session(object):
         between safe mode for different target boot flows. This function can
         only be used to format Real-Time systems.
 
-
-        network_settings - Resets the primary network adapter and disables
-        secondary adapters by default:
-
-        * ``RESET_PRIMARY_RESET_OTHERS`` restores factory settings on the
-          primary adapter and disables all other adapters.
-        * ``PRESERVE_PRIMARY_RESET_OTHERS`` keeps the primary adapter's
-          settings and disables all other adapters.
-        * ``PRESERVE_PRIMARY_PRESERVE_OTHERS`` keeps settings on all adapters.
-          The preserve options may not be supported for targets on a remote
-          subnet.
-
         Args:
-            auto_restart: Restarts the system before and/or after formatting
-                as required by the target's boot flow. Formatting fails if a
-                restart is required and automatic restart is disabled.
-            file_system: Filesystem mode for the primary hard drive. Not all
-                systems support every mode:
+            auto_restart: Restarts the system before and/or after the operation as
+                required by the target's boot flow. The operation will fail if you
+                choose not to restart the target automatically and the target's boot
+                flow requires it to be in safe mode or restart after the operation.
 
-                * ``DEFAULT`` uses the target's existing format.
-                * ``FAT`` uses the File Allocation Table file system.
-                * ``RELIANCE`` uses the Reliance transactional file system, developed
-                  by Datalight, which is tolerant of crashes and power interruptions.
-                * ``UBIFS`` uses the Unsorted Block Image File System.
-                * ``EXT4`` uses the Ext4 file system.
-             network_settings: Network adapter settings to apply:
+            file_system: Formats the primary hard drive into a user-selected file
+                system. Not all systems support all modes.
 
-                * ``RESET_PRIMARY_RESET_OTHERS`` restores factory settings on
-                  the primary adapter and disables all other adapters.
-                * ``PRESERVE_PRIMARY_RESET_OTHERS`` preserves the primary
-                  adapter's settings and disables all other adapters.
-                * ``PRESERVE_PRIMARY_PRESERVE_OTHERS`` preserves settings on
-                  all adapters.
+                * ``DEFAULT`` - Formats the hard drive into the default format. The
+                  default is whatever format the existing target is already in.
 
-                Preserve options may not be supported for targets on a remote
-                subnet.
+                * ``FAT`` - Formats the hard drive with the File Allocation Table
+                  (FAT) file system.
+
+                * ``RELIANCE`` - Formats the hard drive with the Reliance file system.
+                  Reliance is a transactional file system, developed by Datalight,
+                  that is tolerant to crashes and power interruptions.
+
+                * ``UBIFS`` - Formats the hard drive with the Unsorted Block Image
+                  File System (UBIFS).
+
+                * ``EXT4`` - Formats the hard drive with the Ext4 file system.
+
+            network_settings: Resets the primary network adapter and disables
+                secondary adapters by default.
+
+                * ``RESET_PRIMARY_RESET_OTHERS`` - Resets the primary network adapter
+                  to factory settings and disables all other network adapters.
+
+                * ``PRESERVE_PRIMARY_RESET_OTHERS`` - Preserves the existing settings
+                  on the primary network adapter and disables all other network
+                  adapters. This option may not be supported for targets on a remote
+                  subnet.
+
+                * ``PRESERVE_PRIMARY_PRESERVE_OTHERS`` - Preserves the settings for
+                  all network adapters. This option may not be supported for targets
+                  on a remote subnet.
+
             system_image_id: The system image ID.
+
             system_image_version: The system image version.
-            timeout: Base time, in seconds, before the formatting operation times
-                out. The default is 90 seconds. The timeout increases by 90 seconds
-                if a restart after formatting is required, and by another 90 seconds
-                if the system is not in safe mode.
+
+            timeout: The time, in seconds, that the function waits for the format
+                to time out. The default is 90 s. If restart after format is TRUE,
+                the default increases by 90 s. If the system is not in safe mode,
+                the default increases by another 90 s.
 
         Raises:
-            nisyscfg.errors.LibraryError: If the native format operation fails.
+            nisyscfg.errors.LibraryError: In the event of an error.
         """
         error_code = self._library.FormatWithBaseSystemImage(
             self._session,
@@ -499,24 +531,25 @@ class Session(object):
         """Retrieve software components available for installation to the specified target.
 
         Args:
-            item_types: Selects which software component types to include:
+            item_types: Allows inclusion of hidden software installed on the target
+                when ``ALL_VISIBLE_AND_HIDDEN`` is selected. Hidden software is not
+                listed by default.
 
-                * ``ALL_VISIBLE`` includes standard, startup, and essential
+                * ``ALL_VISIBLE`` - Specifies to return all visible software
+                  components. This includes all standard, startup, and essential
                   components.
-                * ``ALL_VISIBLE_AND_HIDDEN`` includes visible and hidden
+
+                * ``ALL_VISIBLE_AND_HIDDEN`` - Specifies to return all visible and
+                  hidden software components.
+
+                * ``ONLY_STANDARD`` - Specifies to only return standard software
                   components.
-                * ``ONLY_STANDARD`` includes standard components only.
-                * ``ONLY_STARTUP`` includes startup applications only.
 
-                Hidden software is not listed by default.
-
-        Returns:
-            An iterator of available software components, or ``None`` if no
-            components are available.
+                * ``ONLY_STARTUP`` - Specifies to only return components that are
+                  startup applications.
 
         Raises:
-            nisyscfg.errors.LibraryError: If retrieving available software
-                components fails.
+            nisyscfg.errors.LibraryError: In the event of an error.
         """
         software_component_handle = nisyscfg.types.EnumSoftwareComponentHandle()
         error_code = self._library.GetAvailableSoftwareComponents(
@@ -537,27 +570,29 @@ class Session(object):
         """Retrieve installed software components.
 
         Args:
-            item_types: Selects which software component types to include:
+            item_types: Allows inclusion of hidden software installed on the target
+                when ``ALL_VISIBLE_AND_HIDDEN`` is selected. Hidden software is not
+                listed by default.
 
-                * ``ALL_VISIBLE`` includes standard, startup, and essential
+                * ``ALL_VISIBLE`` - Specifies to return all visible software
+                  components. This includes all standard, startup, and essential
                   components.
-                * ``ALL_VISIBLE_AND_HIDDEN`` includes visible and hidden
+
+                * ``ALL_VISIBLE_AND_HIDDEN`` - Specifies to return all visible and
+                  hidden software components.
+
+                * ``ONLY_STANDARD`` - Specifies to only return standard software
                   components.
-                * ``ONLY_STANDARD`` includes standard components only.
-                * ``ONLY_STARTUP`` includes startup applications only.
 
-                Hidden software is not listed by default.
-            cached: Return information already read from the specified
-                real-time system if ``True``. By default, the system is
-                contacted again for the information.
+                * ``ONLY_STARTUP`` - Specifies to only return components that are
+                  startup applications.
 
-        Returns:
-            An iterator of installed software components, or ``None`` if no
-            components are installed.
+            cached: Returns information that has already been read from the specified
+                real-time system if TRUE. The system is contacted again for the
+                information by default.
 
         Raises:
-            nisyscfg.errors.LibraryError: If retrieving installed software
-                components fails.
+            nisyscfg.errors.LibraryError: In the event of an error.
         """
         software_component_handle = nisyscfg.types.EnumSoftwareComponentHandle()
         error_code = self._library.GetInstalledSoftwareComponents(
@@ -656,20 +691,28 @@ class Session(object):
         """Installs software on a Real-Time system.
 
         Args:
-            auto_restart: Restarts the system into install mode before the
-                operation and back to a running state afterward as needed. If
-                automatic restart is disabled, the system must already be in
-                install mode.
-            deselect_conflicts: If ``True``, automatically deselects
-                conflicting components. If ``False``, installation fails if
-                conflicting components exist.
+            auto_restart: Restarts the system into install mode by default before
+                the operation is performed, and restarts back to a running state after
+                the operation is complete. If you choose not to restart automatically,
+                the operation will fail if the system is not already in install mode.
+
+            deselect_conflicts: Indicates whether to deselect conflicting software
+                components automatically. Select True to deselect the conflicting
+                software components. If False, installation will fail if the system
+                has conflicting software components.
 
         Returns:
-            A :class:`nisyscfg.system.InstallAllResult` containing iterators
-            for the installed components and any broken dependencies.
+            tuple: ``(installed_components, broken_dependencies)``
+
+                * ``installed_components`` - An iterator to get information about each
+                  component that was just installed.
+
+                * ``broken_dependencies`` - An iterator to get a list of broken
+                  dependencies, which are specific software components that cannot
+                  operate without another software component installed.
 
         Raises:
-            nisyscfg.errors.LibraryError: If the native install operation fails.
+            nisyscfg.errors.LibraryError: In the event of an error.
         """
         installed_component_handle = nisyscfg.types.EnumSoftwareFeedHandle()
         broken_dependency_handle = nisyscfg.types.EnumDependencyHandle()
@@ -725,38 +768,47 @@ class Session(object):
         as the selected components do not overlap with each other.
 
         Args:
-            components_to_install: IDs or titles of software components to
+            components_to_install: List of software components IDs or titles to
                 install.
-            components_to_uninstall: IDs of software components to uninstall.
-            auto_restart: Restarts the system into install mode before the
-                operation and back to a running state afterward as needed. If
-                automatic restart is disabled, the system must already be in
-                install mode.
-            auto_select_dependencies: If ``True``, automatically selects
-                components required by the components being installed.
-            auto_select_recommends: If ``True``, automatically selects
-                recommended components.
-            item_types: Selects component types available for installation:
 
-                * ``ALL_VISIBLE`` includes standard, startup, and essential
-                  components.
-                * ``ALL_VISIBLE_AND_HIDDEN`` includes visible and hidden
-                  components.
-                * ``ONLY_STANDARD`` includes standard components only.
-                * ``ONLY_STARTUP`` includes startup applications only.
+            components_to_uninstall: List of software components IDs to remove.
 
-                Hidden software is not listed by default. This option does not
-                affect which components are selected for uninstallation.
+            auto_restart: Restarts the system into install mode by default before
+                the operation is performed, and restarts back to a running state after
+                the operation is complete. If you choose not to restart automatically,
+                the operation will fail if the system is not already in install mode.
+
+            auto_select_dependencies: Specifies whether to automatically select
+                software components that are required by the software you have
+                specified to install.
+
+            auto_select_recommends: Specifies whether to automatically select
+                recommended packages.
+
+            item_types: Allows inclusion of hidden software installed on the target
+                when ``ALL_VISIBLE_AND_HIDDEN`` is selected. Hidden software is not
+                listed by default.
+
+                * ``ALL_VISIBLE`` - Specifies to return all visible software
+                  components. This includes all standard, startup, and essential
+                  components.
+
+                * ``ALL_VISIBLE_AND_HIDDEN`` - Specifies to return all visible and
+                  hidden software components.
+
+                * ``ONLY_STANDARD`` - Specifies to only return standard software
+                  components.
+
+                * ``ONLY_STARTUP`` - Specifies to only return components that are
+                  startup applications.
 
         Returns:
-            An iterator of broken dependencies, which are software components
-            that cannot operate without another software component installed.
+            An iterator to get a list of broken dependencies, which are specific
+            software components that cannot operate without another software component
+            installed.
 
         Raises:
-            nisyscfg.errors.Error: If a requested component to install is not
-                available on the target.
-            nisyscfg.errors.LibraryError: If the native install/uninstall
-                operation fails.
+            nisyscfg.errors.LibraryError: In the event of an error.
         """
         software_to_install = nisyscfg.component_info.EnumSoftwareComponent()
 
@@ -808,34 +860,44 @@ class Session(object):
         """Allows you to install components.
 
         Args:
-            components: IDs or titles of software components to install.
-            auto_restart: Restarts the system into install mode before the
-                operation and back to a running state afterward as needed. If
-                automatic restart is disabled, the system must already be in
-                install mode.
-            auto_select_dependencies: If ``True``, automatically selects
-                components required by the components being installed.
-            auto_select_recommends: If ``True``, automatically selects
-                recommended components.
-            item_types: Selects component types available for installation:
+            components: List of software components IDs or titles to install.
 
-                * ``ALL_VISIBLE`` includes standard, startup, and essential
-                  components.
-                * ``ALL_VISIBLE_AND_HIDDEN`` includes visible and hidden
-                  components.
-                * ``ONLY_STANDARD`` includes standard components only.
-                * ``ONLY_STARTUP`` includes startup applications only.
+            auto_restart: Restarts the system into install mode by default before
+                the operation is performed, and restarts back to a running state after
+                the operation is complete. If you choose not to restart automatically,
+                the operation will fail if the system is not already in install mode.
 
-                Hidden software is not listed by default.
+            auto_select_dependencies: Specifies whether to automatically select
+                software components that are required by the software you have
+                specified to install.
+
+            auto_select_recommends: Specifies whether to automatically select
+                recommended packages.
+
+            item_types: Allows inclusion of hidden software installed on the target
+                when ``ALL_VISIBLE_AND_HIDDEN`` is selected. Hidden software is not
+                listed by default.
+
+                * ``ALL_VISIBLE`` - Specifies to return all visible software
+                  components. This includes all standard, startup, and essential
+                  components.
+
+                * ``ALL_VISIBLE_AND_HIDDEN`` - Specifies to return all visible and
+                  hidden software components.
+
+                * ``ONLY_STANDARD`` - Specifies to only return standard software
+                  components.
+
+                * ``ONLY_STARTUP`` - Specifies to only return components that are
+                  startup applications.
 
         Returns:
-            An iterator of broken dependencies, which are software components
-            that cannot operate without another software component installed.
+            An iterator to get a list of broken dependencies, which are specific
+            software components that cannot operate without another software component
+            installed.
 
         Raises:
-            nisyscfg.errors.Error: If a requested component to install is not
-                available on the target.
-            nisyscfg.errors.LibraryError: If the native install operation fails.
+            nisyscfg.errors.LibraryError: In the event of an error.
         """
         return self._install_uninstall(
             components_to_install=components,
@@ -856,25 +918,44 @@ class Session(object):
         """Allows you to uninstall components.
 
         Args:
-            components: IDs of software components to uninstall.
-            auto_restart: Restarts the system into install mode before the
-                operation and back to a running state afterward as needed. If
-                automatic restart is disabled, the system must already be in
-                install mode.
-            auto_select_dependencies: Controls whether required dependencies
-                are selected automatically for the operation.
-            auto_select_recommends: Controls whether recommended components
-                are selected automatically for the operation.
-            item_types: Selects component types when installing components.
-                This option does not filter components selected for
-                uninstallation.
+            components: List of software components IDs to remove.
+
+            auto_restart: Restarts the system into install mode by default before
+                the operation is performed, and restarts back to a running state after
+                the operation is complete. If you choose not to restart automatically,
+                the operation will fail if the system is not already in install mode.
+
+            auto_select_dependencies: Specifies whether to automatically select
+                software components that are required by the software you have
+                specified to install.
+
+            auto_select_recommends: Specifies whether to automatically select
+                recommended packages.
+
+            item_types: Allows inclusion of hidden software installed on the target
+                when ``ALL_VISIBLE_AND_HIDDEN`` is selected. Hidden software is not
+                listed by default.
+
+                * ``ALL_VISIBLE`` - Specifies to return all visible software
+                  components. This includes all standard, startup, and essential
+                  components.
+
+                * ``ALL_VISIBLE_AND_HIDDEN`` - Specifies to return all visible and
+                  hidden software components.
+
+                * ``ONLY_STANDARD`` - Specifies to only return standard software
+                  components.
+
+                * ``ONLY_STARTUP`` - Specifies to only return components that are
+                  startup applications.
 
         Returns:
-            An iterator of broken dependencies, which are software components
-            that cannot operate without another software component installed.
+            An iterator to get a list of broken dependencies, which are specific
+            software components that cannot operate without another software component
+            installed.
 
         Raises:
-            nisyscfg.errors.LibraryError: If the native uninstall operation fails.
+            nisyscfg.errors.LibraryError: In the event of an error.
         """
         return self._install_uninstall(
             components_to_uninstall=components,
@@ -989,12 +1070,16 @@ class Session(object):
         """Saves changes made to systems.
 
         Returns:
-            nisyscfg.system.SaveChangesResult: A result containing whether the
-                changes require a reboot and any additional operation details
-                returned by the API.
+            tuple: ``(restart_required, details)``
+
+                * ``restart_required`` - Specifies whether the changes require a
+                  reboot. If TRUE, call ``restart()``.
+
+                * ``details`` - A string containing results of any errors that may
+                  have occurred during execution.
 
         Raises:
-            nisyscfg.errors.LibraryError: If saving system changes fails.
+            nisyscfg.errors.LibraryError: In the event of an error.
         """
         restart_required = ctypes.c_int()
         c_details = ctypes.POINTER(ctypes.c_char)()

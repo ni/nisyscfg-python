@@ -35,7 +35,6 @@ jobs:
     runs-on: ubuntu-latest
     defaults:
       run:
-        # Set the working-directory for all steps in this job.
         working-directory: ${{ inputs.package-basepath }}
     steps:
       - name: Check out repo

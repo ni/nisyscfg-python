@@ -3,7 +3,7 @@
 import ctypes
 import typing
 from functools import reduce
-from typing import Protocol, TYPE_CHECKING
+from typing import TYPE_CHECKING, Protocol
 
 import nisyscfg.errors
 import nisyscfg.properties
@@ -340,6 +340,7 @@ class HardwareResource(object):
     @property
     def name(self) -> str:
         """Returns a name that identifies a resource."""
+
         # PropertyBag dynamically adds indexed properties as attributes on
         # instances (e.g., expert_user_alias, expert_resource_name). Statically
         # annotate these two attributes here so mypy recognizes them.
@@ -357,8 +358,7 @@ class HardwareResource(object):
         """Closes reference to previously allocated resource.
 
         Raises:
-            nisyscfg.errors.LibraryError: An error occurs while closing the
-                resource.
+            nisyscfg.errors.LibraryError: In the event of an error.
         """
         if self._handle:
             error_code = self._library.CloseHandle(self._handle)
@@ -534,13 +534,16 @@ class HardwareResource(object):
         """Writes and saves property changes on a device.
 
         Returns:
-            nisyscfg.hardware_resource.SaveChangesResult: A result containing
-                whether the changes require a restart and any additional
-                operation details returned by the API.
+            tuple: ``(restart_required, details)``
+
+                * ``restart_required`` - Specifies whether the changes require a
+                  reboot. If ``True``, call ``restart``.
+
+                * ``details`` - A string containing results of any errors that
+                  may have occurred during execution.
 
         Raises:
-            nisyscfg.errors.LibraryError: An error occurs while saving the
-                changes.
+            nisyscfg.errors.LibraryError: In the event of an error.
         """
         restart_required = ctypes.c_int()
         c_details = ctypes.POINTER(ctypes.c_char)()
@@ -763,24 +766,33 @@ class HardwareResource(object):
         Note: Not all devices can be deleted; consult your product documentation.
 
         Args:
-            mode: Deletion behavior:
+            mode: Specifies the conditions under which to delete the specified
+                resource.
 
-                * ``VALIDATE_BUT_DO_NOT_DELETE`` checks whether deletion is
-                  allowed and whether dependencies exist without deleting.
-                * ``DELETE_IF_NO_DEPENDENCIES_EXIST`` deletes only when there
-                  are no dependencies.
-                * ``DELETE_ITEM_AND_ANY_DEPENDENCIES`` deletes the resource
-                  and its dependencies.
-                * ``DELETE_ITEM_BUT_KEEP_DEPENDENCIES`` deletes the resource
-                  but leaves dependencies unusable.
+                * ``VALIDATE_BUT_DO_NOT_DELETE`` - Verify whether the resource can be
+                  deleted and whether it has dependencies.
+
+                * ``DELETE_IF_NO_DEPENDENCIES_EXIST`` - Delete the resource only if no
+                  dependencies exist. These could be tasks or child resources.
+
+                * ``DELETE_ITEM_AND_ANY_DEPENDENCIES`` - Delete this resource. If any
+                  dependencies exist, delete them too.
+
+                * ``DELETE_ITEM_BUT_KEEP_DEPENDENCIES`` - Delete this resource. If any
+                  dependencies exist, leave them in an unusable state.
 
         Returns:
-            nisyscfg.hardware_resource.DeleteResult: Whether dependent
-                resources were deleted and any additional operation details
-                returned by the API.
+            tuple: ``(dependent_items_deleted, details)``
+
+                * ``dependent_items_deleted`` - Returns whether resources other than the
+                  specified one were deleted. For example, this may happen if the
+                  resource is a simulated chassis that contained modules.
+
+                * ``details`` - A string containing results of any errors that may
+                  have occurred during execution.
 
         Raises:
-            nisyscfg.errors.LibraryError: If deleting the resource fails.
+            nisyscfg.errors.LibraryError: In the event of an error.
         """
         dependent_items_deleted = ctypes.c_int()
         c_details = ctypes.POINTER(ctypes.c_char)()

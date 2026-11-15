@@ -15,6 +15,7 @@ extensions = [
     "sphinx.ext.intersphinx",
     "sphinx.ext.napoleon",
     "sphinx.ext.viewcode",
+    "myst_parser",
 ]
 
 root_path = pathlib.Path(__file__).parent.parent
@@ -70,3 +71,6 @@ html_theme_options = {
 
 # Napoleon settings
 napoleon_numpy_docstring = False
+
+# myst-parser heading anchors: generate anchors for H1..H3
+myst_heading_anchors = 3
