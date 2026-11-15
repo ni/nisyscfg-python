@@ -75,6 +75,7 @@ optional = true
 sphinx = ">=8.2,<9.0"
 sphinx-rtd-theme = ">=3.0,<4.0"
 sphinx-autoapi = ">=3.8,<4.0"
+m2r2 = {extras = ["sphinx"], version = "^2.1.0"}
 
 [tool.mypy]
 files = "examples/,src/,tests/"

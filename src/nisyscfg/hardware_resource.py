@@ -3,7 +3,7 @@
 import ctypes
 import typing
 from functools import reduce
-from typing import TYPE_CHECKING, Protocol
+from typing import Protocol, TYPE_CHECKING
 
 import nisyscfg.errors
 import nisyscfg.properties

@@ -1,6 +1,4 @@
-.. include:: ../README.md
-   :parser: myst_parser.sphinx_
-
+.. mdinclude:: ../README.md
 Table of Contents
 =================
 
