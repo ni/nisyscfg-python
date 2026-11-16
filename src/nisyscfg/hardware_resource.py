@@ -3,7 +3,7 @@
 import ctypes
 import typing
 from functools import reduce
-from typing import Protocol, TYPE_CHECKING
+from typing import TYPE_CHECKING, Protocol
 
 import nisyscfg.errors
 import nisyscfg.properties
@@ -340,7 +340,6 @@ class HardwareResource(object):
     @property
     def name(self) -> str:
         """Returns a name that identifies a resource."""
-
         # PropertyBag dynamically adds indexed properties as attributes on
         # instances (e.g., expert_user_alias, expert_resource_name). Statically
         # annotate these two attributes here so mypy recognizes them.
