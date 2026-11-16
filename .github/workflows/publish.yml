@@ -85,12 +85,20 @@ jobs:
       package-name: ${{ needs.get_publish_info.outputs.package-name }}
       package-basepath: ${{ needs.get_package_info.outputs.package-basepath }}
       install-extras: ${{ needs.get_package_info.outputs.install-extras }}
-  # TODO: Call check docs post including check docs file which generates docs.
+  check_docs:
+    name: Check docs
+    if: ${{ github.event_name == 'release' || inputs.package-name != 'none' }}
+    uses: ./.github/workflows/check_docs.yml
+    needs: [get_publish_info, get_package_info]
+    with:
+      check-docs: ${{ needs.get_package_info.outputs.should-check-docs }}
+      package-name: ${{ needs.get_publish_info.outputs.package-name }}
+      package-basepath: ${{ needs.get_package_info.outputs.package-basepath }}
   build_package:
     name: Build ${{ needs.get_publish_info.outputs.package-name }}
     if: ${{ github.event_name == 'release' || inputs.package-name != 'none' }}
     runs-on: ubuntu-latest
-    needs: [get_publish_info, get_package_info, analyze_package] # TODO: Add check docs to needs
+    needs: [get_publish_info, get_package_info, analyze_package, check_docs]
     steps:
       - name: Check out repo
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
