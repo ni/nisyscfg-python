@@ -4,8 +4,6 @@ import datetime
 import pathlib
 import tomllib
 
-import autoapi.extension
-
 # Add any Sphinx extension module names here, as strings. They can be
 # extensions coming with Sphinx (named 'sphinx.ext.*') or your custom
 # ones.
@@ -41,9 +39,14 @@ description = proj_config["project"]["description"]
 htmlhelp_basename = f"{project}doc"
 
 
-# tell autoapi to doc the public options
-autoapi_options = list(autoapi.extension._DEFAULT_OPTIONS)
-autoapi_options.remove("private-members")  # note: remove this to include "_" members in docs
+autoapi_options = [
+    "members",
+    "undoc-members",
+    "show-inheritance",
+    "show-module-summary",
+    "special-members",
+    "imported-members",
+]
 autoapi_dirs = [root_path / "src" / "nisyscfg"]
 autoapi_type = "python"
 autodoc_typehints = "description"

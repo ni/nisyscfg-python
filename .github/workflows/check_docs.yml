@@ -57,9 +57,3 @@ jobs:
         run: poetry install -v --only main,docs
       - name: Generate docs
         run:  poetry run sphinx-build docs docs/_build -b html -W
-      # TODO: remove uploading this artifact once publishing to RTD is setup
-      - name: Upload docs artifact
-        uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # v6.0.0
-        with:
-          name: ${{ inputs.package-name }}-docs
-          path: ${{ inputs.package-basepath }}/docs/_build/
