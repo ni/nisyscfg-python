@@ -50,4 +50,6 @@ def test_filter_property_declarations_match_property_bag() -> None:
     xnet_descriptor = vars(nisyscfg.filter.Filter)["xnet"]
     assert isinstance(xnet_descriptor, nisyscfg.properties.Expert)
     xnet_protocol = _class_node(module, "_XnetFilterProperties")
-    assert _annotated_names(xnet_protocol.body) == _runtime_property_names(xnet_descriptor._expert)
+    assert _annotated_names(xnet_protocol.body) == _runtime_property_names(
+        xnet_descriptor._expert  # pyright: ignore[reportPrivateUsage]
+    )

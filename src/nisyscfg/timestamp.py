@@ -45,7 +45,9 @@ def _convert_ctype_to_datetime(  # pyright: ignore[reportUnusedFunction]
         )
 
 
-def _convert_datetime_to_ctype(timestamp: datetime) -> ctypes.Array[ctypes.c_uint]:
+def _convert_datetime_to_ctype(  # pyright: ignore[reportUnusedFunction]
+    timestamp: datetime,
+) -> ctypes.Array[ctypes.c_uint]:
     """Convert a hightime.datetime to a TimestampUTC ctypes array."""
     if timestamp == datetime(year=1904, month=1, day=1):
         return nisyscfg.types.TimestampUTC(0, 0, 0, 0)
