@@ -16,8 +16,8 @@ jobs:
     runs-on: ubuntu-latest
     if: github.event.workflow_run.conclusion == 'success' || github.event.workflow_run.conclusion == 'failure'
     permissions:
-      checks: write
-      pull-requests: write
+      checks: write # needed to push the aggregated report
+      pull-requests: write # needed to post the report to the PR
       actions: read
     steps:
       - name: Download test results and event file
