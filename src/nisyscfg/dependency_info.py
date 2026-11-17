@@ -84,16 +84,16 @@ class DependencyInfoIterator(object):
 
         return DependencyInfo(
             depender=nisyscfg.component_info.ComponentInfo(
-                id=c_string_decode(depender_id),  # type: ignore[call-overload]  # pyright: ignore[reportArgumentType]
-                version=c_string_decode(depender_version),  # type: ignore[call-overload]  # pyright: ignore[reportArgumentType]
-                title=c_string_decode(depender_title),  # type: ignore[call-overload]  # pyright: ignore[reportArgumentType]
+                id=c_string_decode(typing.cast(bytes, depender_id)),
+                version=c_string_decode(typing.cast(bytes, depender_version)),
+                title=c_string_decode(typing.cast(bytes, depender_title)),
                 type=nisyscfg.enums.ComponentType.UNKNOWN,
                 details=depender_detailed_description,
             ),
             dependee=nisyscfg.component_info.ComponentInfo(
-                id=c_string_decode(dependee_id),  # type: ignore[call-overload]  # pyright: ignore[reportArgumentType]
-                version=c_string_decode(dependee_version),  # type: ignore[call-overload]  # pyright: ignore[reportArgumentType]
-                title=c_string_decode(dependee_title),  # type: ignore[call-overload]  # pyright: ignore[reportArgumentType]
+                id=c_string_decode(typing.cast(bytes, dependee_id)),
+                version=c_string_decode(typing.cast(bytes, dependee_version)),
+                title=c_string_decode(typing.cast(bytes, dependee_title)),
                 type=nisyscfg.enums.ComponentType.UNKNOWN,
                 details=dependee_detailed_description,
             ),
