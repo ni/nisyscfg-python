@@ -33,7 +33,7 @@ class SystemInfoIterator(object):
         if error_code == nisyscfg.errors.Status.END_OF_ENUM:
             raise StopIteration()
         nisyscfg.errors.handle_error(self, error_code)
-        return c_string_decode(system_name.value)
+        return c_string_decode(system_name.value)  # pyright: ignore[reportUnknownVariableType]
 
     def close(self) -> None:
         """Close the system enumeration handle."""

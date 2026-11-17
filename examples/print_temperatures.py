@@ -1,6 +1,6 @@
 """Example demonstrating how to read and print temperature values."""
 
-import itertools
+from itertools import zip_longest
 
 import nisyscfg
 from nisyscfg.hardware_resource import HardwareResource
@@ -9,9 +9,7 @@ from nisyscfg.system import Session
 
 def print_resource_temperature(resource: HardwareResource, indent: str) -> None:
     """Print temperature readings for the specified resource."""
-    for name, reading in itertools.zip_longest(
-        resource.temperature_name, resource.temperature_reading
-    ):
+    for name, reading in zip_longest(resource.temperature_name, resource.temperature_reading):
         print(indent + "{}: {}".format(name or "Temperature", reading))
 
 

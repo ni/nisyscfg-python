@@ -3,7 +3,6 @@
 import sys
 
 import nisyscfg
-import nisyscfg.xnet
 import nisyscfg.xnet.enums
 
 
