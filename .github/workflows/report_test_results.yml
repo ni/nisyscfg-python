@@ -38,5 +38,4 @@ jobs:
           event_name: ${{ github.event.workflow_run.event }}
           files: "artifacts/**/*.xml"
           checks: "Report-Test-Results"
-          comment_title: "pull request comment"
           comment_mode: ${{ (github.event.workflow_run.event == 'pull_request' || github.event_name == 'pull_request') && 'always' || 'off' }}
