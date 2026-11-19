@@ -13,11 +13,96 @@ See [GitHub's official documentation](https://help.github.com/articles/using-pul
 
 # Getting Started
 
-- TODO: include build steps here.
+## Install the NI System Configuration driver
+
+The package uses the NI System Configuration Runtime, which is installed with the
+NI System Configuration driver. Download and install the driver for your
+platform from the [NI downloads page](https://www.ni.com/downloads/).
+
+Having the driver installed will allow you to exercise it when you make changes to the Python bindings, so that
+you can confirm the API works with real hardware.
+
+## Set up Poetry
+
+Install [Poetry](https://python-poetry.org/docs/#installation) (version 2.1 or
+later) and Python 3.11 or later. From the repository root, select the Python
+interpreter to use and install the project and its development dependencies:
+
+```shell
+poetry env use 3.11
+poetry install
+```
+
+Run project commands in the Poetry environment with `poetry run`, for example:
+
+```shell
+poetry run python -c "import nisyscfg"
+```
+
+## Update the lock file
+
+Dependencies are periodically updated by [Mend Renovate](https://www.mend.io/renovate/) PRs. But, somtimes you need to update them sooner or need to add a dependency.
+
+When you change dependency declarations in `pyproject.toml`, regenerate
+`poetry.lock` from the repository root and include the updated lock file in your
+change:
+
+```shell
+poetry lock
+poetry check --lock
+```
+
+If you intend to update dependencies to the latest versions allowed by the
+existing constraints, use the [`poetry update` command](https://python-poetry.org/docs/cli/#update).
+
+## Build the package
+
+Build the source distribution and wheel from the repository root:
+
+```shell
+poetry build
+```
+
+The build artifacts are written to `dist/`.
 
 # Testing
 
-- TODO: include testing steps here.
+Pull requests run CI checks before they can be merged. These include workflow
+validation, project analysis (style and type checks), Bandit security checks,
+documentation generation, unit tests on Windows and Linux across the supported
+Python versions, and a package build. Many of these checks can be run locally,
+before you create your PR.
+
+Run the unit tests and coverage report locally with:
+
+```shell
+poetry run pytest
+```
+
+Run the project style and type checks and the Bandit scan with:
+
+```shell
+poetry run ni-python-styleguide lint
+poetry run mypy
+poetry run pyright
+poetry run bandit -c pyproject.toml -r src/
+```
+
+To check the Poetry configuration and lock file, run:
+
+```shell
+poetry check --lock
+```
+
+To build the documentation locally, install the optional docs dependencies and
+run Sphinx with warnings treated as errors:
+
+```shell
+poetry install --with docs
+poetry run sphinx-build docs docs/_build -b html -W
+```
+
+The generated HTML documentation is in `docs/_build/`.
 
 # Contributing
 
