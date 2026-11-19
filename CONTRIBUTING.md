@@ -189,5 +189,5 @@ begin contributing to to the project.
 
 (taken from [developercertificate.org](https://developercertificate.org/))
 
-See [LICENSE](https://github.com/ni/<reponame>/blob/master/LICENSE)
+See [LICENSE](https://github.com/ni/nisyscfg-python/blob/master/LICENSE)
 for details about how **nisyscfg-python** is licensed.
