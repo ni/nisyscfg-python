@@ -117,6 +117,47 @@ begin contributing to to the project.
 5. On GitHub, send a New pull request to the main repository's master branch. GitHub
    pull requests are the expected method of code collaboration on this project.
 
+# Release Process
+
+1. Make sure your worktree is clean and up to date with `main`. Decide the next
+   semantic version and bump the package version in `pyproject.toml` before
+   creating the release. For example, increment the patch version with:
+
+   ```shell
+   poetry version patch
+   ```
+
+   Use `poetry version minor` or `poetry version major` for those increments, or
+   provide an explicit version with `poetry version <version>`. Check the
+   resulting version with `poetry version`, then commit.
+
+   Create a PR and merge the change to `main`.
+
+2. Before release, confirm CI passes, including the unit-test matrix across
+   supported Python versions and operating systems. Spot check the "latest"
+   documentation at https://nisyscfg.readthedocs.io/en/latest/.
+
+3. Create a GitHub Release from the commit on `main` that contains the version
+   bump. Set the tag to the version with a `v` prefix (for example, version
+   `1.2.3` uses tag `v1.2.3`), use the version as the release title, and use
+   the corresponding `CHANGELOG.md` entries as the release description. Publish
+   the release; creating or pushing a tag without publishing a GitHub Release
+   does not trigger the publishing workflow.
+
+4. Publishing the GitHub Release triggers the `Publish to PyPI` workflow. It
+   validates the tag format and checks that the tag version matches
+   `pyproject.toml`, runs the package analysis and documentation checks, builds
+   and verifies the distribution files, and publishes them to PyPI. The
+   workflow uses the `pypi` deployment environment; an authorized reviewer must 
+   approve the deployment before publishing can proceed. A failed validation or 
+   required check prevents publishing.
+
+5. Confirm the workflow completes successfully. It also creates a pull request
+   to update the project version; review that pull request and merge it when
+   appropriate. In a follow-up changelog change, move the released entries
+   under the release version and start a fresh `Unreleased` section with empty
+   `Added`, `Changed`, and `Removed` subsections.
+
 # Developer Certificate of Origin (DCO)
 
    Developer's Certificate of Origin 1.1
