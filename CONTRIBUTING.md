@@ -147,8 +147,9 @@ begin contributing to to the project.
 4. Publishing the GitHub Release triggers the `Publish to PyPI` workflow. It
    validates the tag format and checks that the tag version matches
    `pyproject.toml`, runs the package analysis and documentation checks, builds
-   and verifies the distribution files, and publishes them to PyPI. The
-   workflow uses the `pypi` deployment environment; an authorized reviewer must 
+   and verifies the distribution files, and publishes them to PyPI using
+   [Trusted Publishing](https://docs.pypi.org/trusted-publishers/). The workflow
+   uses the `pypi` deployment environment; an authorized reviewer must
    approve the deployment before publishing can proceed. A failed validation or 
    required check prevents publishing.
 
