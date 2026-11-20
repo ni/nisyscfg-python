@@ -114,7 +114,7 @@ begin contributing to to the project.
 2. Make your change.
 3. Verify all tests, including the new ones, pass.
 4. Update CHANGELOG.md if applicable.
-5. On GitHub, send a New pull request to the main repository's master branch. GitHub
+5. On GitHub, send a New pull request to the main repository's main branch. GitHub
    pull requests are the expected method of code collaboration on this project.
 
 # Release Process
