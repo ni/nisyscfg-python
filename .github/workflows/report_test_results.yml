@@ -21,7 +21,7 @@ jobs:
       actions: read
     steps:
       - name: Download test results and event file
-        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
+        uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
         with:
           github-token: ${{ github.token }}
           run-id: ${{ github.event.workflow_run.id }}
@@ -31,7 +31,7 @@ jobs:
         run: ls -R artifacts
 
       - name: Publish test results
-        uses: EnricoMi/publish-unit-test-result-action@c950f6fb443cb5af20a377fd0dfaa78838901040 # v2.23.0
+        uses: EnricoMi/publish-unit-test-result-action@da5b7be67623cd59bbbd1a0ce4f022050a55605f # v2.26.0
         with:
           commit: ${{ github.event.workflow_run.head_sha }}
           event_file: artifacts/event_file/event.json
