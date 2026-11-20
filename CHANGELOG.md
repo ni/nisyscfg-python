@@ -36,8 +36,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Changed
   - [Raised the minimum supported Python version to 3.7, added Python 3.11 support, and dropped PyPy3 support](https://github.com/tkrebes/nisyscfg-python/pull/49).
   - [Changed PXI bitmask enums to `enum.IntFlag`](https://github.com/tkrebes/nisyscfg-python/pull/51).
-- Documentation
-  - [Fixed a typo in a README example](https://github.com/tkrebes/nisyscfg-python/pull/56).
 
 ## 0.0.5
 - Fixed
