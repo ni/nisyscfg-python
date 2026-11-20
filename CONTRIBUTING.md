@@ -19,8 +19,8 @@ The package uses the NI System Configuration Runtime, which is installed with th
 NI System Configuration driver. Download and install the driver for your
 platform from the [NI downloads page](https://www.ni.com/downloads/).
 
-Having the driver installed will allow you to exercise it when you make changes to the Python bindings, so that
-you can confirm the API works with real hardware.
+The unit tests use mocks, so the driver isn't required to run them, but you
+need it to check changes against real hardware.
 
 ## Set up Poetry
 
@@ -41,7 +41,7 @@ poetry run python -c "import nisyscfg"
 
 ## Update the lock file
 
-Dependencies are periodically updated by [Mend Renovate](https://www.mend.io/renovate/) PRs. But, somtimes you need to update them sooner or need to add a dependency.
+Dependencies are periodically updated by [Mend Renovate](https://www.mend.io/renovate/) PRs. Sometimes you need to update them sooner or add a new dependency.
 
 When you change dependency declarations in `pyproject.toml`, regenerate
 `poetry.lock` from the repository root and include the updated lock file in your
@@ -144,20 +144,14 @@ begin contributing to to the project.
    the release; creating or pushing a tag without publishing a GitHub Release
    does not trigger the publishing workflow.
 
-4. Publishing the GitHub Release triggers the `Publish to PyPI` workflow. It
-   validates the tag format and checks that the tag version matches
-   `pyproject.toml`, runs the package analysis and documentation checks, builds
-   and verifies the distribution files, and publishes them to PyPI using
-   [Trusted Publishing](https://docs.pypi.org/trusted-publishers/). The workflow
-   uses the `pypi` deployment environment; an authorized reviewer must
-   approve the deployment before publishing can proceed. A failed validation or 
-   required check prevents publishing.
+4. Publishing the release runs the `Publish to PyPI` workflow, which validates
+   the tag against `pyproject.toml`, runs the analysis and docs checks, builds
+   the package, and, after an authorized reviewer approves the `pypi`
+   deployment, publishes to PyPI using
+   [Trusted Publishing](https://docs.pypi.org/trusted-publishers/).
 
-5. Confirm the workflow completes successfully. It also creates a pull request
-   to update the project version; review that pull request and merge it when
-   appropriate. In a follow-up changelog change, move the released entries
-   under the release version and start a fresh `Unreleased` section with empty
-   `Added`, `Changed`, and `Removed` subsections.
+5. Confirm the workflow completes successfully. It also opens a PR that bumps
+   `main` to the next dev version (for example, `0.2.2.dev0`); review and merge it.
 
 # Developer Certificate of Origin (DCO)
 
@@ -189,5 +183,5 @@ begin contributing to to the project.
 
 (taken from [developercertificate.org](https://developercertificate.org/))
 
-See [LICENSE](https://github.com/ni/nisyscfg-python/blob/master/LICENSE)
+See [LICENSE](https://github.com/ni/nisyscfg-python/blob/main/LICENSE)
 for details about how **nisyscfg-python** is licensed.
