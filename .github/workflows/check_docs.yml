@@ -49,7 +49,7 @@ jobs:
       - name: Check for lock changes
         run: poetry check --lock
       - name: Cache virtualenv (with docs)
-        uses: actions/cache@668228422ae6a00e4ad889ee87cd7109ec5666a7 # v5.0.4
+        uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
         with:
           path: ${{ github.workspace }}/${{ needs.get_package_info.outputs.package-basepath == '.' && '.venv' || format('{0}/.venv', needs.get_package_info.outputs.package-basepath) }}
           key:  ${{ inputs.package-name }}-${{ matrix.os }}-py${{ matrix.python-version }}-${{ steps.setup-python.outputs.python-version }}-${{ hashFiles('**/poetry.lock') }}
